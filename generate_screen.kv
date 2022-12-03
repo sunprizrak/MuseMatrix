@@ -1,0 +1,104 @@
+<Check@MDCheckbox>
+    group: 'image_size'
+    size_hint: None, None
+    size: 30, 30
+
+<CheckLabel@MDLabel>
+    font_size: 13
+    size_hint_x: None
+    width: 65
+
+
+<GenerateScreen>
+    name: 'generate_screen'
+
+    image_section: image_section
+    option_section: option_section
+
+    ImageSection:
+        id: image_section
+        size_hint: 1, .5
+        pos_hint: {'top': 1}
+        padding: 15
+
+        canvas:
+            Color:
+                rgba: 1, 1, 0, 1
+            Rectangle:
+                size: self.size
+                pos: self.pos
+
+    OptionSection:
+        prompt: prompt.text
+        image_count: int(img_count.text) if len(img_count.text) > 0 else 0
+        image_size: ''
+
+        id: option_section
+        size_hint: 1, .5
+        orientation: 'vertical'
+        spacing: 10
+        padding: 15
+
+        canvas:
+            Color:
+                rgba: 1, 0, 0, 1
+            Rectangle:
+                size: self.size
+                pos: self.pos
+
+        MDLabel:
+            adaptive_size: True
+            text: 'Выберите размер картинки:'
+
+
+        MDBoxLayout:
+            orientation: 'horizontal'
+            adaptive_size: True
+
+            Check:
+                on_active: self.parent.parent.image_size = check_label_1.text
+
+            CheckLabel:
+                id: check_label_1
+                text: '256x256'
+
+            Check:
+                on_active: self.parent.parent.image_size = check_label_2.text
+
+            CheckLabel:
+                id: check_label_2
+                text: '512x512'
+
+            Check:
+                on_active: self.parent.parent.image_size = check_label_3.text
+
+            CheckLabel:
+                id: check_label_3
+                text: '1024x1024'
+
+        MDBoxLayout:
+            orientation: 'horizontal'
+            spacing: 10
+            adaptive_size: True
+
+            MDLabel:
+                size_hint_x: None
+                text: 'Колличество:'
+
+            MDTextFieldRect:
+                id: img_count
+                size_hint: None, None
+                height: 30
+                width: 35
+
+        MDTextFieldRect:
+            id: prompt
+            size_hint_y: None
+            height: 100
+            pos_hint: {'center_x': .5}
+
+        MDRoundFlatButton:
+            text: 'Generate'
+            font_size: 15
+            pos_hint: {'center_x': .5}
+            on_release: root.generate()

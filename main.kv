@@ -1,94 +1,13 @@
+#:include generate_screen.kv
 
 <SM@ScreenManager>
 
 SM:
-    OpenAIScreen:
-        id: openai
+    GenerateScreen:
+        id: generate_screen
 
 
-<Check@MDCheckbox>
-    group: 'image_size'
-    size_hint: None, None
-    size: dp(48), dp(48)
 
-<CheckLabel@MDLabel>
-    font_size: 13
-    size_hint_x: None
-
-<OpenAIScreen@MDScreen>
-    name: 'openai'
-
-    JustGenerate:
-        prompt: prompt.text
-        image_count: int(img_count.text) if len(img_count.text) > 0 else 0
-        image_size: ''
-
-        orientation: 'vertical'
-        spacing: 5
-
-#        MDBoxLayout:
-#            id: box_image
-#            pos_hint: {'center_x': .5}
-#            size_hint: None, None
-#            size: 256, 256
-
-        MDLabel:
-            size_hint_y: None
-            text: 'Выберите размер картинки:'
-
-        MDGridLayout:
-            cols: 3
-            rows: 2
-            adaptive_height: True
-            pos_hint: {'center_x': .6}
-
-            CheckLabel:
-                id: check_label_1
-                text: '256x256'
-
-            CheckLabel:
-                id: check_label_2
-                text: '512x512'
-
-            CheckLabel:
-                id: check_label_3
-                text: '1024x1024'
-
-            Check:
-                on_active: self.parent.parent.image_size = check_label_1.text
-
-            Check:
-                on_active: self.parent.parent.image_size = check_label_2.text
-
-            Check:
-                on_active: self.parent.parent.image_size = check_label_3.text
-
-        MDBoxLayout:
-            orientation: 'horizontal'
-            spacing: 10
-            adaptive_height: True
-
-            MDLabel:
-                size_hint_x: None
-                text: 'Колличество'
-
-            MDTextFieldRect:
-                id: img_count
-                size_hint: None, None
-                height: '30dp'
-                width: '40dp'
-
-        MDTextFieldRect:
-            id: prompt
-            size_hint: .9, None
-            height: '100dp'
-            pos_hint: {'center_x': .5}
-
-        MDRoundFlatButton:
-            text: 'Generate'
-            font_size: '15sp'
-            pos_hint: {'center_x': .5}
-            on_release: self.parent.generate()
 
 
 
