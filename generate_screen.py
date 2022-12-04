@@ -27,39 +27,41 @@ class GenerateScreen(MDScreen):
         print(f'{self.__class__.__name__} {GenerateScreen.count}')
 
     def generate(self):
-        # openai.api_key = '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'
-        # response = openai.Image.create(
-        #     prompt=self.option_section.prompt,
-        #     n=self.option_section.image_count,
-        #     size=self.option_section.image_size,
-        # )
-        # print(response)
+        if all([self.option_section.prompt, self.option_section.image_size, self.option_section.image_count]):
 
-        for widget in self.image_section.children:
-            try:
-                if widget.id == 'box_image' or widget.id == 'swiper_image':
-                    self.image_section.remove_widget(widget)
-            except Exception:
-                pass
+            # openai.api_key = ''
+            # response = openai.Image.create(
+            #     prompt=self.option_section.prompt,
+            #     n=self.option_section.image_count,
+            #     size=self.option_section.image_size,
+            # )
+            # print(response)
 
-        if self.option_section.image_count == 1:
-            # url = response['data'][0].get('url')
+            for widget in self.image_section.children:
+                try:
+                    if widget.id == 'box_image' or widget.id == 'swiper_image':
+                        self.image_section.remove_widget(widget)
+                except Exception:
+                    pass
 
-            layout = MDBoxLayout(id='box_image')
-            layout.add_widget(AsyncImage(source=f'1024x1024.jpg'))  # source=f'{url}'
+            if self.option_section.image_count == 1:
+                # url = response['data'][0].get('url')
 
-            self.image_section.add_widget(layout)
-        elif self.option_section.image_count > 1:  # len(response['data']) > 1
-            swiper = MDSwiper(id='swiper_image')
+                layout = MDBoxLayout(id='box_image')
+                layout.add_widget(AsyncImage(source=f'1024x1024.jpg'))  # source=f'{url}'
 
-            for el in range(self.option_section.image_count):  # response['data']
-                # url = el.get('url')
+                self.image_section.add_widget(layout)
+            elif self.option_section.image_count > 1:  # len(response['data']) > 1
+                swiper = MDSwiper(id='swiper_image')
 
-                item = MDSwiperItem()
-                item.add_widget(AsyncImage(source=f'default.jpg'))  # source=f'{url}'
+                for el in range(self.option_section.image_count):  # response['data']
+                    # url = el.get('url')
 
-                swiper.add_widget(item)
+                    item = MDSwiperItem()
+                    item.add_widget(AsyncImage(source=f'default.jpg'))  # source=f'{url}'
 
-            self.image_section.add_widget(swiper)
+                    swiper.add_widget(item)
+
+                self.image_section.add_widget(swiper)
 
 
