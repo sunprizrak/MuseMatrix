@@ -1,6 +1,7 @@
 from kivymd.app import MDApp
 from kivy.core.window import Window
-from generate_screen import ImageSection, OptionSection
+from create_screen import CreateScreen
+from open_image_screen import OpenImageScreen
 
 Window.size = (360, 600)
 

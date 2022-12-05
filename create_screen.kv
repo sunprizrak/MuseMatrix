@@ -9,8 +9,9 @@
     width: 65
 
 
-<GenerateScreen>
-    name: 'generate_screen'
+
+<CreateScreen>
+    name: 'create_screen'
 
     image_section: image_section
     option_section: option_section
@@ -21,16 +22,9 @@
         pos_hint: {'top': 1}
         padding: 15
 
-        canvas:
-            Color:
-                rgba: 1, 1, 0, 1
-            Rectangle:
-                size: self.size
-                pos: self.pos
-
     OptionSection:
         prompt: prompt.text
-        image_count: int(img_count.text) if len(img_count.text) > 0 else 0
+        image_count: int(img_count.text) if img_count.text else 1
         image_size: ''
 
         id: option_section
@@ -41,12 +35,12 @@
 
         MDLabel:
             adaptive_size: True
-            text: 'Выберите размер картинки:'
-
+            text: 'Choose picture size:'
 
         MDBoxLayout:
             orientation: 'horizontal'
             adaptive_size: True
+            pos_hint: {'center_x': .5}
 
             Check:
                 on_active: self.parent.parent.image_size = check_label_1.text
@@ -71,27 +65,47 @@
 
         MDBoxLayout:
             orientation: 'horizontal'
-            spacing: 10
             adaptive_size: True
 
             MDLabel:
                 size_hint_x: None
-                text: 'Колличество:'
+                width: 65
+                text: 'Amount:'
+
+            MDIconButton:
+                group: 'amount'
+                icon: 'minus'
+                icon_size: 20
+                on_release: img_count.text = str(int(img_count.text) - 1) if int(img_count.text) >= 2 else img_count.text
 
             MDTextFieldRect:
                 id: img_count
+                #mode: 'round'
+                text: '1'
+                halign: 'center'
+                pos_hint: {'center_y': .5}
                 size_hint: None, None
                 height: 30
-                width: 35
+                width: 50
+                input_filter: 'int'
+                disabled: True
+
+            MDIconButton:
+                icon: 'plus'
+                icon_size: 20
+                on_release: img_count.text = str(int(img_count.text) + 1) if int(img_count.text) <= 9 else img_count.text
 
         MDTextFieldRect:
             id: prompt
             size_hint_y: None
             height: 100
             pos_hint: {'center_x': .5}
+            padding: 10
+            auto_indent: True
 
-        MDRoundFlatButton:
-            text: 'Generate'
+        MDRaisedButton:
+            text: 'Create'
             font_size: 15
+            md_bg_color: 'green'
             pos_hint: {'center_x': .5}
-            on_release: root.generate()
+            on_release: root.create()
