@@ -1,9 +1,7 @@
-from kivy.graphics import Color, Rectangle
 from kivy.uix.image import AsyncImage
 from kivy.uix.screenmanager import RiseInTransition
-from kivy.uix.widget import Widget
 from kivymd.uix.boxlayout import MDBoxLayout
-from kivy.properties import StringProperty, NumericProperty, ObjectProperty
+from kivy.properties import StringProperty, NumericProperty, ObjectProperty, BooleanProperty
 from kivymd.uix.relativelayout import MDRelativeLayout
 from kivymd.uix.screen import MDScreen
 from kivymd.uix.swiper import MDSwiperItem, MDSwiper
@@ -14,7 +12,6 @@ class MyImage(AsyncImage):
     sm = ObjectProperty()
 
     def on_touch_up(self, touch):
-        print(self.collide_point(*touch.pos))
         if self.collide_point(*touch.pos):
             self.full_screen()
 
@@ -31,7 +28,7 @@ class MyImage(AsyncImage):
         self.sm.current = 'open_img_screen'
 
 
-class ImageSection(MDBoxLayout):
+class ImageSection(MDRelativeLayout):
     pass
 
 
@@ -44,22 +41,16 @@ class OptionSection(MDBoxLayout):
 class CreateScreen(MDScreen):
     image_section = ObjectProperty()
     option_section = ObjectProperty()
-    count = 0
-
-    def __init__(self, **kwargs):
-        super(CreateScreen, self).__init__(**kwargs)
-        CreateScreen.count += 1
-        print(f'{self.__class__.__name__} {CreateScreen.count}')
 
     def create(self):
         if self.option_section.prompt:
 
-            # openai.api_key = ''
             # response = openai.Image.create(
             #     prompt=self.option_section.prompt,
             #     n=self.option_section.image_count,
             #     size=self.option_section.image_size,
             # )
+            #
             # print(response)
 
             for widget in self.image_section.children:
@@ -69,7 +60,7 @@ class CreateScreen(MDScreen):
                 except Exception:
                     pass
 
-            if self.option_section.image_count == 1:
+            if self.option_section.image_count == 1:    # len(response['data']) == 1
                 # url = response['data'][0].get('url')
 
                 layout = MDRelativeLayout(
@@ -78,7 +69,9 @@ class CreateScreen(MDScreen):
 
                 image = MyImage(
                     sm=self.parent,
-                    source='1024x1024.jpg',  # source=f'{url}'
+                    #source=f'{url}',
+                    source='https://oaidalleapiprodscus.blob.core.windows.net/private/org-2DPiZYNZodBycS9fvh0ao9aE/user-SsGnIAyK6zK7DJGy26seC8ME/img-eLAOkNq3A1plPT538vUCcY1M.png?st=2022-12-06T13%3A38%3A35Z&se=2022-12-06T15%3A38%3A35Z&sp=r&sv=2021-08-06&sr=b&rscd=inline&rsct=image/png&skoid=6aaadede-4fb3-4698-a8f6-684d7786b067&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2022-12-06T13%3A26%3A55Z&ske=2022-12-07T13%3A26%3A55Z&sks=b&skv=2021-08-06&sig=LJPVQ5K0tSXkbvImCXSWgXGIRdnPVtQho2X8s7rba9Q%3D',
+                    mipmap=True,
                     allow_stretch=True,
                 )
 
@@ -95,7 +88,9 @@ class CreateScreen(MDScreen):
 
                     image = MyImage(
                         sm=self.parent,
-                        source='1024x1024.jpg',  # source=f'{url}'
+                        #source=f'{url}',
+                        source='https://oaidalleapiprodscus.blob.core.windows.net/private/org-2DPiZYNZodBycS9fvh0ao9aE/user-SsGnIAyK6zK7DJGy26seC8ME/img-eLAOkNq3A1plPT538vUCcY1M.png?st=2022-12-06T13%3A38%3A35Z&se=2022-12-06T15%3A38%3A35Z&sp=r&sv=2021-08-06&sr=b&rscd=inline&rsct=image/png&skoid=6aaadede-4fb3-4698-a8f6-684d7786b067&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2022-12-06T13%3A26%3A55Z&ske=2022-12-07T13%3A26%3A55Z&sks=b&skv=2021-08-06&sig=LJPVQ5K0tSXkbvImCXSWgXGIRdnPVtQho2X8s7rba9Q%3D',
+                        mipmap=True,
                         allow_stretch=True,
                     )
 

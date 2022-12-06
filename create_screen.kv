@@ -22,12 +22,11 @@
         pos_hint: {'top': 1}
         padding: 0, 15, 0, 15
 
-        canvas:
-            Color:
-                rgba: 1, 0, 1, 1
-            Rectangle:
-                size: self.size
-                pos: self.pos
+        MDSpinner:
+            size_hint: None, None
+            size: 38, 38
+            pos_hint: {'center_x': .5, 'center_y': .5}
+            active: False
 
     OptionSection:
         prompt: prompt.text
@@ -47,7 +46,6 @@
         MDBoxLayout:
             orientation: 'horizontal'
             adaptive_size: True
-            pos_hint: {'center_x': .5}
 
             Check:
                 active: True
@@ -113,7 +111,7 @@
 
         MDRaisedButton:
             text: 'Create'
-            font_size: 15
-            md_bg_color: 'green'
+            font_style: 'Button'
+            md_bg_color: 'purple'
             pos_hint: {'center_x': .5}
             on_release: root.create()
