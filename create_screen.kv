@@ -20,12 +20,19 @@
         id: image_section
         size_hint: 1, .5
         pos_hint: {'top': 1}
-        padding: 15
+        padding: 0, 15, 0, 15
+
+        canvas:
+            Color:
+                rgba: 1, 0, 1, 1
+            Rectangle:
+                size: self.size
+                pos: self.pos
 
     OptionSection:
         prompt: prompt.text
         image_count: int(img_count.text) if img_count.text else 1
-        image_size: ''
+        image_size: '256x256'
 
         id: option_section
         size_hint: 1, .5
@@ -43,6 +50,7 @@
             pos_hint: {'center_x': .5}
 
             Check:
+                active: True
                 on_active: self.parent.parent.image_size = check_label_1.text
 
             CheckLabel:

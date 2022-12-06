@@ -1,11 +1,34 @@
-from kivy.uix.button import Button
+from kivy.graphics import Color, Rectangle
 from kivy.uix.image import AsyncImage
+from kivy.uix.screenmanager import RiseInTransition
+from kivy.uix.widget import Widget
 from kivymd.uix.boxlayout import MDBoxLayout
 from kivy.properties import StringProperty, NumericProperty, ObjectProperty
 from kivymd.uix.relativelayout import MDRelativeLayout
 from kivymd.uix.screen import MDScreen
 from kivymd.uix.swiper import MDSwiperItem, MDSwiper
 import openai
+
+
+class MyImage(AsyncImage):
+    sm = ObjectProperty()
+
+    def on_touch_up(self, touch):
+        print(self.collide_point(*touch.pos))
+        if self.collide_point(*touch.pos):
+            self.full_screen()
+
+    def collide_point(self, x, y):
+        width, height = self.norm_image_size
+        left = self.x + (self.width - width) / 2
+        right = self.right - (self.right - (left + width))
+        top = height
+        return left <= x <= right and self.y <= y <= top
+
+    def full_screen(self):
+        self.sm.ids.open_img_screen.ids.full_image.source = self.source
+        self.sm.transition = RiseInTransition()
+        self.sm.current = 'open_img_screen'
 
 
 class ImageSection(MDBoxLayout):
@@ -29,7 +52,7 @@ class CreateScreen(MDScreen):
         print(f'{self.__class__.__name__} {CreateScreen.count}')
 
     def create(self):
-        if all([self.option_section.prompt, self.option_section.image_size, self.option_section.image_count]):
+        if self.option_section.prompt:
 
             # openai.api_key = ''
             # response = openai.Image.create(
@@ -48,23 +71,20 @@ class CreateScreen(MDScreen):
 
             if self.option_section.image_count == 1:
                 # url = response['data'][0].get('url')
-                layout = MDRelativeLayout(id='box_image')
 
-                button = Button(
-                    background_color=(1, 1, 1, 0),
-                    on_release=lambda x: setattr(self.parent, 'current', 'open_img_screen'),
+                layout = MDRelativeLayout(
+                    id='box_image',
                 )
 
-                layout.add_widget(button)
-                layout.add_widget(AsyncImage(
-                    source='default.jpg',  # source=f'{url}'
-                    mipmap=True,
-                    keep_ratio=False,
+                image = MyImage(
+                    sm=self.parent,
+                    source='1024x1024.jpg',  # source=f'{url}'
                     allow_stretch=True,
-                ))
+                )
+
+                layout.add_widget(image)
 
                 self.image_section.add_widget(layout)
-
             elif self.option_section.image_count > 1:  # len(response['data']) > 1
                 swiper = MDSwiper(id='swiper_image')
 
@@ -72,7 +92,14 @@ class CreateScreen(MDScreen):
                     # url = el.get('url')
 
                     item = MDSwiperItem()
-                    item.add_widget(AsyncImage(source=f'default.jpg'))  # source=f'{url}'
+
+                    image = MyImage(
+                        sm=self.parent,
+                        source='1024x1024.jpg',  # source=f'{url}'
+                        allow_stretch=True,
+                    )
+
+                    item.add_widget(image)
 
                     swiper.add_widget(item)
 
