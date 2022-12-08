@@ -8,8 +8,6 @@
     size_hint_x: None
     width: 65
 
-
-
 <CreateScreen>
     name: 'create_screen'
 
@@ -20,18 +18,9 @@
         id: image_section
         size_hint: 1, .5
         pos_hint: {'top': 1}
-        padding: 0, 15, 0, 15
-
-        MDSpinner:
-            size_hint: None, None
-            size: 38, 38
-            pos_hint: {'center_x': .5, 'center_y': .5}
-            active: False
 
     OptionSection:
-        prompt: prompt.text
-        image_count: int(img_count.text) if img_count.text else 1
-        image_size: '256x256'
+        prompt: input_prompt.text
 
         id: option_section
         size_hint: 1, .5
@@ -49,21 +38,25 @@
 
             Check:
                 active: True
-                on_active: self.parent.parent.image_size = check_label_1.text
+                on_active:
+                    root.option_section.parent.image_size = check_label_1.text
+
 
             CheckLabel:
                 id: check_label_1
                 text: '256x256'
 
             Check:
-                on_active: self.parent.parent.image_size = check_label_2.text
+                on_active:
+                    root.option_section.image_size = check_label_2.text
 
             CheckLabel:
                 id: check_label_2
                 text: '512x512'
 
             Check:
-                on_active: self.parent.parent.image_size = check_label_3.text
+                on_active:
+                    root.option_section.image_size = check_label_3.text
 
             CheckLabel:
                 id: check_label_3
@@ -82,27 +75,27 @@
                 group: 'amount'
                 icon: 'minus'
                 icon_size: 20
-                on_release: img_count.text = str(int(img_count.text) - 1) if int(img_count.text) >= 2 else img_count.text
+                on_release:
+                    root.option_section.image_count -= 1
 
             MDTextFieldRect:
                 id: img_count
-                #mode: 'round'
-                text: '1'
+                text: str(root.option_section.image_count)
                 halign: 'center'
                 pos_hint: {'center_y': .5}
                 size_hint: None, None
                 height: 30
                 width: 50
-                input_filter: 'int'
                 disabled: True
 
             MDIconButton:
                 icon: 'plus'
                 icon_size: 20
-                on_release: img_count.text = str(int(img_count.text) + 1) if int(img_count.text) <= 9 else img_count.text
+                on_release:
+                    root.option_section.image_count += 1
 
         MDTextFieldRect:
-            id: prompt
+            id: input_prompt
             size_hint_y: None
             height: 100
             pos_hint: {'center_x': .5}
@@ -114,4 +107,5 @@
             font_style: 'Button'
             md_bg_color: 'purple'
             pos_hint: {'center_x': .5}
-            on_release: root.create()
+            on_release:
+                root.create()

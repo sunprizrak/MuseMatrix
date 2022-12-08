@@ -1,11 +1,16 @@
-from kivy.uix.image import AsyncImage
+from kivy.clock import Clock
+from kivy.loader import Loader
+from kivy.uix.image import AsyncImage, Image
 from kivy.uix.screenmanager import RiseInTransition
 from kivymd.uix.boxlayout import MDBoxLayout
-from kivy.properties import StringProperty, NumericProperty, ObjectProperty, BooleanProperty
+from kivy.properties import StringProperty, ObjectProperty, BoundedNumericProperty
 from kivymd.uix.relativelayout import MDRelativeLayout
 from kivymd.uix.screen import MDScreen
+from kivymd.uix.spinner import MDSpinner
 from kivymd.uix.swiper import MDSwiperItem, MDSwiper
 import openai
+import threading
+import time
 
 
 class MyImage(AsyncImage):
@@ -34,70 +39,97 @@ class ImageSection(MDRelativeLayout):
 
 class OptionSection(MDBoxLayout):
     prompt = StringProperty()
-    image_count = NumericProperty()
-    image_size = StringProperty()
+    image_count = BoundedNumericProperty(1, min=1, max=10, errorhandler=lambda x: 10 if x > 10 else 1)
+    image_size = StringProperty('256x256')
 
 
 class CreateScreen(MDScreen):
     image_section = ObjectProperty()
     option_section = ObjectProperty()
 
-    def create(self):
-        if self.option_section.prompt:
+    def load_images(self, **kwargs):
+        kwargs['spinner'].active = True
 
-            # response = openai.Image.create(
-            #     prompt=self.option_section.prompt,
-            #     n=self.option_section.image_count,
-            #     size=self.option_section.image_size,
-            # )
-            #
-            # print(response)
+        response = openai.Image.create(
+            prompt=self.option_section.prompt,
+            n=self.option_section.image_count,
+            size=self.option_section.image_size,
+        )
+
+        kwargs['spinner'].active = False
+
+        if len(response['data']) == 1:
+            url = response['data'][0].get('url')
+            kwargs['image'].source = url  # source='https://loremflickr.com/320/240/cat'
+        elif len(response['data']) > 1:
+            count = 0
+            for el in response['data']:  # response['data']
+                url = el.get('url')
+                kwargs['swiper'].children[0].children[count].children[0].children[0].source = url
+                count += 1
+
+    def create(self):
+        if all([self.option_section.prompt, self.option_section.image_count, self.option_section.image_size]):
+
+            spinner = MDSpinner(
+                size_hint=(None, None),
+                size=(38, 38),
+                pos_hint={'center_x': .5, 'center_y': .5},
+                active=False,
+            )
+
+            kwargs = {}
 
             for widget in self.image_section.children:
-                try:
-                    if widget.id == 'box_image' or widget.id == 'swiper_image':
-                        self.image_section.remove_widget(widget)
-                except Exception:
-                    pass
+                if isinstance(widget, MDRelativeLayout) or isinstance(widget, MDSwiper):
+                    self.image_section.remove_widget(widget)
 
-            if self.option_section.image_count == 1:    # len(response['data']) == 1
-                # url = response['data'][0].get('url')
-
-                layout = MDRelativeLayout(
-                    id='box_image',
-                )
+            if self.option_section.image_count == 1:
+                layout = MDRelativeLayout()
 
                 image = MyImage(
                     sm=self.parent,
-                    #source=f'{url}',
-                    source='https://oaidalleapiprodscus.blob.core.windows.net/private/org-2DPiZYNZodBycS9fvh0ao9aE/user-SsGnIAyK6zK7DJGy26seC8ME/img-eLAOkNq3A1plPT538vUCcY1M.png?st=2022-12-06T13%3A38%3A35Z&se=2022-12-06T15%3A38%3A35Z&sp=r&sv=2021-08-06&sr=b&rscd=inline&rsct=image/png&skoid=6aaadede-4fb3-4698-a8f6-684d7786b067&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2022-12-06T13%3A26%3A55Z&ske=2022-12-07T13%3A26%3A55Z&sks=b&skv=2021-08-06&sig=LJPVQ5K0tSXkbvImCXSWgXGIRdnPVtQho2X8s7rba9Q%3D',
                     mipmap=True,
                     allow_stretch=True,
                 )
 
-                layout.add_widget(image)
+                layout.add_widget(spinner, index=0)
+                layout.add_widget(image, index=1)
 
                 self.image_section.add_widget(layout)
-            elif self.option_section.image_count > 1:  # len(response['data']) > 1
-                swiper = MDSwiper(id='swiper_image')
 
-                for el in range(self.option_section.image_count):  # response['data']
-                    # url = el.get('url')
+                kwargs={'spinner': spinner, 'image': image}
+            elif self.option_section.image_count > 1:
+                layout = MDRelativeLayout()
+                swiper = MDSwiper()
 
+                for el in range(self.option_section.image_count):
                     item = MDSwiperItem()
-
                     image = MyImage(
                         sm=self.parent,
-                        #source=f'{url}',
-                        source='https://oaidalleapiprodscus.blob.core.windows.net/private/org-2DPiZYNZodBycS9fvh0ao9aE/user-SsGnIAyK6zK7DJGy26seC8ME/img-eLAOkNq3A1plPT538vUCcY1M.png?st=2022-12-06T13%3A38%3A35Z&se=2022-12-06T15%3A38%3A35Z&sp=r&sv=2021-08-06&sr=b&rscd=inline&rsct=image/png&skoid=6aaadede-4fb3-4698-a8f6-684d7786b067&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2022-12-06T13%3A26%3A55Z&ske=2022-12-07T13%3A26%3A55Z&sks=b&skv=2021-08-06&sig=LJPVQ5K0tSXkbvImCXSWgXGIRdnPVtQho2X8s7rba9Q%3D',
+                        #source='https://loremflickr.com/320/240/cat',
                         mipmap=True,
                         allow_stretch=True,
                     )
 
                     item.add_widget(image)
-
                     swiper.add_widget(item)
 
-                self.image_section.add_widget(swiper)
+                layout.add_widget(spinner, index=0)
+                layout.add_widget(swiper, index=1)
+                self.image_section.add_widget(layout)
+
+                kwargs = {'swiper': swiper, 'spinner': spinner}
+
+            thr = threading.Thread(target=self.load_images, kwargs=kwargs)
+            thr.start()
+
+
+
+
+
+
+
+
 
 
