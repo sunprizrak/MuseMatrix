@@ -1,0 +1,20 @@
+<OpenImageScreen>
+    name: 'open_img_screen'
+
+    MDRelativeLayout:
+
+        AnchorLayout:
+            anchor_x: 'left'
+            anchor_y: 'top'
+
+            MDIconButton:
+                icon: 'arrow-left-circle'
+                icon_size: '48'
+                on_release: root.back('create_screen')
+
+
+        AsyncImage:
+            id: full_image
+            size: self.texture_size
+            mipmap: True
+            allow_stretch: True
