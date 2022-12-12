@@ -1,0 +1,128 @@
+<Check@MDCheckbox>
+    group: 'image_size'
+    size_hint: None, None
+    size: 30, 30
+
+<CheckLabel@MDLabel>
+    font_size: 13
+    size_hint_x: None
+    width: 65
+
+<MainScreen>
+    name: 'main_screen'
+
+    image_section: image_section
+    option_section: option_section
+    prompt: input_prompt.text
+
+    MDBottomNavigation:
+        panel_color: 'white'
+        text_color_active: 2, 1, 4, 1
+
+        MDBottomNavigationItem:
+            name: 'create'
+            icon: 'fountain-pen-tip'
+
+            MDRelativeLayout:
+                id: image_section
+                size_hint: 1, .5
+                pos_hint: {'top': 1}
+
+                MDSpinner:
+                    id: spinner
+                    size_hint: None, None
+                    size: 38, 38
+                    pos_hint: {'center_x': .5, 'center_y': .5}
+                    active: False
+
+            MDBoxLayout:
+                id: option_section
+                size_hint: 1, .3
+                orientation: 'vertical'
+                spacing: 10
+                padding: 15
+
+                MDBoxLayout:
+                    orientation: 'horizontal'
+                    pos_hint: {'center_x': .5}
+                    adaptive_size: True
+
+                    Check:
+                        active: True
+                        on_active:
+                            root.image_size = check_label_1.text
+
+                    CheckLabel:
+                        id: check_label_1
+                        text: '256x256'
+
+                    Check:
+                        on_active:
+                            root.image_size = check_label_2.text
+
+                    CheckLabel:
+                        id: check_label_2
+                        text: '512x512'
+
+                    Check:
+                        on_active:
+                            root.image_size = check_label_3.text
+
+                    CheckLabel:
+                        id: check_label_3
+                        text: '1024x1024'
+
+                MDBoxLayout:
+                    orientation: 'horizontal'
+                    pos_hint: {'center_x': .5}
+                    adaptive_size: True
+
+                    MDIconButton:
+                        icon: 'minus'
+                        icon_size: 20
+                        on_release:
+                            root.image_count -= 1
+
+                    MDTextFieldRect:
+                        id: img_count
+                        text: str(root.image_count)
+                        halign: 'center'
+                        pos_hint: {'center_y': .5}
+                        size_hint: None, None
+                        height: 30
+                        width: 50
+                        disabled: True
+
+                    MDIconButton:
+                        icon: 'plus'
+                        icon_size: 20
+                        on_release:
+                            root.image_count += 1
+
+                MDTextFieldRect:
+                    id: input_prompt
+                    size_hint_y: None
+                    height: 100
+                    pos_hint: {'center_x': .5}
+                    padding: 10
+                    auto_indent: True
+
+                MDRaisedButton:
+                    text: 'Create'
+                    font_style: 'Button'
+                    md_bg_color: 'purple'
+                    pos_hint: {'center_x': .5}
+                    on_release:
+                        root.get_image()
+
+        MDBottomNavigationItem:
+            name: 'edit'
+            icon: 'image-edit'
+
+        MDBottomNavigationItem:
+            name: 'chat'
+            icon: 'forum'
+
+        MDBottomNavigationItem:
+            name: 'collection'
+            icon: 'image-multiple'

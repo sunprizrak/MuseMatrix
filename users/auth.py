@@ -1,4 +1,6 @@
-import requests
+from kivy.cache import Cache
+from kivy.network.urlrequest import UrlRequest
+import json
 
 
 class Auth:
@@ -7,35 +9,57 @@ class Auth:
     path_logout = host_name + 'auth/token/logout/'
 
     def __init__(self):
-        self.session = requests.Session()
         self.switch = False
+        self.error = None
 
     def __get_token(self, email, password):
-        response = self.session.post(url=self.path_login, data={'email': email, 'password': password})
-        if response.status_code == 200:
-            value = response.json().get('auth_token')
-            self.session.headers = {'Authorization': f'Token {value}'}
+
+        def callback(request, response):
+            Cache.register('token', limit=None, timeout=None)
+            Cache.append('token', 'auth_token', response.get('auth_token'))
             self.switch = True
 
+        def callback_failure(request, response):
+            self.error = response
+
+        def callback_error(request, error):
+            self.error = error.strerror
+
+        UrlRequest(
+            url=self.path_login,
+            method='POST',
+            on_success=callback,
+            on_error=callback_error,
+            on_failure=callback_failure,
+            req_headers={'Content-type': 'application/json'},
+            req_body=json.dumps({'email': email, 'password': password}),
+        ).wait()
+
     def del_token(self):
-        try:
-            self.session.post(url=self.path_logout, headers={'Authorization': f'Token {self.token}'})
-        except requests.RequestException as e:
-            self.session.close()
+
+        def callback(request, response):
             self.switch = False
-        self.session.close()
-        self.switch = False
+
+        def callback_failure(request, response):
+            self.switch = False
+
+        UrlRequest(
+            url=self.path_logout,
+            method='POST',
+            on_success=callback,
+            on_failure=callback_failure,
+            req_headers={'Content-type': 'application/json',
+                         'Authorization': f'Token {self.token}',
+                         },
+        )
 
     def is_auth(self):
         return self.switch
 
     def __call__(self, email, password):
-        try:
-            self.__get_token(email=email, password=password)
-            if self.is_auth():
-                return self.session
-            else:
-                return 'Email or password entered incorrectly'
-        except requests.RequestException as e:
-            return 'Problem with connection'''
+        self.__get_token(email=email, password=password)
 
+        if self.is_auth():
+            return True
+        else:
+            return self.error

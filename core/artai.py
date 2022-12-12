@@ -1,22 +1,30 @@
 from kivymd.app import MDApp
+from kivy.lang import Builder
 from kivy.core.window import Window
 from kivymd.uix.button import MDFlatButton
 from kivymd.uix.dialog import MDDialog
+from users.auth import Auth
 
-from image.screen import CreateScreen, OpenImageScreen
 from users.screen import AuthScreen
+from main.screen import MainScreen, OpenImageScreen
+
+
 import openai
 
 Window.size = (360, 600)
 
 
-class MainApp(MDApp):
+class ArtAIApp(MDApp):
 
     def __init__(self, **kwargs):
-        super(MainApp, self).__init__(**kwargs)
+        super(ArtAIApp, self).__init__(**kwargs)
+        self.auth = Auth()
         self.dialog = None
-        print(dir(self))
-        openai.api_key = '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'
+        self.theme_cls.material_style = 'M3'
+
+    def build(self):
+        kv_file = Builder.load_file('./kv/layout.kv')
+        return kv_file
 
     def show_dialog(self):
         self.dialog = MDDialog(
@@ -36,5 +44,6 @@ class MainApp(MDApp):
     def close_dialog(self, inst):
         self.dialog.dismiss()
 
+
 if __name__ == '__main__':
-    MainApp().run()
+    ArtAIApp().run()
