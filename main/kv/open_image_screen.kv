@@ -8,13 +8,35 @@
             anchor_y: 'top'
 
             MDIconButton:
-                icon: 'arrow-left-circle'
-                icon_size: '48'
-                on_release: root.back('create_screen')
-
+                icon: 'arrow-left-bold-circle-outline'
+                icon_size: '38'
+                theme_icon_color: 'Custom'
+                icon_color: 'gray'
+                on_press:
+                    self.icon_color = app.theme_cls.primary_color
+                on_release:
+                    self.icon_color = 'gray'
+                    root.back(full_image.back_screen)
 
         AsyncImage:
+            back_screen: ''
+
             id: full_image
             size: self.texture_size
             mipmap: True
             allow_stretch: True
+
+        MDBoxLayout:
+            orientation: 'horizontal'
+
+            MDIconButton:
+                icon: 'download'
+                icon_size: '38'
+                theme_icon_color: "Custom"
+                icon_color: 'gray'
+                on_press:
+                    self.text_color = app.theme_cls.primary_color
+                on_release:
+                    self.text_color = 'gray'
+                    root.download(full_image.texture)
+

@@ -20,4 +20,5 @@ class MyImage(AsyncImage):
     def full_screen(self):
         self.sm.ids.open_img_screen.ids.full_image.source = self.source
         self.sm.transition = RiseInTransition()
+        self.sm.ids.open_img_screen.ids.full_image.back_screen = self.sm.current
         self.sm.current = 'open_img_screen'

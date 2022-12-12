@@ -20,6 +20,7 @@
         text_color_active: 2, 1, 4, 1
 
         MDBottomNavigationItem:
+            id: my
             name: 'create'
             icon: 'fountain-pen-tip'
 
@@ -78,9 +79,14 @@
                     adaptive_size: True
 
                     MDIconButton:
-                        icon: 'minus'
+                        icon: 'minus-circle-outline'
                         icon_size: 20
+                        theme_icon_color: "Custom"
+                        icon_color: 'gray'
+                        on_press:
+                            self.icon_color = app.theme_cls.primary_color
                         on_release:
+                            self.icon_color = 'gray'
                             root.image_count -= 1
 
                     MDTextFieldRect:
@@ -94,9 +100,14 @@
                         disabled: True
 
                     MDIconButton:
-                        icon: 'plus'
+                        icon: 'plus-circle-outline'
                         icon_size: 20
+                        theme_icon_color: "Custom"
+                        icon_color: 'gray'
+                        on_press:
+                            self.icon_color = app.theme_cls.primary_color
                         on_release:
+                            self.icon_color = 'gray'
                             root.image_count += 1
 
                 MDTextFieldRect:
@@ -107,13 +118,13 @@
                     padding: 10
                     auto_indent: True
 
-                MDRaisedButton:
+                MDFillRoundFlatButton:
                     text: 'Create'
                     font_style: 'Button'
-                    md_bg_color: 'purple'
+                    md_bg_color: 'gray'
                     pos_hint: {'center_x': .5}
                     on_release:
-                        root.get_image()
+                        root.create()
 
         MDBottomNavigationItem:
             name: 'edit'

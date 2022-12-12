@@ -1,4 +1,3 @@
-from kivy.network.urlrequest import UrlRequest
 from kivy.uix.screenmanager import FallOutTransition
 from kivy.properties import StringProperty, ObjectProperty, BoundedNumericProperty
 from kivymd.uix.boxlayout import MDBoxLayout
@@ -6,7 +5,8 @@ from kivymd.uix.screen import MDScreen
 from kivymd.uix.swiper import MDSwiperItem, MDSwiper
 from .widget import MyImage
 from .controller import OpenAIController
-import json
+import io
+from kivy.core.image import Image as CoreImage
 
 
 class MainScreen(MDScreen):
@@ -20,7 +20,7 @@ class MainScreen(MDScreen):
         super(MainScreen, self).__init__(**kwargs)
         self.openai_controller = OpenAIController()
 
-    def get_image(self):
+    def create(self):
 
         def callback(request, response):
             self.ids.spinner.active = False
@@ -81,3 +81,7 @@ class OpenImageScreen(MDScreen):
     def back(self, screen):
         self.parent.transition = FallOutTransition()
         self.parent.current = screen
+
+    def download(self, texture):
+        image = CoreImage(texture)
+        image.save('./gallery/test.png')
