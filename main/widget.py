@@ -1,14 +1,14 @@
 from kivy.properties import ObjectProperty
+from kivy.uix.behaviors import ButtonBehavior
 from kivy.uix.image import AsyncImage
 from kivy.uix.screenmanager import RiseInTransition
 
 
-class MyImage(AsyncImage):
+class MyImage(ButtonBehavior, AsyncImage):
     sm = ObjectProperty()
 
-    def on_touch_up(self, touch):
-        if self.collide_point(*touch.pos):
-            self.full_screen()
+    def on_release(self, *args):
+        self.full_screen()
 
     def collide_point(self, x, y):
         width, height = self.norm_image_size

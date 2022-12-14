@@ -1,7 +1,8 @@
+from kivy.clock import Clock
 from kivy.properties import ObjectProperty
 from kivy.uix.screenmanager import FallOutTransition
 from kivymd.uix.screen import MDScreen
-from .controller import UserController
+import threading
 
 
 class AuthScreen(MDScreen):
@@ -10,13 +11,14 @@ class AuthScreen(MDScreen):
     def login(self, email, password):
 
         def load_data():
-            self.user_controller.get_data_user()
+            self.core.user_controller.get_data_user()
+            self.core.image_controller.get_image_list()
 
         login = self.core.auth(email, password)
 
         if self.core.auth.is_auth():
-            self.__dict__['user_controller'] = UserController()
-            load_data()
+            #load_data()
+            print('hi')
             self.ids.email_field.text = ''
             self.ids.password_field.text = ''
             self.parent.transition = FallOutTransition()
@@ -34,4 +36,3 @@ class AuthScreen(MDScreen):
                         error += f'{value[0]}\n'
                     self.core.show_dialog()
                     self.core.dialog.text = error
-

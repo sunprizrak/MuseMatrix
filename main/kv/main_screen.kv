@@ -11,6 +11,7 @@
 <MainScreen>
     name: 'main_screen'
 
+    core: app
     image_section: image_section
     option_section: option_section
     prompt: input_prompt.text
@@ -20,7 +21,6 @@
         text_color_active: 2, 1, 4, 1
 
         MDBottomNavigationItem:
-            id: my
             name: 'create'
             icon: 'fountain-pen-tip'
 
@@ -137,3 +137,20 @@
         MDBottomNavigationItem:
             name: 'collection'
             icon: 'image-multiple'
+
+            MDScrollView:
+
+                MDGridLayout:
+                    id: collection
+                    cols: 4
+                    padding: 2
+                    spacing: 2
+                    row_default_height: (self.width - self.cols * self.spacing[0]) / self.cols
+                    row_force_default: True
+                    pos_hint: {'top': 1}
+                    adaptive_height: True
+
+
+#source: 'https://picsum.photos/256/256'
+
+

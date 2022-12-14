@@ -3,13 +3,13 @@ from kivy.lang import Builder
 from kivy.core.window import Window
 from kivymd.uix.button import MDFlatButton
 from kivymd.uix.dialog import MDDialog
+
 from users.auth import Auth
+from users.controller import UserController
+from main.controller import ImageController
 
 from users.screen import AuthScreen
 from main.screen import MainScreen, OpenImageScreen
-
-
-import openai
 
 Window.size = (360, 600)
 
@@ -18,19 +18,25 @@ class ArtAIApp(MDApp):
 
     def __init__(self, **kwargs):
         super(ArtAIApp, self).__init__(**kwargs)
+
         self.auth = Auth()
-        self.dialog = None
+        self.user_controller = UserController()
+        self.image_controller = ImageController()
+
         self.theme_cls.material_style = 'M3'
+        self.dialog = None
 
     def build(self):
         kv_file = Builder.load_file('./kv/layout.kv')
         return kv_file
 
-    def show_dialog(self):
+    def show_dialog(self, button=None):
         self.dialog = MDDialog(
             title='Notice!',
             type='custom',
+            radius=[20, 7, 20, 7],
             buttons=[
+                button,
                 MDFlatButton(
                     text="Close",
                     theme_text_color="Custom",

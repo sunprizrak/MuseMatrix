@@ -1,6 +1,7 @@
 from kivy.uix.screenmanager import FallOutTransition
 from kivy.properties import StringProperty, ObjectProperty, BoundedNumericProperty
 from kivymd.uix.boxlayout import MDBoxLayout
+from kivymd.uix.button import MDFlatButton
 from kivymd.uix.screen import MDScreen
 from kivymd.uix.swiper import MDSwiperItem, MDSwiper
 from .widget import MyImage
@@ -10,6 +11,7 @@ from kivy.core.image import Image as CoreImage
 
 
 class MainScreen(MDScreen):
+    core = ObjectProperty()
     image_section = ObjectProperty()
     option_section = ObjectProperty()
     prompt = StringProperty()
@@ -33,8 +35,8 @@ class MainScreen(MDScreen):
                 image = MyImage(
                     sm=self.parent,
                     source=url,
-                    mipmap=True,
                     allow_stretch=True,
+                    mipmap=True,
                 )
 
                 layout.add_widget(image)
@@ -77,11 +79,29 @@ class MainScreen(MDScreen):
 
 
 class OpenImageScreen(MDScreen):
+    core = ObjectProperty()
 
     def back(self, screen):
         self.parent.transition = FallOutTransition()
         self.parent.current = screen
 
     def download(self, texture):
-        image = CoreImage(texture)
-        image.save('./gallery/test.png')
+
+        def save_image():
+            image = CoreImage(texture)
+            image.save('./gallery/test.png')
+            self.core.dialog.dismiss()
+
+        button = MDFlatButton(
+            text="Save",
+            theme_text_color="Custom",
+            text_color=self.core.theme_cls.primary_color,
+            on_release=lambda x: save_image(),
+        )
+
+        self.core.show_dialog(button=button)
+        self.core.dialog.title = 'Save image'
+        self.core.dialog.text = 'Do you want to save the picture?'
+
+
+
