@@ -4,9 +4,6 @@ from kivy.core.window import Window
 from kivymd.uix.button import MDFlatButton
 from kivymd.uix.dialog import MDDialog
 
-from users.auth import Auth
-from users.controller import UserController
-from main.controller import ImageController
 
 from users.screen import AuthScreen
 from main.screen import MainScreen, OpenImageScreen
@@ -18,10 +15,6 @@ class ArtAIApp(MDApp):
 
     def __init__(self, **kwargs):
         super(ArtAIApp, self).__init__(**kwargs)
-
-        self.auth = Auth()
-        self.user_controller = UserController()
-        self.image_controller = ImageController()
 
         self.theme_cls.material_style = 'M3'
         self.dialog = None

@@ -6,6 +6,7 @@ from kivymd.uix.screen import MDScreen
 from kivymd.uix.swiper import MDSwiperItem, MDSwiper
 from .widget import MyImage
 from .controller import OpenAIController
+from main.controller import ImageController
 import io
 from kivy.core.image import Image as CoreImage
 
@@ -21,6 +22,7 @@ class MainScreen(MDScreen):
     def __init__(self, **kwargs):
         super(MainScreen, self).__init__(**kwargs)
         self.openai_controller = OpenAIController()
+        self.image_controller = ImageController(screen=self)
 
     def create(self):
 
