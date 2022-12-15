@@ -1,10 +1,10 @@
 from kivy.network.urlrequest import UrlRequest
 from kivy.cache import Cache
 import json
-
 from kivy.uix.screenmanager import FallOutTransition
 
 from .models import User
+from main.controller import ImageController
 
 
 class UserController:
@@ -14,15 +14,16 @@ class UserController:
     path_logout = host_name + 'auth/token/logout/'
     path_data_user = host_name + 'auth/users/me/'
 
-    def __init__(self, image):
-        self.image = image
+    def __init__(self, screen):
+        self.screen = screen
+        self.image_controller = ImageController(screen=screen)
 
-    def auth(self, email, password, screen):
+    def auth(self, email, password):
 
         def output_error(error):
             if type(error) is str:
-                screen.core.show_dialog()
-                screen.core.dialog.text = error
+                self.screen.core.show_dialog()
+                self.screen.core.dialog.text = error
             elif type(error) is dict:
                 if len({'password', 'email'} & set(error)) > 0:
                     print('password or email обработать поля')
@@ -30,20 +31,20 @@ class UserController:
                     error_text = ''
                     for value in error.values():
                         error_text += f'{value[0]}\n'
-                    screen.core.show_dialog()
-                    screen.core.dialog.text = error_text
+                    self.screen.core.show_dialog()
+                    self.screen.core.dialog.text = error_text
 
         def callback(request, response):
             Cache.register('token', limit=None, timeout=None)
             Cache.append('token', 'auth_token', response.get('auth_token'))
 
             self.get_data_user()
-            self.image.get_image_list()
+            self.image_controller.get_image_list()
 
-            screen.ids.email_field.text = ''
-            screen.ids.password_field.text = ''
-            screen.parent.transition = FallOutTransition()
-            screen.parent.current = 'main_screen'
+            self.screen.ids.email_field.text = ''
+            self.screen.ids.password_field.text = ''
+            self.screen.parent.transition = FallOutTransition()
+            self.screen.parent.current = 'main_screen'
 
         def callback_failure(request, response):
             output_error(error=response)

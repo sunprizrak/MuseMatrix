@@ -3,27 +3,24 @@
 
     core: app
 
-    MDRelativeLayout:
+    MDBoxLayout:
+        orientation: 'vertical'
 
         MDTopAppBar:
             id: app_bar
             type_height: 'small'
             md_bg_color: '#2d2734'
-            pos_hint: {'top': 1}
             left_action_items: [['arrow-left', lambda x: root.back(full_image.back_screen)]]
-            right_action_items: [['download', lambda x: root.download(full_image.texture), 'download']]
+            right_action_items: [['download', lambda x: root.download(texture=full_image.texture), 'download']]
             adaptive_height: True
-            elevation: 0
 
-        FitImage:
-            back_screen: ''
+        MDBoxLayout:
 
-            id: full_image
-            #size_hint: None, None
-            #size: self.children[1].children[0].image.norm_image_size
-            keep_ratio: False
-            allow_stretch: True
-            mipmap: True
+            AsyncImage:
+                id: full_image
+                mipmap: True
+                allow_stretch: True
+
 
 
 

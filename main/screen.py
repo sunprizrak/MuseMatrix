@@ -1,13 +1,19 @@
+import base64
+
 from kivy.uix.screenmanager import FallOutTransition
 from kivy.properties import StringProperty, ObjectProperty, BoundedNumericProperty
 from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.button import MDFlatButton
 from kivymd.uix.screen import MDScreen
 from kivymd.uix.swiper import MDSwiperItem, MDSwiper
+
+from users.controller import UserController
 from .widget import MyImage
 from .controller import OpenAIController
 from main.controller import ImageController
 import io
+from PIL import Image
+from urllib.request import urlopen
 from kivy.core.image import Image as CoreImage
 
 
@@ -83,6 +89,11 @@ class MainScreen(MDScreen):
 class OpenImageScreen(MDScreen):
     core = ObjectProperty()
 
+    def __init__(self, **kwargs):
+        super(OpenImageScreen, self).__init__(**kwargs)
+        self.user_controller = UserController(screen=self)
+        self.image_controller = ImageController(screen=self)
+
     def back(self, screen):
         self.parent.transition = FallOutTransition()
         self.parent.current = screen
@@ -90,8 +101,24 @@ class OpenImageScreen(MDScreen):
     def download(self, texture):
 
         def save_image():
-            image = CoreImage(texture)
-            image.save('./gallery/test.png')
+            data = io.BytesIO()
+            img = CoreImage(texture)
+            img.save(data, fmt='str')
+            str_bytes = data.read()
+            im = str_bytes.decode('utf-8')
+
+
+
+            data_image = {
+                'user': self.user_controller.user.id,
+                'source': im,
+                'description': self.core.root.ids.main_screen.prompt,
+            }
+
+            self.image_controller.save_image(data_image=data_image)
+
+            # image = CoreImage(texture)
+            # image.save('./gallery/test.png')
             self.core.dialog.dismiss()
 
         button = MDFlatButton(
@@ -104,6 +131,5 @@ class OpenImageScreen(MDScreen):
         self.core.show_dialog(button=button)
         self.core.dialog.title = 'Save image'
         self.core.dialog.text = 'Do you want to save the picture?'
-
 
 

@@ -7,6 +7,9 @@ from .controller import UserController
 class AuthScreen(MDScreen):
     core = ObjectProperty()
 
+    def __init__(self, **kwargs):
+        super(AuthScreen, self).__init__(**kwargs)
+        self.user_controller = UserController(screen=self)
+
     def login(self, email, password):
-        self.__dict__['user_controller'] = UserController(image=self.core.root.ids.main_screen.image_controller)
-        self.user_controller.auth(email=email, password=password, screen=self)
+        self.user_controller.auth(email=email, password=password)
