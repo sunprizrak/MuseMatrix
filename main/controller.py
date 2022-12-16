@@ -1,8 +1,8 @@
 from kivy.cache import Cache
 from kivy.network.urlrequest import UrlRequest
-from kivymd.uix.fitimage import FitImage
-from .models import Image
 import json
+from .models import Image
+from .widget import MyImage
 
 
 class OpenAIController:
@@ -36,15 +36,29 @@ class ImageController:
     def save_image(self, data_image):
 
         def callback(request, response):
+            image = self.object(data_image=response)
+
+            img = MyImage(
+                sm=self.screen.core.root,
+                source=image.source,
+                keep_ratio=False,
+                allow_stretch=True,
+                mipmap=True,
+            )
+
+            self.screen.core.root.ids.main_screen.ids.collection.add_widget(img)
+
+        def callback_failure(request, response):
             print(response)
 
         UrlRequest(
             url=self.path_image,
             method='POST',
             on_success=callback,
+            on_failure=callback_failure,
             req_headers={
+                'Content-type': 'application/json',                                 #
                 'Authorization': f"Token {Cache.get('token', 'auth_token')}",
-                'Content-type': 'multipart/form-data',
             },
             req_body=json.dumps(data_image),
         )
@@ -57,8 +71,12 @@ class ImageController:
 
             for image in self.object.images:
 
-                img = FitImage(
+                img = MyImage(
+                    sm=self.screen.core.root,
                     source=image.source,
+                    keep_ratio=False,
+                    allow_stretch=True,
+                    mipmap=True,
                 )
 
                 self.screen.core.root.ids.main_screen.ids.collection.add_widget(img)

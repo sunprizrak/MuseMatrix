@@ -1,3 +1,5 @@
+#:import ScrollEffect kivy.effects.scroll.ScrollEffect
+
 <Check@MDCheckbox>
     group: 'image_size'
     size_hint: None, None
@@ -17,8 +19,12 @@
     prompt: input_prompt.text
 
     MDBottomNavigation:
+        id: navigation
         panel_color: 'white'
         text_color_active: 2, 1, 4, 1
+        current: 'create'
+        on_switch_tabs:
+            self.current = args[1].name
 
         MDBottomNavigationItem:
             name: 'create'
@@ -139,6 +145,7 @@
             icon: 'image-multiple'
 
             MDScrollView:
+                effect_cls: ScrollEffect
 
                 MDGridLayout:
                     id: collection
@@ -151,6 +158,7 @@
                     col_default_width: (self.width - (self.cols * self.spacing[0] + self.padding[0])) / self.cols
                     col_force_default: True
                     pos_hint: {'top': 1}
+
 
 
 

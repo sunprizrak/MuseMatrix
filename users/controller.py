@@ -1,10 +1,9 @@
 from kivy.network.urlrequest import UrlRequest
 from kivy.cache import Cache
-import json
 from kivy.uix.screenmanager import FallOutTransition
-
 from .models import User
 from main.controller import ImageController
+import json
 
 
 class UserController:

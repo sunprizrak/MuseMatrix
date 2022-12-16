@@ -1,20 +1,17 @@
-import base64
-
 from kivy.uix.screenmanager import FallOutTransition
 from kivy.properties import StringProperty, ObjectProperty, BoundedNumericProperty
 from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.button import MDFlatButton
 from kivymd.uix.screen import MDScreen
 from kivymd.uix.swiper import MDSwiperItem, MDSwiper
-
+from kivy.core.image import Image as CoreImage
 from users.controller import UserController
 from .widget import MyImage
 from .controller import OpenAIController
 from main.controller import ImageController
 import io
-from PIL import Image
-from urllib.request import urlopen
-from kivy.core.image import Image as CoreImage
+import base64
+import random
 
 
 class MainScreen(MDScreen):
@@ -38,7 +35,9 @@ class MainScreen(MDScreen):
             if len(response['data']) == 1:
                 url = response['data'][0].get('url')
 
-                layout = MDBoxLayout(padding=[0, 15, 0, 15])
+                layout = MDBoxLayout(
+                    padding=[0, 15, 0, 15],
+                )
 
                 image = MyImage(
                     sm=self.parent,
@@ -98,27 +97,28 @@ class OpenImageScreen(MDScreen):
         self.parent.transition = FallOutTransition()
         self.parent.current = screen
 
-    def download(self, texture):
+    def download(self, img):
 
         def save_image():
-            data = io.BytesIO()
-            img = CoreImage(texture)
-            img.save(data, fmt='str')
-            str_bytes = data.read()
-            im = str_bytes.decode('utf-8')
 
+            image = CoreImage(img.texture)
 
+            if img.back_tab == 'create':
+                data = io.BytesIO()
+                image.save(data, fmt='png')
+                png_bytes = data.read()
+                im_b64 = base64.b64encode(png_bytes).decode('utf-8')
 
-            data_image = {
-                'user': self.user_controller.user.id,
-                'source': im,
-                'description': self.core.root.ids.main_screen.prompt,
-            }
+                data_image = {
+                    'user': self.user_controller.user.id,
+                    'source': im_b64,
+                    'description': self.core.root.ids.main_screen.prompt,
+                }
 
-            self.image_controller.save_image(data_image=data_image)
+                self.image_controller.save_image(data_image=data_image)
 
-            # image = CoreImage(texture)
-            # image.save('./gallery/test.png')
+            image.save(f"./gallery/{''.join(['' + str(random.randint(0, 9)) for x in range(9)])}.png")
+
             self.core.dialog.dismiss()
 
         button = MDFlatButton(
@@ -131,5 +131,3 @@ class OpenImageScreen(MDScreen):
         self.core.show_dialog(button=button)
         self.core.dialog.title = 'Save image'
         self.core.dialog.text = 'Do you want to save the picture?'
-
-
