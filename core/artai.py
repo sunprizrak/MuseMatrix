@@ -5,7 +5,7 @@ from kivymd.uix.button import MDFlatButton
 from kivymd.uix.dialog import MDDialog
 
 
-from users.screen import AuthScreen
+from users.screen import LoginScreen, RegistrateScreen
 from main.screen import MainScreen, OpenImageScreen
 
 Window.size = (360, 600)

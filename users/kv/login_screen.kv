@@ -1,5 +1,5 @@
-<AuthScreen>
-    name: 'auth_screen'
+<LoginScreen>
+    name: 'login_screen'
 
     core: app
 
@@ -7,19 +7,17 @@
 
         MDBoxLayout:
             orientation: 'vertical'
-            padding: '5dp'
             spacing: 15
-            pos_hint: {'center_x': .5, 'y': .35}
+            pos_hint: {'center_x': .5, 'center_y': .5}
             size_hint: .8, .8
             size_hint_max_x: 300
 
             MDTextField:
                 id: email_field
-                mode: 'round'
                 hint_text: 'email'
                 icon_left: 'email'
-                color_active: 0, 1, 0, 1
                 pos_hint: {'center_x': .5}
+                helper_text_mode: 'on_error'
 
             MDRelativeLayout:
                 size_hint: 1, None
@@ -28,11 +26,10 @@
 
                 MDTextField:
                     id: password_field
-                    mode: 'round'
                     hint_text: 'Password'
                     icon_left: 'key-variant'
-                    color_active: 0, 1, 0, 1
                     password: True
+                    helper_text_mode: 'on_error'
 
                 MDIconButton:
                     icon: "eye-off"
@@ -43,9 +40,11 @@
                         self.icon = "eye" if self.icon == "eye-off" else "eye-off"
                         password_field.password = False if password_field.password is True else True
 
-            MDRoundFlatButton:
-                text: 'Sign in'
-                font_size: '15sp'
+            MDRaisedButton:
+                text: 'Login'
+                font_size: 15
+                font_style: 'Button'
+                md_bg_color: 'green'
                 pos_hint: {'center_x': .5}
                 on_release:
                     root.login(email_field.text, password_field.text)
@@ -53,7 +52,13 @@
             MDRoundFlatIconButton:
                 text: 'Continue with Google'
                 icon: 'google'
-                font_size: '12sp'
+                font_size: 15
                 pos_hint: {'center_x': .5}
                 on_release:
                     False
+
+            MDTextButton:
+                text: "Forget Password?"
+                theme_text_color: "Custom"
+                text_color: "orange"
+                pos_hint: {'center_x': .5}

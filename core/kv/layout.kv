@@ -1,4 +1,5 @@
-#:include users/kv/auth.kv
+#:include users/kv/login_screen.kv
+#:include users/kv/registrate_screen.kv
 #:include main/kv/main_screen.kv
 #:include main/kv/open_image_screen.kv
 
@@ -8,8 +9,11 @@
 
 SM:
 
-    AuthScreen:
-        id: auth_screen
+    RegistrateScreen:
+        id: reg_screen
+
+    LoginScreen:
+        id: login_screen
 
     MainScreen:
         id: main_screen
@@ -17,7 +21,6 @@ SM:
     OpenImageScreen:
         id: open_img_screen
 
-#get_norm_image_size
 
 
 
