@@ -1,9 +1,23 @@
+#:import SlideTransition kivymd.uix.transition.transition.MDSlideTransition
+
 <RegistrateScreen@MDScreen>
     name: 'reg_screen'
 
     core: app
 
     MDFloatLayout:
+
+        MDIconButton:
+            icon: 'arrow-left-bold'
+            theme_text_color: 'Secondary'
+            pos_hint: {'y': .9}
+            on_release:
+                app.root.transition = MDSlideTransition()
+                app.root.transition.direction = 'right'
+                app.root.current = 'start_screen'
+                email_field.text = ''
+                password_field.text = ''
+                re_password_field.text = ''
 
         MDBoxLayout:
             orientation: 'vertical'

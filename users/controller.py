@@ -1,6 +1,6 @@
 from kivy.network.urlrequest import UrlRequest
 from kivy.cache import Cache
-from kivy.uix.screenmanager import FallOutTransition
+from kivymd.uix.transition.transition import MDTransitionBase
 from .models import User
 from main.controller import ImageController
 import json
@@ -96,7 +96,7 @@ class UserController:
 
             self.screen.ids.email_field.text = ''
             self.screen.ids.password_field.text = ''
-            self.screen.parent.transition = FallOutTransition()
+            self.screen.parent.transition = MDTransitionBase()
             self.screen.parent.current = 'main_screen'
 
         def callback_failure(request, response):

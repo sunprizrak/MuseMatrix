@@ -1,0 +1,34 @@
+#:import MDSwapTransition kivymd.uix.transition.transition.MDSwapTransition
+#:import MDSlideTransition kivymd.uix.transition.transition.MDSlideTransition
+
+<StartScreen@MDScreen>
+    name: 'start_screen'
+
+    MDFloatLayout:
+
+        MDTextButton:
+            text: 'Sign in'
+            theme_text_color: 'Secondary'
+            pos_hint: {'x': .8, 'y': .9}
+            on_release:
+                app.root.transition = MDSwapTransition()
+                app.root.current = 'login_screen'
+
+        MDLabel:
+            text: 'Art AI'
+            theme_text_color: 'Secondary'
+            font_size: 20
+            halign: 'center'
+
+        MDFillRoundFlatButton:
+            id: b_registration
+            text: 'Sign up'
+            theme_text_color: 'Secondary'
+            #md_bg_color: 0, 1, 0, 1
+            text_color: 0, 0, 0, 0
+            font_size: 20
+            pos_hint: {'center_x': .5, 'y': .1}
+            on_release:
+                app.root.transition = MDSlideTransition()
+                app.root.transition.direction = 'up'
+                app.root.current = 'reg_screen'

@@ -1,5 +1,7 @@
+#:include core/kv/start_screen.kv
 #:include users/kv/login_screen.kv
 #:include users/kv/registrate_screen.kv
+#:include users/kv/profile_screen.kv
 #:include main/kv/main_screen.kv
 #:include main/kv/open_image_screen.kv
 
@@ -9,14 +11,20 @@
 
 SM:
 
+    StartScreen:
+        id: start_screen
+
     RegistrateScreen:
         id: reg_screen
 
-    LoginScreen:
-        id: login_screen
+    ProfileScreen:
+        id: profile_screen
 
     MainScreen:
         id: main_screen
+
+    LoginScreen:
+        id: login_screen
 
     OpenImageScreen:
         id: open_img_screen

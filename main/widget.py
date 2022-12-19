@@ -1,14 +1,21 @@
-from kivy.properties import ObjectProperty
+from kivy.animation import Animation
+from kivy.properties import ObjectProperty, ColorProperty
 from kivy.uix.behaviors import ButtonBehavior
 from kivy.uix.image import AsyncImage
 from kivy.uix.screenmanager import RiseInTransition
+from kivymd.uix.list import MDList
+from kivymd.uix.selection import MDSelectionList
+from kivymd.uix.selection.selection import SelectionItem, SelectionIconCheck
 
 
 class MyImage(ButtonBehavior, AsyncImage):
     sm = ObjectProperty()
 
     def on_release(self, *args):
-        self.full_screen()
+        if isinstance(self.parent.parent, MySelectionList) and self.parent.parent.get_selected():
+            pass
+        else:
+            self.full_screen()
 
     def collide_point(self, x, y):
         if self.size != self.norm_image_size:
@@ -25,3 +32,52 @@ class MyImage(ButtonBehavior, AsyncImage):
         self.sm.ids.open_img_screen.ids.full_image.back_screen = self.sm.current
         self.sm.ids.open_img_screen.ids.full_image.back_tab = self.sm.ids.main_screen.ids.navigation.current
         self.sm.current = 'open_img_screen'
+
+
+class MySelectionList(MDSelectionList):
+    toolbar = ObjectProperty()
+    progress_round_color = ColorProperty('#ed1c1c')
+
+    def add_widget(self, widget, index=0, canvas=None):
+
+        selection_icon = SelectionIconCheck(
+            icon=self.icon,
+            size_hint=(.2, .2),
+            pos_hint={'center_x': .15, 'center_y': .85},
+            md_bg_color=self.icon_bg_color,
+            icon_check_color=self.icon_check_color,
+        )
+
+        selection_item = SelectionItem(
+            size_hint=(1, 1),
+            height=widget.height,
+            instance_item=widget,
+            instance_icon=selection_icon,
+            overlay_color=self.overlay_color,
+            progress_round_size=self.progress_round_size,
+            progress_round_color=self.progress_round_color,
+            owner=self,
+        )
+
+        selection_item.add_widget(widget)
+        selection_item.add_widget(selection_icon)
+
+        return super(MDList, self).add_widget(selection_item, index, canvas)
+
+    def set_selection_mode(self, instance_selection_list, mode):
+        if mode:
+            left_action_items = [
+                ["close", lambda x: self.unselected_all(), ]
+            ]
+        else:
+            left_action_items = []
+            self.toolbar.title = ""
+
+        self.toolbar.left_action_items = left_action_items
+
+    def selected(self, instance_selection_list, instance_selection_item):
+        self.toolbar.title = str(len(instance_selection_list.get_selected_list_items()))
+
+    def unselected(self, instance_selection_list, instance_selection_item):
+        if instance_selection_list.get_selected_list_items():
+            self.toolbar.title = str(len(instance_selection_list.get_selected_list_items()))

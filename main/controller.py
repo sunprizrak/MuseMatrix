@@ -46,7 +46,7 @@ class ImageController:
                 mipmap=True,
             )
 
-            self.screen.core.root.ids.main_screen.ids.collection.add_widget(img)
+            self.screen.core.root.ids.main_screen.ids.selection_list.add_widget(img, index=len(self.object.images) - 1 if len(self.object.images) > 0 else 0)
 
         def callback_failure(request, response):
             print(response)
@@ -57,7 +57,7 @@ class ImageController:
             on_success=callback,
             on_failure=callback_failure,
             req_headers={
-                'Content-type': 'application/json',                                 #
+                'Content-type': 'application/json',
                 'Authorization': f"Token {Cache.get('token', 'auth_token')}",
             },
             req_body=json.dumps(data_image),
@@ -79,7 +79,7 @@ class ImageController:
                     mipmap=True,
                 )
 
-                self.screen.core.root.ids.main_screen.ids.collection.add_widget(img)
+                self.screen.core.root.ids.main_screen.ids.selection_list.add_widget(img)
 
         UrlRequest(
             url=self.path_image,
