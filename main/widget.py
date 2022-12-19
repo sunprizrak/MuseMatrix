@@ -1,5 +1,4 @@
-from kivy.animation import Animation
-from kivy.properties import ObjectProperty, ColorProperty
+from kivy.properties import ObjectProperty, ColorProperty, NumericProperty
 from kivy.uix.behaviors import ButtonBehavior
 from kivy.uix.image import AsyncImage
 from kivy.uix.screenmanager import RiseInTransition
@@ -10,6 +9,7 @@ from kivymd.uix.selection.selection import SelectionItem, SelectionIconCheck
 
 class MyImage(ButtonBehavior, AsyncImage):
     sm = ObjectProperty()
+    img_id = NumericProperty()
 
     def on_release(self, *args):
         if isinstance(self.parent.parent, MySelectionList) and self.parent.parent.get_selected():
@@ -31,6 +31,8 @@ class MyImage(ButtonBehavior, AsyncImage):
         self.sm.transition = RiseInTransition()
         self.sm.ids.open_img_screen.ids.full_image.back_screen = self.sm.current
         self.sm.ids.open_img_screen.ids.full_image.back_tab = self.sm.ids.main_screen.ids.navigation.current
+        if self.sm.ids.main_screen.ids.navigation.current == 'collection':
+            self.sm.ids.open_img_screen.ids.app_bar.right_action_items.insert(0, ['trash-can', lambda x: self.sm.ids.open_img_screen.delete(img_id=self.img_id, widget=self.parent)])
         self.sm.current = 'open_img_screen'
 
 
@@ -66,14 +68,13 @@ class MySelectionList(MDSelectionList):
 
     def set_selection_mode(self, instance_selection_list, mode):
         if mode:
-            left_action_items = [
-                ["close", lambda x: self.unselected_all(), ]
-            ]
-        else:
-            left_action_items = []
-            self.toolbar.title = ""
+            self.toolbar.left_action_items.append(["close", lambda x: self.unselected_all()])
+            self.toolbar.right_action_items.insert(0, ['trash-can', lambda x: False])
 
-        self.toolbar.left_action_items = left_action_items
+        else:
+            self.toolbar.left_action_items.remove(self.toolbar.left_action_items[-1])
+            self.toolbar.right_action_items.remove(self.toolbar.right_action_items[0])
+            self.toolbar.title = ""
 
     def selected(self, instance_selection_list, instance_selection_item):
         self.toolbar.title = str(len(instance_selection_list.get_selected_list_items()))

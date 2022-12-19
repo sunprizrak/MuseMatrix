@@ -94,6 +94,8 @@ class OpenImageScreen(MDScreen):
         self.image_controller = ImageController(screen=self)
 
     def back(self, screen):
+        if len(self.ids.app_bar.right_action_items) > 1:
+            self.ids.app_bar.right_action_items.remove(self.ids.app_bar.right_action_items[0])
         self.parent.transition = FallOutTransition()
         self.parent.current = screen
 
@@ -131,3 +133,20 @@ class OpenImageScreen(MDScreen):
         self.core.show_dialog(button=button)
         self.core.dialog.title = 'Save image'
         self.core.dialog.text = 'Do you want to save the picture?'
+
+    def delete(self, img_id, widget):
+
+        def del_image():
+            self.image_controller.del_image(image_id=img_id, widget=widget)
+            self.core.dialog.dismiss()
+
+        button = MDFlatButton(
+            text="Delete",
+            theme_text_color="Custom",
+            text_color=self.core.theme_cls.primary_color,
+            on_release=lambda x: del_image(),
+        )
+
+        self.core.show_dialog(button=button)
+        self.core.dialog.title = 'Delete image'
+        self.core.dialog.text = 'Do you want to delete the picture?'

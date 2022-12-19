@@ -77,6 +77,7 @@ class ImageController:
                     keep_ratio=False,
                     allow_stretch=True,
                     mipmap=True,
+                    img_id=image.id,
                 )
 
                 self.screen.core.root.ids.main_screen.ids.selection_list.add_widget(img)
@@ -90,6 +91,28 @@ class ImageController:
                 'Authorization': f"Token {Cache.get('token', 'auth_token')}",
             },
         )
+
+    def del_image(self, image_id, widget):
+
+        def callback(request, response):
+            self.object.delete_image(image_id=image_id)
+            self.screen.core.root.ids.main_screen.ids.selection_list.remove_widget(widget)
+            self.screen.back(screen=self.screen.ids.full_image.back_screen)
+
+        def callback_failure(request, response):
+            print(response)
+
+        UrlRequest(
+            url=f'{self.path_image}{image_id}/',
+            method='DELETE',
+            on_success=callback,
+            on_failure=callback_failure,
+            req_headers={
+                'Content-type': 'application/json',
+                'Authorization': f"Token {Cache.get('token', 'auth_token')}",
+            },
+        )
+
 
 
 
