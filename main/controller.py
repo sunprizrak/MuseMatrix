@@ -44,6 +44,7 @@ class ImageController:
                 keep_ratio=False,
                 allow_stretch=True,
                 mipmap=True,
+                img_id=image.id,
             )
 
             self.screen.core.root.ids.main_screen.ids.selection_list.add_widget(img, index=len(self.object.images) - 1 if len(self.object.images) > 0 else 0)
