@@ -37,6 +37,7 @@ class MyImage(ButtonBehavior, AsyncImage):
 
 
 class MySelectionList(MDSelectionList):
+    screen: ObjectProperty()
     toolbar = ObjectProperty()
     progress_round_color = ColorProperty('#ed1c1c')
 
@@ -69,8 +70,7 @@ class MySelectionList(MDSelectionList):
     def set_selection_mode(self, instance_selection_list, mode):
         if mode:
             self.toolbar.left_action_items.append(["close", lambda x: self.unselected_all()])
-            self.toolbar.right_action_items.insert(0, ['trash-can', lambda x: False])
-
+            self.toolbar.right_action_items.insert(0, ['trash-can', lambda x: self.screen.delete_images(widget_list=instance_selection_list.get_selected_list_items())])
         else:
             self.toolbar.left_action_items.remove(self.toolbar.left_action_items[-1])
             self.toolbar.right_action_items.remove(self.toolbar.right_action_items[0])

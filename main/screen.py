@@ -84,6 +84,24 @@ class MainScreen(MDScreen):
                 callback=callback,
             )
 
+    def delete_images(self, widget_list):
+        images_id = [widget.children[1].img_id for widget in widget_list]
+
+        def del_images():
+            self.image_controller.del_images(images_id=images_id, widget_list=widget_list)
+            self.core.dialog.dismiss()
+
+        button = MDFlatButton(
+            text="Delete",
+            theme_text_color="Custom",
+            text_color=self.core.theme_cls.primary_color,
+            on_release=lambda x: del_images(),
+        )
+
+        self.core.show_dialog(button=button)
+        self.core.dialog.title = 'Delete'
+        self.core.dialog.text = 'Are you sure you want to delete?'
+
 
 class OpenImageScreen(MDScreen):
     core = ObjectProperty()
@@ -148,5 +166,5 @@ class OpenImageScreen(MDScreen):
         )
 
         self.core.show_dialog(button=button)
-        self.core.dialog.title = 'Delete image'
-        self.core.dialog.text = 'Do you want to delete the picture?'
+        self.core.dialog.title = 'Delete'
+        self.core.dialog.text = 'Are you sure you want to delete??'

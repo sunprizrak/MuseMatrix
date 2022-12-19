@@ -28,6 +28,7 @@ class OpenAIController:
 class ImageController:
     host_name = 'http://127.0.0.1:8000/'
     path_image = host_name + 'image/'
+    path_image_delete = path_image + 'delete/'
     object = Image
 
     def __init__(self, screen):
@@ -114,7 +115,30 @@ class ImageController:
             },
         )
 
+    def del_images(self, images_id, widget_list):
 
+        def callback(request, response):
+            for image_id in images_id:
+                self.object.delete_image(image_id=image_id)
+
+            for widget in widget_list:
+                self.screen.core.root.ids.main_screen.ids.selection_list.remove_widget(widget)
+                self.screen.core.root.ids.main_screen.ids.selection_list.unselected_all()
+
+        def callback_failure(request, response):
+            print(response)
+
+        UrlRequest(
+            url=self.path_image_delete,
+            method='DELETE',
+            on_success=callback,
+            on_failure=callback_failure,
+            req_headers={
+                'Content-type': 'application/json',
+                'Authorization': f"Token {Cache.get('token', 'auth_token')}",
+            },
+            req_body=json.dumps(images_id),
+        )
 
 
 
