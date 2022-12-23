@@ -7,14 +7,15 @@ from .widget import MyImage
 
 class OpenAIController:
     host_name = 'http://127.0.0.1:8000/'
-    path_get_image = host_name + 'openai/get_image/'
+    path_image_generation = host_name + 'openai/image_generation/'
+    path_image_edit = host_name + 'openai/image_edit/'
 
-    def get_image(self, prompt, image_count, image_size, callback):
+    def image_generation(self, prompt, image_count, image_size, callback):
         # token = Cache.get('token', 'auth_token')
         token = '1be37f1ae2cbc7f90354ac42c8def1a29eaf21fb'
 
         UrlRequest(
-            url=self.path_get_image,
+            url=self.path_image_generation,
             method='GET',
             on_success=callback,
             req_headers={
@@ -22,6 +23,21 @@ class OpenAIController:
                 'Authorization': f"Token {token}",
             },
             req_body=json.dumps({'prompt': prompt, 'image_count': image_count, 'image_size': image_size}),
+        )
+
+    def image_edit(self, image, mask, prompt, image_count, image_size, callback):
+        # token = Cache.get('token', 'auth_token')
+        token = '1be37f1ae2cbc7f90354ac42c8def1a29eaf21fb'
+
+        UrlRequest(
+            url=self.path_image_edit,
+            method='GET',
+            on_success=callback,
+            req_headers={
+                'Content-type': 'application/json',
+                'Authorization': f"Token {token}",
+            },
+            req_body=json.dumps({'image': image, 'mask': mask, 'prompt': prompt, 'image_count': image_count, 'image_size': image_size}),
         )
 
 
@@ -48,7 +64,7 @@ class ImageController:
                 img_id=image.id,
             )
 
-            self.screen.core.root.ids.main_screen.ids.selection_list.add_widget(img, index=len(self.object.images) - 1 if len(self.object.images) > 0 else 0)
+            self.screen.core.root.ids.collection_screen.ids.selection_list.add_widget(img, index=len(self.object.images) - 1 if len(self.object.images) > 0 else 0)
 
         def callback_failure(request, response):
             print(response)
@@ -82,7 +98,7 @@ class ImageController:
                     img_id=image.id,
                 )
 
-                self.screen.core.root.ids.main_screen.ids.selection_list.add_widget(img)
+                self.screen.core.root.ids.collection_screen.ids.selection_list.add_widget(img)
 
         UrlRequest(
             url=self.path_image,
@@ -98,7 +114,7 @@ class ImageController:
 
         def callback(request, response):
             self.object.delete_image(image_id=image_id)
-            self.screen.core.root.ids.main_screen.ids.selection_list.remove_widget(widget)
+            self.screen.core.root.ids.collection_screen.ids.selection_list.remove_widget(widget)
             self.screen.back(screen=self.screen.ids.full_image.back_screen)
 
         def callback_failure(request, response):
@@ -122,8 +138,8 @@ class ImageController:
                 self.object.delete_image(image_id=image_id)
 
             for widget in widget_list:
-                self.screen.core.root.ids.main_screen.ids.selection_list.remove_widget(widget)
-                self.screen.core.root.ids.main_screen.ids.selection_list.unselected_all()
+                self.screen.ids.selection_list.remove_widget(widget)
+                self.screen.ids.selection_list.unselected_all()
 
         def callback_failure(request, response):
             print(response)

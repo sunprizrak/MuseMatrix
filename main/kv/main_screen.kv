@@ -1,180 +1,118 @@
 #:import ScrollEffect kivy.effects.scroll.ScrollEffect
 
-<Check@MDCheckbox>
-    group: 'image_size'
-    size_hint: None, None
-    size: 30, 30
-
-<CheckLabel@MDLabel>
-    font_size: 13
-    size_hint_x: None
-    width: 65
-
-
 <MainScreen>
     name: 'main_screen'
 
     core: app
-    image_section: image_section
-    option_section: option_section
-    prompt: input_prompt.text
+    #image_edit_section: image_edit_section
 
-    MDBottomNavigation:
-        id: navigation
-        panel_color: '#2c2c2c'
-        text_color_normal: .9, .9, .9, 1
-        text_color_active: '#2c2c2c'
-        selected_color_background: .9, .9, .9, 1
-        current: 'create'
-        on_switch_tabs:
-            self.current = args[1].name
+    MDRelativeLayout:
+        orientation: 'vertical'
 
-        MDBottomNavigationItem:
-            name: 'create'
-            icon: 'fountain-pen-tip'
+        MDTopAppBar:
+            pos_hint: {'top': 1}
+            specific_text_color: 'gray'
+            type_height: 'small'
+            md_bg_color: app.theme_cls.bg_dark
+            left_action_items: [["menu", lambda x: nav_drawer.set_state("open")]]
+            elevation: 0
 
-            MDRelativeLayout:
-                id: image_section
-                size_hint: 1, .5
-                pos_hint: {'top': 1}
+        MDBoxLayout:
+            orientation: 'vertical'
+            spacing: 8
+            padding: 8
+            adaptive_size: True
+            pos_hint: {'center_x': .5, 'center_y': .5}
 
-                MDSpinner:
-                    id: spinner
-                    size_hint: None, None
-                    size: 38, 38
-                    pos_hint: {'center_x': .5, 'center_y': .5}
-                    active: False
 
-            MDBoxLayout:
-                id: option_section
-                size_hint: 1, .3
-                orientation: 'vertical'
-                spacing: 10
-                padding: 15
+            MDFillRoundFlatIconButton:
+                icon: 'image'
+                text: 'create image'
+                font_size: 15
+                font_style: 'Button'
+                theme_icon_color: 'Custom'
+                md_bg_color: '#c462e5'
+                icon_color: 'white'
+                on_release:
+                    app.root.transition = MDSwapTransition()
+                    app.root.current = 'create_image_screen'
 
-                MDBoxLayout:
-                    orientation: 'horizontal'
-                    pos_hint: {'center_x': .5}
-                    adaptive_size: True
 
-                    Check:
-                        active: True
-                        on_active:
-                            root.image_size = check_label_1.text
+            MDFillRoundFlatIconButton:
+                icon: 'image-edit'
+                text: 'edit image'
+                font_style: 'Button'
+                font_size: 15
+                theme_icon_color: 'Custom'
+                md_bg_color: '#c462e5'
+                icon_color: 'white'
+                on_release:
+                    app.root.current = 'edit_image_screen'
 
-                    CheckLabel:
-                        id: check_label_1
-                        text: '256x256'
 
-                    Check:
-                        on_active:
-                            root.image_size = check_label_2.text
+            MDFillRoundFlatIconButton:
+                icon: 'image-sync'
+                text: 'variable image'
+                font_style: 'Button'
+                font_size: 15
+                theme_icon_color: 'Custom'
+                md_bg_color: '#c462e5'
+                icon_color: 'white'
+                on_release:
+                    app.root.current = 'variable_image_screen'
 
-                    CheckLabel:
-                        id: check_label_2
-                        text: '512x512'
 
-                    Check:
-                        on_active:
-                            root.image_size = check_label_3.text
+            MDFillRoundFlatIconButton:
+                icon: 'chat'
+                text: 'chat'
+                font_style: 'Button'
+                font_size: 15
+                theme_icon_color: 'Custom'
+                md_bg_color: '#c462e5'
+                icon_color: 'white'
+                on_release:
+                    app.root.current = 'chat_screen'
 
-                    CheckLabel:
-                        id: check_label_3
-                        text: '1024x1024'
+    MDNavigationLayout:
 
-                MDBoxLayout:
-                    orientation: 'horizontal'
-                    pos_hint: {'center_x': .5}
-                    adaptive_size: True
+        MDNavigationDrawer:
+            id: nav_drawer
+            radius: (0, 16, 16, 0)
 
-                    MDIconButton:
-                        icon: 'minus-circle-outline'
-                        icon_size: 20
-                        theme_icon_color: "Custom"
-                        icon_color: 'gray'
-                        on_press:
-                            self.icon_color = app.theme_cls.primary_color
-                        on_release:
-                            self.icon_color = 'gray'
-                            root.image_count -= 1
+            MDNavigationDrawerMenu:
 
-                    MDTextFieldRect:
-                        id: img_count
-                        text: str(root.image_count)
-                        halign: 'center'
-                        pos_hint: {'center_y': .5}
-                        size_hint: None, None
-                        height: 30
-                        width: 50
-                        disabled: True
+                MDNavigationDrawerHeader:
+                    id: nav_drawer_header
+                    title: "Text"
+                    title_font_size: '17sp'
+                    text: "User text"
+                    source: "path"
+                    spacing: "15dp"
+                    padding: 10, 0, 0, 10
 
-                    MDIconButton:
-                        icon: 'plus-circle-outline'
-                        icon_size: 20
-                        theme_icon_color: "Custom"
-                        icon_color: 'gray'
-                        on_press:
-                            self.icon_color = app.theme_cls.primary_color
-                        on_release:
-                            self.icon_color = 'gray'
-                            root.image_count += 1
+                MDNavigationDrawerDivider:
 
-                MDTextFieldRect:
-                    id: input_prompt
-                    size_hint_y: None
-                    height: 100
-                    pos_hint: {'center_x': .5}
-                    padding: 10
-                    auto_indent: True
-
-                MDFillRoundFlatButton:
-                    text: 'Create'
-                    font_style: 'Button'
-                    md_bg_color: 'gray'
-                    pos_hint: {'center_x': .5}
+                MDNavigationDrawerItem:
+                    icon: "account"
+                    text: "profile"
                     on_release:
-                        root.create()
+                        print('profile')
 
-        MDBottomNavigationItem:
-            name: 'edit'
-            icon: 'image-edit'
+                MDNavigationDrawerDivider:
 
-        MDBottomNavigationItem:
-            name: 'chat'
-            icon: 'forum'
+                MDNavigationDrawerItem:
+                    id: collection
+                    icon: 'image-multiple'
+                    text: 'MyCollection'
+                    on_release:
+                        screen = app.root.current
+                        app.root.ids.collection_screen.ids.selection_list.back_item = ['arrow-left', lambda x: app.back(screen=screen)]
+                        nav_drawer.set_state("close")
+                        app.root.transition = MDSwapTransition()
+                        app.root.current = 'collection_screen'
 
-        MDBottomNavigationItem:
-            name: 'collection'
-            icon: 'image-multiple'
 
-            MDBoxLayout:
-                orientation: 'vertical'
 
-                MDTopAppBar:
-                    id: collection_app_bar
-                    type_height: 'small'
-                    md_bg_color: '#2c2c2c'
-                    right_action_items: [['dots-vertical'],]
-                    elevation: 0
-
-                MDScrollView:
-                    effect_cls: ScrollEffect
-
-                    MySelectionList:
-                        screen: root
-                        toolbar: collection_app_bar
-
-                        id: selection_list
-                        cols: 4
-                        padding: 2
-                        spacing: 2
-                        row_default_height: (self.width - self.cols * self.spacing[0]) / self.cols
-                        row_force_default: True
-                        col_default_width: (self.width - (self.cols * self.spacing[0] + self.padding[0])) / self.cols
-                        col_force_default: True
-                        on_selected: self.selected(*args)
-                        on_unselected: self.unselected(*args)
-                        on_selected_mode: self.set_selection_mode(*args)
 
 
 

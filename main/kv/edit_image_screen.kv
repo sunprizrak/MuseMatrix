@@ -1,0 +1,19 @@
+
+<EditImageScreen>
+    name: 'edit_image_screen'
+
+    MDRelativeLayout:
+        id: image_edit_section
+        size_hint: 1, .5
+        pos_hint: {'top': 1}
+
+        MDBoxLayout:
+
+            MDIconButton:
+                icon: 'image-plus'
+                icon_size: 20
+                theme_icon_color: "Custom"
+                icon_color: 'gray'
+                pos_hint: {"center_x": .5, "center_y": .5}
+                on_release:
+                    app.file_manager_open()

@@ -4,12 +4,15 @@
 #:include users/kv/profile_screen.kv
 #:include main/kv/main_screen.kv
 #:include main/kv/open_image_screen.kv
+#:include main/kv/create_image_screen.kv
+#:include main/kv/collection_screen.kv
 
 
 <SM@MDScreenManager>
 
-
 SM:
+
+
 
     StartScreen:
         id: start_screen
@@ -20,16 +23,20 @@ SM:
     ProfileScreen:
         id: profile_screen
 
-    MainScreen:
-        id: main_screen
-
     LoginScreen:
         id: login_screen
 
+    MainScreen:
+        id: main_screen
+
+    CreateImageScreen:
+        id: create_image_screen
+
+    CollectionScreen:
+        id: collection_screen
+
     OpenImageScreen:
         id: open_img_screen
-
-
 
 
 

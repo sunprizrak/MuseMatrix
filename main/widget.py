@@ -1,5 +1,6 @@
-from kivy.properties import ObjectProperty, ColorProperty, NumericProperty
-from kivy.uix.behaviors import ButtonBehavior
+from kivy.graphics import Color, Ellipse, Line
+from kivy.properties import ObjectProperty, ColorProperty, NumericProperty, ListProperty
+from kivymd.uix.segmentedcontrol import MDSegmentedControl, MDSegmentedControlItem
 from kivy.uix.image import AsyncImage
 from kivy.uix.screenmanager import RiseInTransition
 from kivymd.uix.list import MDList
@@ -7,15 +8,40 @@ from kivymd.uix.selection import MDSelectionList
 from kivymd.uix.selection.selection import SelectionItem, SelectionIconCheck
 
 
-class MyImage(ButtonBehavior, AsyncImage):
+class MyImage(AsyncImage):
     sm = ObjectProperty()
     img_id = NumericProperty()
 
-    def on_release(self, *args):
-        if isinstance(self.parent.parent, MySelectionList) and self.parent.parent.get_selected():
-            pass
-        else:
-            self.full_screen()
+    def on_touch_down(self, touch):
+        if self.disabled and self.collide_point(*touch.pos):
+            with self.canvas:
+                Color(0, 1, 0, 0.4)
+                rad = 15
+                Ellipse(pos=(touch.x - rad / 2, touch.y - rad / 2), size=(rad, rad))
+                touch.ud['line'] = Line(points=(touch.x, touch.y), width=8)
+            return True
+        for child in self.children[:]:
+            if child.dispatch('on_touch_down', touch):
+                return True
+
+    def on_touch_move(self, touch):
+        if self.disabled and self.collide_point(*touch.pos):
+            if touch.ud.get('line'):
+                touch.ud['line'].points += (touch.x, touch.y)
+            return
+        for child in self.children[:]:
+            if child.dispatch('on_touch_move', touch):
+                return True
+
+    def on_touch_up(self, touch):
+        if not self.disabled and self.collide_point(*touch.pos):
+            if isinstance(self.parent.parent, MySelectionList) and self.parent.parent.get_selected():
+                pass
+            else:
+                return self.full_screen()
+        for child in self.children[:]:
+            if child.dispatch('on_touch_up', touch):
+                return True
 
     def collide_point(self, x, y):
         if self.size != self.norm_image_size:
@@ -30,16 +56,26 @@ class MyImage(ButtonBehavior, AsyncImage):
         self.sm.ids.open_img_screen.ids.full_image.source = self.source
         self.sm.transition = RiseInTransition()
         self.sm.ids.open_img_screen.ids.full_image.back_screen = self.sm.current
-        self.sm.ids.open_img_screen.ids.full_image.back_tab = self.sm.ids.main_screen.ids.navigation.current
-        if self.sm.ids.main_screen.ids.navigation.current == 'collection':
+        if self.sm.current == 'collection_screen':
             self.sm.ids.open_img_screen.ids.app_bar.right_action_items.insert(0, ['trash-can', lambda x: self.sm.ids.open_img_screen.delete(img_id=self.img_id, widget=self.parent)])
         self.sm.current = 'open_img_screen'
+
+
+class MySegmentedControl(MDSegmentedControl):
+
+    def update_segment_panel_width(
+        self, widget: MDSegmentedControlItem
+    ) -> None:
+        widget.font_size = 12
+        widget.texture_update()
+        self.ids.segment_panel.width = 300
 
 
 class MySelectionList(MDSelectionList):
     screen: ObjectProperty()
     toolbar = ObjectProperty()
     progress_round_color = ColorProperty('#ed1c1c')
+    back_item = ListProperty(['arrow-left'])
 
     def add_widget(self, widget, index=0, canvas=None):
 
@@ -69,10 +105,12 @@ class MySelectionList(MDSelectionList):
 
     def set_selection_mode(self, instance_selection_list, mode):
         if mode:
+            self.toolbar.left_action_items.remove(self.toolbar.left_action_items[0])
             self.toolbar.left_action_items.append(["close", lambda x: self.unselected_all()])
             self.toolbar.right_action_items.insert(0, ['trash-can', lambda x: self.screen.delete_images(widget_list=instance_selection_list.get_selected_list_items())])
         else:
-            self.toolbar.left_action_items.remove(self.toolbar.left_action_items[-1])
+            self.toolbar.left_action_items.remove(self.toolbar.left_action_items[0])
+            self.toolbar.left_action_items.append(self.back_item)
             self.toolbar.right_action_items.remove(self.toolbar.right_action_items[0])
             self.toolbar.title = ""
 

@@ -3,9 +3,14 @@ from kivy.lang import Builder
 from kivy.core.window import Window
 from kivymd.uix.button import MDFlatButton
 from kivymd.uix.dialog import MDDialog
+from kivymd.uix.filemanager import MDFileManager
+from kivymd.toast import toast
+import os
+
+from kivymd.uix.transition import MDSlideTransition
 
 from users.screen import LoginScreen, RegistrateScreen, ProfileScreen
-from main.screen import MainScreen, OpenImageScreen
+from main.screen import MainScreen, CreateImageScreen, OpenImageScreen
 
 Window.size = (360, 600)
 
@@ -17,10 +22,36 @@ class ArtAIApp(MDApp):
 
         self.theme_cls.material_style = 'M3'
         self.dialog = None
+        self.manager_open = False
+        self.file_manager = MDFileManager(
+            exit_manager=self.exit_manager,
+            select_path=self.select_path,
+            preview=True,
+        )
 
     def build(self):
         kv_file = Builder.load_file('./kv/layout.kv')
         return kv_file
+
+    def file_manager_open(self):
+        self.file_manager.show(os.path.expanduser('~'))
+        self.manager_open = True
+
+    def select_path(self, path: str):
+        self.exit_manager()
+        toast(path)
+        if self.root.current == 'main_screen':
+            self.root.ids.main_screen.add_image(path=path)
+
+    def exit_manager(self, *args):
+        self.manager_open = False
+        self.file_manager.close()
+
+    def events(self, instance, keyboard, keycode, text, modifiers):
+        if keyboard in (1001, 27):
+            if self.manager_open:
+                self.file_manager.back()
+        return True
 
     def show_dialog(self, button=None):
         self.dialog = MDDialog(
@@ -41,6 +72,11 @@ class ArtAIApp(MDApp):
 
     def close_dialog(self, inst):
         self.dialog.dismiss()
+
+    def back(self, screen):
+        self.root.transition = MDSlideTransition()
+        self.root.transition.direction = 'right'
+        self.root.current = screen
 
 
 if __name__ == '__main__':

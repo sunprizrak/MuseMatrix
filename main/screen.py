@@ -2,9 +2,12 @@ from kivy.uix.screenmanager import FallOutTransition
 from kivy.properties import StringProperty, ObjectProperty, BoundedNumericProperty
 from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.button import MDFlatButton
+from kivymd.uix.menu import MDDropdownMenu
 from kivymd.uix.screen import MDScreen
 from kivymd.uix.swiper import MDSwiperItem, MDSwiper
 from kivy.core.image import Image as CoreImage
+from kivymd.uix.transition import MDSlideTransition
+
 from users.controller import UserController
 from .widget import MyImage
 from .controller import OpenAIController
@@ -15,7 +18,28 @@ import random
 
 
 class MainScreen(MDScreen):
-    core = ObjectProperty()
+    pass
+
+    # def add_image(self, path):
+    #
+    #     layout = MDBoxLayout(
+    #         padding=[0, 15, 0, 15],
+    #     )
+    #
+    #     image = MyImage(
+    #         sm=self.parent,
+    #         disabled=True,
+    #         source=path,
+    #         allow_stretch=True,
+    #         mipmap=True,
+    #     )
+    #
+    #     layout.add_widget(image)
+    #
+    #     self.image_edit_section.add_widget(layout)
+
+
+class CreateImageScreen(MDScreen):
     image_section = ObjectProperty()
     option_section = ObjectProperty()
     prompt = StringProperty()
@@ -23,7 +47,7 @@ class MainScreen(MDScreen):
     image_size = StringProperty('256x256')
 
     def __init__(self, **kwargs):
-        super(MainScreen, self).__init__(**kwargs)
+        super(CreateImageScreen, self).__init__(**kwargs)
         self.openai_controller = OpenAIController()
         self.image_controller = ImageController(screen=self)
 
@@ -77,12 +101,37 @@ class MainScreen(MDScreen):
 
             self.ids.spinner.active = True
 
-            self.openai_controller.get_image(
+            self.openai_controller.image_generation(
                 prompt=self.prompt,
                 image_count=self.image_count,
                 image_size=self.image_size,
                 callback=callback,
             )
+
+
+class CollectionScreen(MDScreen):
+    core = ObjectProperty()
+
+    def __init__(self, **kwargs):
+        super(CollectionScreen, self).__init__(**kwargs)
+        self.image_controller = ImageController(screen=self)
+
+        menu_items = [
+            {
+                'text': 'Choose all',
+                'viewclass': 'OneLineListItem',
+                'on_release': lambda: (self.ids.selection_list.selected_all(), self.menu.dismiss()),
+            }
+        ]
+
+        self.menu = MDDropdownMenu(
+            items=menu_items,
+            width_mult=2.5,
+        )
+
+    def menu_callback(self, button):
+        self.menu.caller = button
+        self.menu.open()
 
     def delete_images(self, widget_list):
         images_id = [widget.children[1].img_id for widget in widget_list]
@@ -120,10 +169,9 @@ class OpenImageScreen(MDScreen):
     def download(self, img):
 
         def save_image():
-
             image = CoreImage(img.texture)
 
-            if img.back_tab == 'create':
+            if img.back_screen == 'create_image_screen':
                 data = io.BytesIO()
                 image.save(data, fmt='png')
                 png_bytes = data.read()
@@ -132,7 +180,7 @@ class OpenImageScreen(MDScreen):
                 data_image = {
                     'user': self.user_controller.user.id,
                     'source': im_b64,
-                    'description': self.core.root.ids.main_screen.prompt,
+                    'description': self.core.root.ids.create_image_screen.prompt,
                 }
 
                 self.image_controller.save_image(data_image=data_image)

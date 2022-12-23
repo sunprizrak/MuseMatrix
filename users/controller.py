@@ -1,6 +1,6 @@
 from kivy.network.urlrequest import UrlRequest
 from kivy.cache import Cache
-from kivymd.uix.transition.transition import MDTransitionBase
+from kivymd.uix.transition.transition import MDSwapTransition
 from .models import User
 from main.controller import ImageController
 import json
@@ -96,7 +96,7 @@ class UserController:
 
             self.screen.ids.email_field.text = ''
             self.screen.ids.password_field.text = ''
-            self.screen.parent.transition = MDTransitionBase()
+            self.screen.parent.transition = MDSwapTransition()
             self.screen.parent.current = 'main_screen'
 
         def callback_failure(request, response):
@@ -120,6 +120,8 @@ class UserController:
 
         def callback(request, response):
             self.user.update(data_user=response)
+            self.screen.core.root.ids.main_screen.ids.nav_drawer_header.title = self.user.email
+            self.screen.core.root.ids.main_screen.ids.nav_drawer_header.source = self.user.avatar
 
         UrlRequest(
             url=self.path_data_user,
