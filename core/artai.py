@@ -40,8 +40,8 @@ class ArtAIApp(MDApp):
     def select_path(self, path: str):
         self.exit_manager()
         toast(path)
-        if self.root.current == 'main_screen':
-            self.root.ids.main_screen.add_image(path=path)
+        if self.root.current == 'edit_image_screen':
+            self.root.ids.edit_image_screen.add_image(path=path)
 
     def exit_manager(self, *args):
         self.manager_open = False

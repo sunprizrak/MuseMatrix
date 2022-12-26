@@ -2,18 +2,111 @@
 <EditImageScreen>
     name: 'edit_image_screen'
 
-    MDRelativeLayout:
-        id: image_edit_section
-        size_hint: 1, .5
-        pos_hint: {'top': 1}
+    prompt: input_prompt.text
+
+    MDFloatLayout:
 
         MDBoxLayout:
+            orientation: 'vertical'
 
-            MDIconButton:
-                icon: 'image-plus'
-                icon_size: 20
-                theme_icon_color: "Custom"
-                icon_color: 'gray'
-                pos_hint: {"center_x": .5, "center_y": .5}
-                on_release:
-                    app.file_manager_open()
+            MDTopAppBar:
+                id: edit_top_bar
+                specific_text_color: 'gray'
+                type_height: 'small'
+                md_bg_color: app.theme_cls.bg_dark
+                left_action_items: [['arrow-left', lambda x: app.back(screen='main_screen')]]
+                elevation: 0
+
+            MDBoxLayout:
+                id: image_section
+                padding: 0, 15, 0, 15
+
+            MDBoxLayout:
+                id: option_section
+                orientation: 'vertical'
+                adaptive_height: True
+                spacing: 10
+                padding: 15
+
+                MySegmentedControl:
+                    pos_hint: {'center_x': .5}
+                    on_active:
+                        root.image_size = self.current_active_segment.text
+
+                    MDSegmentedControlItem:
+                        text: '256x256'
+
+                    MDSegmentedControlItem:
+                        text: '512x512'
+
+                    MDSegmentedControlItem:
+                        text: '1024x1024'
+
+                MDBoxLayout:
+                    orientation: 'horizontal'
+                    pos_hint: {'center_x': .5}
+                    adaptive_size: True
+
+                    MDIconButton:
+                        icon: 'minus-circle'
+                        icon_size: 20
+                        theme_icon_color: "Custom"
+                        icon_color: 'gray'
+                        on_press:
+                            self.icon_color = app.theme_cls.primary_color
+                        on_release:
+                            self.icon_color = 'gray'
+                            root.image_count -= 1
+
+                    MDTextFieldRect:
+                        id: img_count
+                        text: str(root.image_count)
+                        halign: 'center'
+                        pos_hint: {'center_y': .5}
+                        size_hint: None, None
+                        height: 30
+                        width: 50
+                        disabled: True
+
+                    MDIconButton:
+                        icon: 'plus-circle'
+                        icon_size: 20
+                        theme_icon_color: "Custom"
+                        icon_color: 'gray'
+                        on_press:
+                            self.icon_color = app.theme_cls.primary_color
+                        on_release:
+                            self.icon_color = 'gray'
+                            root.image_count += 1
+
+                MDTextFieldRect:
+                    id: input_prompt
+                    size_hint_y: None
+                    height: 100
+                    pos_hint: {'center_x': .5}
+                    padding: 10
+                    auto_indent: True
+
+                MDFillRoundFlatButton:
+                    text: 'Generate'
+                    font_style: 'Button'
+                    md_bg_color: 'gray'
+                    pos_hint: {'center_x': .5}
+                    on_release:
+                        root.edit_image()
+
+        MDSpinner:
+            id: create_spin
+            size_hint: None, None
+            size: 38, 38
+            pos_hint: {'center_x': .5, 'center_y': .68}
+            active: False
+
+        MDIconButton:
+            icon: 'image-plus'
+            icon_size: 20
+            theme_icon_color: "Custom"
+            icon_color: 'gray'
+            pos_hint: {"center_x": .5, "center_y": .47}
+            on_release:
+                app.file_manager_open()

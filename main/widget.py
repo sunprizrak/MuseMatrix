@@ -14,8 +14,8 @@ class MyImage(AsyncImage):
 
     def on_touch_down(self, touch):
         if self.disabled and self.collide_point(*touch.pos):
-            with self.canvas:
-                Color(0, 1, 0, 0.4)
+            with self.canvas.after:
+                Color(1, 1, 1, 1)
                 rad = 15
                 Ellipse(pos=(touch.x - rad / 2, touch.y - rad / 2), size=(rad, rad))
                 touch.ud['line'] = Line(points=(touch.x, touch.y), width=8)
@@ -48,8 +48,7 @@ class MyImage(AsyncImage):
             width, height = self.norm_image_size
             left = self.x + (self.width - width) / 2
             right = self.right - (self.right - (left + width))
-            top = height
-            return left <= x <= right and self.y <= y <= top
+            return left <= x <= right and self.y <= y <= self.top
         return super(MyImage, self).collide_point(x, y)
 
     def full_screen(self):
@@ -120,3 +119,7 @@ class MySelectionList(MDSelectionList):
     def unselected(self, instance_selection_list, instance_selection_item):
         if instance_selection_list.get_selected_list_items():
             self.toolbar.title = str(len(instance_selection_list.get_selected_list_items()))
+
+
+
+

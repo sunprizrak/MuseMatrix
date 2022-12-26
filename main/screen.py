@@ -1,12 +1,11 @@
+from kivy.graphics import Line
 from kivy.uix.screenmanager import FallOutTransition
 from kivy.properties import StringProperty, ObjectProperty, BoundedNumericProperty
-from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.button import MDFlatButton
 from kivymd.uix.menu import MDDropdownMenu
 from kivymd.uix.screen import MDScreen
 from kivymd.uix.swiper import MDSwiperItem, MDSwiper
 from kivy.core.image import Image as CoreImage
-from kivymd.uix.transition import MDSlideTransition
 
 from users.controller import UserController
 from .widget import MyImage
@@ -20,31 +19,12 @@ import random
 class MainScreen(MDScreen):
     pass
 
-    # def add_image(self, path):
-    #
-    #     layout = MDBoxLayout(
-    #         padding=[0, 15, 0, 15],
-    #     )
-    #
-    #     image = MyImage(
-    #         sm=self.parent,
-    #         disabled=True,
-    #         source=path,
-    #         allow_stretch=True,
-    #         mipmap=True,
-    #     )
-    #
-    #     layout.add_widget(image)
-    #
-    #     self.image_edit_section.add_widget(layout)
-
 
 class CreateImageScreen(MDScreen):
-    image_section = ObjectProperty()
-    option_section = ObjectProperty()
     prompt = StringProperty()
     image_count = BoundedNumericProperty(1, min=1, max=10, errorhandler=lambda x: 10 if x > 10 else 1)
     image_size = StringProperty('256x256')
+    default_img = ObjectProperty()
 
     def __init__(self, **kwargs):
         super(CreateImageScreen, self).__init__(**kwargs)
@@ -54,14 +34,10 @@ class CreateImageScreen(MDScreen):
     def create(self):
 
         def callback(request, response):
-            self.ids.spinner.active = False
+            self.ids.create_spin.active = False
 
             if len(response['data']) == 1:
                 url = response['data'][0].get('url')
-
-                layout = MDBoxLayout(
-                    padding=[0, 15, 0, 15],
-                )
 
                 image = MyImage(
                     sm=self.parent,
@@ -70,9 +46,7 @@ class CreateImageScreen(MDScreen):
                     mipmap=True,
                 )
 
-                layout.add_widget(image)
-
-                self.ids.image_section.add_widget(layout)
+                self.ids.image_section.add_widget(image)
             elif len(response['data']) > 1:
                 swiper = MDSwiper()
 
@@ -95,11 +69,13 @@ class CreateImageScreen(MDScreen):
 
         if all([self.prompt, self.image_count, self.image_size]):
 
-            for widget in self.image_section.children:
-                if isinstance(widget, MDBoxLayout) or isinstance(widget, MDSwiper):
-                    self.image_section.remove_widget(widget)
+            for widget in self.ids.image_section.children:
+                if isinstance(widget, MyImage) or isinstance(widget, MDSwiper):
+                    self.ids.image_section.remove_widget(widget)
 
-            self.ids.spinner.active = True
+            self.ids.image_section.remove_widget(self.default_img)
+
+            self.ids.create_spin.active = True
 
             self.openai_controller.image_generation(
                 prompt=self.prompt,
@@ -107,6 +83,67 @@ class CreateImageScreen(MDScreen):
                 image_size=self.image_size,
                 callback=callback,
             )
+
+
+class EditImageScreen(MDScreen):
+    prompt = StringProperty()
+    image_count = BoundedNumericProperty(1, min=1, max=10, errorhandler=lambda x: 10 if x > 10 else 1)
+    image_size = StringProperty('256x256')
+    image_original = io.BytesIO()
+    image_mask = io.BytesIO()
+
+    def __init__(self, **kwargs):
+        super(EditImageScreen, self).__init__(**kwargs)
+        self.openai_controller = OpenAIController()
+
+    def add_image(self, path):
+
+        image = MyImage(
+            sm=self.parent,
+            disabled=True,
+            source=path,
+            allow_stretch=True,
+            mipmap=True,
+        )
+
+        self.ids.image_section.add_widget(image)
+
+        img = CoreImage(image.texture)
+        print(img.size)
+        img.save(self.image_original, fmt='png')
+
+    def edit_image(self):
+
+        def callback(request, response):
+            print(response)
+
+        self.ids.image_section.children[0].size = (225, 225)
+        mask_img = self.ids.image_section.children[0].export_as_image()
+        print(mask_img.size)
+        mask_img.save(self.image_mask, fmt='png')
+
+        png_image_original = self.image_original.read()
+        im_b64_image_original = base64.b64encode(png_image_original).decode('utf-8')
+
+        png_image_mask = self.image_mask.read()
+        im_b64_image_mask = base64.b64encode(png_image_mask).decode('utf-8')
+
+        # self.openai_controller.image_edit(
+        #     image=im_b64_image_original,
+        #     mask=im_b64_image_mask,
+        #     prompt=self.prompt,
+        #     image_count=self.image_count,
+        #     image_size=self.image_size,
+        #     callback=callback,
+        # )
+
+        print(dir(self.ids.image_section.children[0].canvas.after))
+        for el in self.ids.image_section.children[0].canvas.after.children:
+            if isinstance(el, Line):
+                print(dir(el))
+                print(dir(el.texture))
+
+
 
 
 class CollectionScreen(MDScreen):
