@@ -1,4 +1,6 @@
+from kivy.core.image import Image as CoreImage
 from kivy.graphics import Color, Ellipse, Line
+from kivy.graphics.texture import Texture
 from kivy.properties import ObjectProperty, ColorProperty, NumericProperty, ListProperty
 from kivymd.uix.segmentedcontrol import MDSegmentedControl, MDSegmentedControlItem
 from kivy.uix.image import AsyncImage
@@ -14,8 +16,8 @@ class MyImage(AsyncImage):
 
     def on_touch_down(self, touch):
         if self.disabled and self.collide_point(*touch.pos):
-            with self.canvas.after:
-                Color(1, 1, 1, 1)
+            with self.canvas:
+                Color(.5, .8, .2, 1)
                 rad = 15
                 Ellipse(pos=(touch.x - rad / 2, touch.y - rad / 2), size=(rad, rad))
                 touch.ud['line'] = Line(points=(touch.x, touch.y), width=8)
@@ -28,7 +30,7 @@ class MyImage(AsyncImage):
         if self.disabled and self.collide_point(*touch.pos):
             if touch.ud.get('line'):
                 touch.ud['line'].points += (touch.x, touch.y)
-            return
+            return True
         for child in self.children[:]:
             if child.dispatch('on_touch_move', touch):
                 return True
@@ -58,6 +60,56 @@ class MyImage(AsyncImage):
         if self.sm.current == 'collection_screen':
             self.sm.ids.open_img_screen.ids.app_bar.right_action_items.insert(0, ['trash-can', lambda x: self.sm.ids.open_img_screen.delete(img_id=self.img_id, widget=self.parent)])
         self.sm.current = 'open_img_screen'
+
+    def get_mask_image(self):
+        # width, height = self.norm_image_size
+        # left = self.x + (self.width - width) / 2
+
+        change_texture = self.texture.create(size=self.texture_size, colorfmt='rgba')
+
+        # Get the pixel data from the texture
+        pixels = bytearray(change_texture.pixels)
+
+        # Modify the pixel data to set every pixel to red
+        for i in range(0, len(pixels), 4):
+            pixels[i] = 255  # red channel
+            pixels[i + 1] = 0  # green channel
+            pixels[i + 2] = 0  # blue channel
+            pixels[i + 3] = 255  # alpha channel
+
+        # Write the modified pixel data back to the texture
+        change_texture.blit_buffer(pixels, colorfmt='rgba')
+
+        self.texture = change_texture
+
+        texture = self.texture.create(size=(64, 64), colorfmt='rgba')
+        texture.mag_filter = 'linear'
+        texture.min_filter = 'linear_mipmap_linear'
+
+        cords = []
+        for point in self.canvas.children[-1].points:
+            if len(cords) < 1:
+                cords.append([int(point)])
+            else:
+                if len(cords[-1]) < 2:
+                    cords[-1].append(int(point))
+                else:
+                    cords.append([int(point)])
+
+        data = texture.pixels
+        dst_rect = (64, 64, 64, 64)
+        print(dir(self.canvas.children[-1].texture))
+        print(self.canvas.children[-1].texture)
+        line = (8, 8, 8, 8)
+
+        # Cut out the part of the texture
+        #self.texture.blit_buffer(data, dst_rect, pos=(50, 50), colorfmt='rgba', bufferfmt='ubyte')
+
+        # for cord in cords:
+        #     print(cord)
+        self.texture.blit_buffer(data, line, pos=(50, 50), colorfmt='rgba', bufferfmt='ubyte')
+
+        return self.texture
 
 
 class MySegmentedControl(MDSegmentedControl):

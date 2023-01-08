@@ -1,4 +1,3 @@
-from kivy.graphics import Line
 from kivy.uix.screenmanager import FallOutTransition
 from kivy.properties import StringProperty, ObjectProperty, BoundedNumericProperty
 from kivymd.uix.button import MDFlatButton
@@ -6,7 +5,6 @@ from kivymd.uix.menu import MDDropdownMenu
 from kivymd.uix.screen import MDScreen
 from kivymd.uix.swiper import MDSwiperItem, MDSwiper
 from kivy.core.image import Image as CoreImage
-
 from users.controller import UserController
 from .widget import MyImage
 from .controller import OpenAIController
@@ -108,19 +106,22 @@ class EditImageScreen(MDScreen):
 
         self.ids.image_section.add_widget(image)
 
-        img = CoreImage(image.texture)
-        print(img.size)
-        img.save(self.image_original, fmt='png')
+        image_core = CoreImage(image.texture)
+
+        print(image_core.size)
+        image_core.save(self.image_original, fmt='png')
 
     def edit_image(self):
 
         def callback(request, response):
             print(response)
 
-        self.ids.image_section.children[0].size = (225, 225)
-        mask_img = self.ids.image_section.children[0].export_as_image()
+        mask_img_texture = self.ids.image_section.children[0].get_mask_image()
+        mask_img = CoreImage(mask_img_texture)
         print(mask_img.size)
+
         mask_img.save(self.image_mask, fmt='png')
+        mask_img.save('./mask.png')
 
         png_image_original = self.image_original.read()
         im_b64_image_original = base64.b64encode(png_image_original).decode('utf-8')
@@ -136,14 +137,6 @@ class EditImageScreen(MDScreen):
         #     image_size=self.image_size,
         #     callback=callback,
         # )
-
-        print(dir(self.ids.image_section.children[0].canvas.after))
-        for el in self.ids.image_section.children[0].canvas.after.children:
-            if isinstance(el, Line):
-                print(dir(el))
-                print(dir(el.texture))
-
-
 
 
 class CollectionScreen(MDScreen):
