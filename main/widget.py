@@ -18,9 +18,9 @@ class MyImage(AsyncImage):
         if self.disabled and self.collide_point(*touch.pos):
             with self.canvas:
                 Color(.5, .8, .2, 1)
-                rad = 15
-                Ellipse(pos=(touch.x - rad / 2, touch.y - rad / 2), size=(rad, rad))
-                touch.ud['line'] = Line(points=(touch.x, touch.y), width=8)
+                setattr(self, 'rad', 16)
+                Ellipse(pos=(touch.x - self.rad/2, touch.y - self.rad/2), size=(self.rad, self.rad))
+                touch.ud['line'] = Line(points=(touch.x, touch.y), width=self.rad/2)
             return True
         for child in self.children[:]:
             if child.dispatch('on_touch_down', touch):
@@ -62,9 +62,6 @@ class MyImage(AsyncImage):
         self.sm.current = 'open_img_screen'
 
     def get_mask_image(self):
-        # width, height = self.norm_image_size
-        # left = self.x + (self.width - width) / 2
-
         change_texture = self.texture.create(size=self.texture_size, colorfmt='rgba')
 
         # Get the pixel data from the texture
@@ -82,34 +79,32 @@ class MyImage(AsyncImage):
 
         self.texture = change_texture
 
-        texture = self.texture.create(size=(64, 64), colorfmt='rgba')
-        texture.mag_filter = 'linear'
-        texture.min_filter = 'linear_mipmap_linear'
+        transparent_texture = self.texture.create(size=(64, 64), colorfmt='rgba')
+        transparent_texture.mag_filter = 'linear'
+        transparent_texture.min_filter = 'linear_mipmap_linear'
 
         cords = []
-        for point in self.canvas.children[-1].points:
-            if len(cords) < 1:
-                cords.append([int(point)])
-            else:
-                if len(cords[-1]) < 2:
-                    cords[-1].append(int(point))
-                else:
-                    cords.append([int(point)])
 
-        data = texture.pixels
-        dst_rect = (64, 64, 64, 64)
-        print(dir(self.canvas.children[-1].texture))
-        print(self.canvas.children[-1].texture)
-        line = (8, 8, 8, 8)
+        width, height = self.norm_image_size
+        left = self.x + (self.width - width) / 2
+
+        for elem in self.canvas.children:
+            if isinstance(elem, Line):
+                for point in elem.points:
+                    if len(cords) < 1:
+                        cords.append([point - left - self.rad/2])
+                    else:
+                        if len(cords[-1]) < 2:
+                            cords[-1].append(point - self.y - self.rad/2)
+                        else:
+                            cords.append([point - left - self.rad/2])
 
         # Cut out the part of the texture
-        #self.texture.blit_buffer(data, dst_rect, pos=(50, 50), colorfmt='rgba', bufferfmt='ubyte')
+        for cord in cords:
+            self.texture.blit_buffer(transparent_texture.pixels, size=(self.rad, self.rad), pos=cord, colorfmt='rgba', bufferfmt='ubyte')
 
-        # for cord in cords:
-        #     print(cord)
-        self.texture.blit_buffer(data, line, pos=(50, 50), colorfmt='rgba', bufferfmt='ubyte')
-
-        return self.texture
+        mask_img = CoreImage(self.texture)
+        return mask_img
 
 
 class MySegmentedControl(MDSegmentedControl):

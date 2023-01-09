@@ -107,6 +107,7 @@ class EditImageScreen(MDScreen):
         self.ids.image_section.add_widget(image)
 
         image_core = CoreImage(image.texture)
+        image_core.save('./original.png')
 
         print(image_core.size)
         image_core.save(self.image_original, fmt='png')
@@ -116,8 +117,8 @@ class EditImageScreen(MDScreen):
         def callback(request, response):
             print(response)
 
-        mask_img_texture = self.ids.image_section.children[0].get_mask_image()
-        mask_img = CoreImage(mask_img_texture)
+        mask_img = self.ids.image_section.children[0].get_mask_image()
+
         print(mask_img.size)
 
         mask_img.save(self.image_mask, fmt='png')
