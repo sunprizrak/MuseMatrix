@@ -107,37 +107,69 @@ class EditImageScreen(MDScreen):
         self.ids.image_section.add_widget(image)
 
         image_core = CoreImage(image.texture)
-        image_core.save('./original.png')
-
-        print(image_core.size)
         image_core.save(self.image_original, fmt='png')
 
     def edit_image(self):
 
         def callback(request, response):
-            print(response)
+            self.ids.edit_spin.active = False
 
-        mask_img = self.ids.image_section.children[0].get_mask_image()
+            if len(response['data']) == 1:
+                url = response['data'][0].get('url')
 
-        print(mask_img.size)
+                image = MyImage(
+                    sm=self.parent,
+                    source=url,
+                    allow_stretch=True,
+                    mipmap=True,
+                )
 
-        mask_img.save(self.image_mask, fmt='png')
-        mask_img.save('./mask.png')
+                self.ids.image_section.add_widget(image)
+            elif len(response['data']) > 1:
+                swiper = MDSwiper()
 
-        png_image_original = self.image_original.read()
-        im_b64_image_original = base64.b64encode(png_image_original).decode('utf-8')
+                for el in response['data']:
+                    url = el.get('url')
 
-        png_image_mask = self.image_mask.read()
-        im_b64_image_mask = base64.b64encode(png_image_mask).decode('utf-8')
+                    item = MDSwiperItem()
 
-        # self.openai_controller.image_edit(
-        #     image=im_b64_image_original,
-        #     mask=im_b64_image_mask,
-        #     prompt=self.prompt,
-        #     image_count=self.image_count,
-        #     image_size=self.image_size,
-        #     callback=callback,
-        # )
+                    image = MyImage(
+                        sm=self.parent,
+                        source=url,
+                        mipmap=True,
+                        allow_stretch=True,
+                    )
+
+                    item.add_widget(image)
+                    swiper.add_widget(item)
+
+                self.ids.image_section.add_widget(swiper)
+
+        if all([self.prompt, self.image_count, self.image_size]):
+
+            for widget in self.ids.image_section.children:
+                if isinstance(widget, MyImage) or isinstance(widget, MDSwiper):
+                    if isinstance(widget, MyImage) and widget.disabled:
+                        mask_img = self.ids.image_section.children[0].get_mask_image()
+                        mask_img.save(self.image_mask, flipped=True, fmt='png')
+                    self.ids.image_section.remove_widget(widget)
+
+            self.ids.edit_spin.active = True
+
+            png_image_original = self.image_original.read()
+            im_b64_image_original = base64.b64encode(png_image_original).decode('utf-8')
+
+            png_image_mask = self.image_mask.read()
+            im_b64_image_mask = base64.b64encode(png_image_mask).decode('utf-8')
+
+            self.openai_controller.image_edit(
+                image=im_b64_image_original,
+                mask=im_b64_image_mask,
+                prompt=self.prompt,
+                image_count=self.image_count,
+                image_size=self.image_size,
+                callback=callback,
+            )
 
 
 class CollectionScreen(MDScreen):

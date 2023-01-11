@@ -104,6 +104,7 @@ class MyImage(AsyncImage):
             self.texture.blit_buffer(transparent_texture.pixels, size=(self.rad, self.rad), pos=cord, colorfmt='rgba', bufferfmt='ubyte')
 
         mask_img = CoreImage(self.texture)
+
         return mask_img
 
 
