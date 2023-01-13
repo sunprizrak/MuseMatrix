@@ -1,6 +1,5 @@
 from kivy.core.image import Image as CoreImage
 from kivy.graphics import Color, Ellipse, Line
-from kivy.graphics.texture import Texture
 from kivy.properties import ObjectProperty, ColorProperty, NumericProperty, ListProperty
 from kivymd.uix.segmentedcontrol import MDSegmentedControl, MDSegmentedControlItem
 from kivy.uix.image import AsyncImage
@@ -106,6 +105,12 @@ class MyImage(AsyncImage):
         mask_img = CoreImage(self.texture)
 
         return mask_img
+
+    def clear_selection(self):
+        if self.disabled:
+            for el in self.canvas.children:
+                if isinstance(el, Ellipse) or isinstance(el, Line):
+                    self.canvas.children.remove(el)
 
 
 class MySegmentedControl(MDSegmentedControl):

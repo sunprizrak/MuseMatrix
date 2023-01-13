@@ -105,10 +105,30 @@
             active: False
 
         MDIconButton:
+            id: add_image_button
             icon: 'image-plus'
+            icon_size: 70
+            theme_icon_color: "Custom"
+            disabled_color: 1, 1, 1, 0
+            icon_color: 'gray'
+            pos_hint: {"center_x": .5, "center_y": .7}
+            on_release:
+                app.file_manager_open()
+
+        MDIconButton:
+            icon: 'autorenew'
             icon_size: 20
             theme_icon_color: "Custom"
             icon_color: 'gray'
             pos_hint: {"center_x": .5, "center_y": .47}
             on_release:
-                app.file_manager_open()
+                root.reload_image()
+
+        MDIconButton:
+            icon: 'broom'
+            icon_size: 20
+            theme_icon_color: "Custom"
+            icon_color: 'gray'
+            pos_hint: {"center_x": .6, "center_y": .47}
+            on_release:
+                root.clear_selection()

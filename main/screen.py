@@ -1,3 +1,4 @@
+from kivy.graphics import Ellipse, Line
 from kivy.uix.screenmanager import FallOutTransition
 from kivy.properties import StringProperty, ObjectProperty, BoundedNumericProperty
 from kivymd.uix.button import MDFlatButton
@@ -95,6 +96,11 @@ class EditImageScreen(MDScreen):
         self.openai_controller = OpenAIController()
 
     def add_image(self, path):
+        self.ids.add_image_button.disabled = True
+
+        for widget in self.ids.image_section.children:
+            if isinstance(widget, MyImage) or isinstance(widget, MDSwiper):
+                self.ids.image_section.remove_widget(widget)
 
         image = MyImage(
             sm=self.parent,
@@ -145,31 +151,48 @@ class EditImageScreen(MDScreen):
 
                 self.ids.image_section.add_widget(swiper)
 
-        if all([self.prompt, self.image_count, self.image_size]):
+        self.image_original.seek(0)
+        if len(self.image_original.read()) > 0:
 
-            for widget in self.ids.image_section.children:
-                if isinstance(widget, MyImage) or isinstance(widget, MDSwiper):
-                    if isinstance(widget, MyImage) and widget.disabled:
-                        mask_img = self.ids.image_section.children[0].get_mask_image()
-                        mask_img.save(self.image_mask, flipped=True, fmt='png')
-                    self.ids.image_section.remove_widget(widget)
+            if all([self.prompt, self.image_count, self.image_size]):
 
-            self.ids.edit_spin.active = True
+                for widget in self.ids.image_section.children:
+                    if isinstance(widget, MyImage) or isinstance(widget, MDSwiper):
+                        if isinstance(widget, MyImage) and widget.disabled:
+                            mask_img = self.ids.image_section.children[0].get_mask_image()
+                            mask_img.save(self.image_mask, flipped=True, fmt='png')
+                        self.ids.image_section.remove_widget(widget)
 
-            png_image_original = self.image_original.read()
-            im_b64_image_original = base64.b64encode(png_image_original).decode('utf-8')
+                self.ids.edit_spin.active = True
 
-            png_image_mask = self.image_mask.read()
-            im_b64_image_mask = base64.b64encode(png_image_mask).decode('utf-8')
+                self.image_original.seek(0)
+                png_image_original = self.image_original.read()
+                im_b64_image_original = base64.b64encode(png_image_original).decode('utf-8')
 
-            self.openai_controller.image_edit(
-                image=im_b64_image_original,
-                mask=im_b64_image_mask,
-                prompt=self.prompt,
-                image_count=self.image_count,
-                image_size=self.image_size,
-                callback=callback,
-            )
+                self.image_mask.seek(0)
+                png_image_mask = self.image_mask.read()
+                im_b64_image_mask = base64.b64encode(png_image_mask).decode('utf-8')
+
+                self.openai_controller.image_edit(
+                    image=im_b64_image_original,
+                    mask=im_b64_image_mask,
+                    prompt=self.prompt,
+                    image_count=self.image_count,
+                    image_size=self.image_size,
+                    callback=callback,
+                )
+
+    def clear_selection(self):
+        for widget in self.ids.image_section.children:
+            if isinstance(widget, MyImage):
+                widget.clear_selection()
+
+    def reload_image(self):
+        for widget in self.ids.image_section.children:
+            if isinstance(widget, MyImage) or isinstance(widget, MDSwiper):
+                self.ids.image_section.remove_widget(widget)
+
+        self.ids.add_image_button.disabled = False
 
 
 class CollectionScreen(MDScreen):
