@@ -5,13 +5,12 @@ from kivymd.uix.button import MDFlatButton
 from kivymd.uix.dialog import MDDialog
 from kivymd.uix.filemanager import MDFileManager
 from kivymd.toast import toast
+from kivymd.uix.transition import MDSlideTransition
 import os
 
-from kivymd.uix.transition import MDSlideTransition
 
 from users.screen import LoginScreen, RegistrateScreen, ProfileScreen
-from main.screen import MainScreen, CreateImageScreen, OpenImageScreen
-
+from main.screen import MainScreen
 Window.size = (360, 600)
 
 
@@ -42,6 +41,8 @@ class ArtAIApp(MDApp):
         toast(path)
         if self.root.current == 'edit_image_screen':
             self.root.ids.edit_image_screen.add_image(path=path)
+        elif self.root.current == 'variable_image_screen':
+            self.root.ids.variable_image_screen.add_image(path=path)
 
     def exit_manager(self, *args):
         self.manager_open = False

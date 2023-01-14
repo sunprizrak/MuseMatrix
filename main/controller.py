@@ -9,6 +9,7 @@ class OpenAIController:
     host_name = 'http://127.0.0.1:8000/'
     path_image_generation = host_name + 'openai/image_generation/'
     path_image_edit = host_name + 'openai/image_edit/'
+    path_image_variation = host_name + 'openai/image_variation/'
 
     def image_generation(self, prompt, image_count, image_size, callback):
         # token = Cache.get('token', 'auth_token')
@@ -38,6 +39,22 @@ class OpenAIController:
                 'Authorization': f"Token {token}",
             },
             req_body=json.dumps({'image': image, 'mask': mask, 'prompt': prompt, 'image_count': image_count, 'image_size': image_size}),
+        )
+
+    def image_variation(self, image, image_count, image_size, callback):
+        # token = Cache.get('token', 'auth_token')
+        token = '1be37f1ae2cbc7f90354ac42c8def1a29eaf21fb'
+
+        UrlRequest(
+            url=self.path_image_variation,
+            method='GET',
+            on_success=callback,
+            req_headers={
+                'Content-type': 'application/json',
+                'Authorization': f"Token {token}",
+            },
+            req_body=json.dumps(
+                {'image': image, 'image_count': image_count, 'image_size': image_size}),
         )
 
 

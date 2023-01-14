@@ -1,7 +1,5 @@
-<EditImageScreen>
-    name: 'edit_image_screen'
-
-    prompt: input_prompt.text
+<VariableImageScreen>
+    name: 'variable_image_screen'
 
     MDFloatLayout:
 
@@ -9,7 +7,7 @@
             orientation: 'vertical'
 
             MDTopAppBar:
-                id: edit_top_bar
+                id: variable_top_bar
                 specific_text_color: 'gray'
                 type_height: 'small'
                 md_bg_color: app.theme_cls.bg_dark
@@ -20,13 +18,18 @@
                 id: image_section
                 padding: 0, 15, 0, 15
 
-
             MDBoxLayout:
                 id: option_section
                 orientation: 'vertical'
-                adaptive_height: True
                 spacing: 10
                 padding: 15
+
+                canvas:
+                    Color:
+                        rgba: .5, .3, .4, 1
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
 
                 MySegmentedControl:
                     pos_hint: {'center_x': .5}
@@ -79,25 +82,16 @@
                             self.icon_color = 'gray'
                             root.image_count += 1
 
-                MDTextFieldRect:
-                    id: input_prompt
-                    size_hint_y: None
-                    height: 100
-                    pos_hint: {'center_x': .5}
-                    padding: 10
-                    auto_indent: True
-
                 MDFillRoundFlatButton:
                     text: 'Generate'
-
                     font_style: 'Button'
                     md_bg_color: 'gray'
                     pos_hint: {'center_x': .5}
                     on_release:
-                        root.edit_image()
+                        root.generate()
 
         MDSpinner:
-            id: edit_spin
+            id: variable_spin
             size_hint: None, None
             size: 38, 38
             pos_hint: {'center_x': .5, 'center_y': .68}
@@ -119,15 +113,6 @@
             icon_size: 20
             theme_icon_color: "Custom"
             icon_color: 'gray'
-            pos_hint: {"center_x": .5, "center_y": .47}
+            pos_hint: {"center_x": .5, "center_y": .46}
             on_release:
                 root.reload_image()
-
-        MDIconButton:
-            icon: 'broom'
-            icon_size: 20
-            theme_icon_color: "Custom"
-            icon_color: 'gray'
-            pos_hint: {"center_x": .6, "center_y": .47}
-            on_release:
-                root.clear_selection()

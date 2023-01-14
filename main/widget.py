@@ -53,15 +53,16 @@ class MyImage(AsyncImage):
         return super(MyImage, self).collide_point(x, y)
 
     def full_screen(self):
-        self.sm.ids.open_img_screen.ids.full_image.source = self.source
-        self.sm.transition = RiseInTransition()
-        self.sm.ids.open_img_screen.ids.full_image.back_screen = self.sm.current
-        if self.sm.current == 'collection_screen':
-            self.sm.ids.open_img_screen.ids.app_bar.right_action_items.insert(0, ['trash-can', lambda x: self.sm.ids.open_img_screen.delete(img_id=self.img_id, widget=self.parent)])
-        self.sm.current = 'open_img_screen'
+        if self.sm:
+            self.sm.ids.open_img_screen.ids.full_image.source = self.source
+            self.sm.transition = RiseInTransition()
+            self.sm.ids.open_img_screen.ids.full_image.back_screen = self.sm.current
+            if self.sm.current == 'collection_screen':
+                self.sm.ids.open_img_screen.ids.app_bar.right_action_items.insert(0, ['trash-can', lambda x: self.sm.ids.open_img_screen.delete(img_id=self.img_id, widget=self.parent)])
+            self.sm.current = 'open_img_screen'
 
     def get_mask_image(self):
-        change_texture = self.texture.create(size=self.texture_size, colorfmt='rgba')
+        change_texture = self.texture.create(size=(256, 256), colorfmt='rgba')
 
         # Get the pixel data from the texture
         pixels = bytearray(change_texture.pixels)

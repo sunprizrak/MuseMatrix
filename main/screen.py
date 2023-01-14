@@ -1,4 +1,3 @@
-from kivy.graphics import Ellipse, Line
 from kivy.uix.screenmanager import FallOutTransition
 from kivy.properties import StringProperty, ObjectProperty, BoundedNumericProperty
 from kivymd.uix.button import MDFlatButton
@@ -13,6 +12,7 @@ from main.controller import ImageController
 import io
 import base64
 import random
+from PIL import Image
 
 
 class MainScreen(MDScreen):
@@ -103,7 +103,6 @@ class EditImageScreen(MDScreen):
                 self.ids.image_section.remove_widget(widget)
 
         image = MyImage(
-            sm=self.parent,
             disabled=True,
             source=path,
             allow_stretch=True,
@@ -112,8 +111,9 @@ class EditImageScreen(MDScreen):
 
         self.ids.image_section.add_widget(image)
 
-        image_core = CoreImage(image.texture)
-        image_core.save(self.image_original, fmt='png')
+        with Image.open(path) as img:
+            new = img.resize(size=(256, 256))
+            new.save(self.image_original, format='png')
 
     def edit_image(self):
 
@@ -163,6 +163,7 @@ class EditImageScreen(MDScreen):
                             mask_img.save(self.image_mask, flipped=True, fmt='png')
                         self.ids.image_section.remove_widget(widget)
 
+                self.ids.add_image_button.disabled = True
                 self.ids.edit_spin.active = True
 
                 self.image_original.seek(0)
@@ -192,7 +193,107 @@ class EditImageScreen(MDScreen):
             if isinstance(widget, MyImage) or isinstance(widget, MDSwiper):
                 self.ids.image_section.remove_widget(widget)
 
+        self.image_original.truncate(0)
+        self.image_mask.truncate(0)
         self.ids.add_image_button.disabled = False
+
+
+class VariableImageScreen(MDScreen):
+    image = io.BytesIO()
+    image_count = BoundedNumericProperty(1, min=1, max=10, errorhandler=lambda x: 10 if x > 10 else 1)
+    image_size = StringProperty('256x256')
+
+    def __init__(self, **kwargs):
+        super(VariableImageScreen, self).__init__(**kwargs)
+        self.openai_controller = OpenAIController()
+
+    def add_image(self, path):
+        self.ids.add_image_button.disabled = True
+
+        for widget in self.ids.image_section.children:
+            if isinstance(widget, MyImage) or isinstance(widget, MDSwiper):
+                self.ids.image_section.remove_widget(widget)
+
+        image = MyImage(
+            source=path,
+            allow_stretch=True,
+            mipmap=True,
+        )
+
+        self.ids.image_section.add_widget(image)
+
+        with Image.open(path) as img:
+            new = img.resize(size=(256, 256))
+            new.save(self.image, format='png')
+
+    def reload_image(self):
+        for widget in self.ids.image_section.children:
+            if isinstance(widget, MyImage) or isinstance(widget, MDSwiper):
+                self.ids.image_section.remove_widget(widget)
+
+        self.image.truncate(0)
+        self.ids.add_image_button.disabled = False
+
+    def generate(self):
+
+        def callback(request, response):
+            self.ids.variable_spin.active = False
+
+            if len(response['data']) == 1:
+                url = response['data'][0].get('url')
+
+                image = MyImage(
+                    sm=self.parent,
+                    source=url,
+                    allow_stretch=True,
+                    mipmap=True,
+                )
+
+                self.ids.image_section.add_widget(image)
+            elif len(response['data']) > 1:
+                swiper = MDSwiper()
+
+                for el in response['data']:
+                    url = el.get('url')
+
+                    item = MDSwiperItem()
+
+                    image = MyImage(
+                        sm=self.parent,
+                        source=url,
+                        mipmap=True,
+                        allow_stretch=True,
+                    )
+
+                    item.add_widget(image)
+                    swiper.add_widget(item)
+
+                self.ids.image_section.add_widget(swiper)
+
+        self.image.seek(0)
+        if len(self.image.read()) > 0:
+
+            if all([self.image_count, self.image_size]):
+
+                for widget in self.ids.image_section.children:
+                    if isinstance(widget, MyImage) or isinstance(widget, MDSwiper):
+                        self.ids.image_section.remove_widget(widget)
+
+                self.ids.add_image_button.disabled = True
+                self.ids.variable_spin.active = True
+
+                self.image.seek(0)
+                image_png = self.image.read()
+                im_b64_image = base64.b64encode(image_png).decode('utf-8')
+
+                self.openai_controller.image_variation(
+                    image=im_b64_image,
+                    image_count=self.image_count,
+                    image_size=self.image_size,
+                    callback=callback,
+                )
+
+
 
 
 class CollectionScreen(MDScreen):
