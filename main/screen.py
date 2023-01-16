@@ -294,6 +294,8 @@ class VariableImageScreen(MDScreen):
                 )
 
 
+class ChatGptScreen(MDScreen):
+    pass
 
 
 class CollectionScreen(MDScreen):

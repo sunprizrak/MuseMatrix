@@ -1,0 +1,39 @@
+<ChatGptScreen>
+    name: 'chat_gpt_screen'
+
+    MDFloatLayout:
+
+        MDBoxLayout:
+            orientation: 'vertical'
+            padding: 0, 0, 0, 15
+
+            MDTopAppBar:
+                id: chat_gpt_top_bar
+                specific_text_color: 'gray'
+                type_height: 'small'
+                md_bg_color: app.theme_cls.bg_dark
+                left_action_items: [['arrow-left', lambda x: app.back(screen='main_screen')]]
+                elevation: 0
+
+            MDScrollView:
+
+                MDList:
+
+
+            MDRelativeLayout:
+                id: send_box
+                size_hint: .7, None
+                height: send_field.height
+                pos_hint: {'center_x': .5}
+
+                MDTextField:
+                    id: send_field
+                    mode: 'round'
+                    hint_text: 'Write message...'
+
+                MDIconButton:
+                    icon: "send"
+                    pos_hint: {"center_y": .5}
+                    pos: send_field.width - self.width, 0
+                    on_release:
+                        print('send')
