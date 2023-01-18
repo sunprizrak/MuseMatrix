@@ -1,6 +1,7 @@
 from kivymd.app import MDApp
 from kivy.lang import Builder
 from kivy.core.window import Window
+from kivymd.theming import ThemeManager
 from kivymd.uix.button import MDFlatButton
 from kivymd.uix.dialog import MDDialog
 from kivymd.uix.filemanager import MDFileManager
@@ -15,6 +16,7 @@ Window.size = (360, 600)
 
 
 class ArtAIApp(MDApp):
+    theme_cls = ThemeManager()
 
     def __init__(self, **kwargs):
         super(ArtAIApp, self).__init__(**kwargs)
@@ -29,7 +31,7 @@ class ArtAIApp(MDApp):
         )
 
     def build(self):
-        kv_file = Builder.load_file('./kv/layout.kv')
+        kv_file = Builder.load_file('./core/kv/layout.kv')
         return kv_file
 
     def file_manager_open(self):

@@ -1,5 +1,8 @@
+from kivy.uix.label import Label
+from kivy.uix.recycleview import RecycleDataModelBehavior
 from kivy.uix.screenmanager import FallOutTransition
 from kivy.properties import StringProperty, ObjectProperty, BoundedNumericProperty
+from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.button import MDFlatButton
 from kivymd.uix.menu import MDDropdownMenu
 from kivymd.uix.screen import MDScreen
@@ -295,7 +298,71 @@ class VariableImageScreen(MDScreen):
 
 
 class ChatGptScreen(MDScreen):
-    pass
+    core = ObjectProperty()
+    prompt = StringProperty()
+
+    def __init__(self, **kwargs):
+        super(ChatGptScreen, self).__init__(*kwargs)
+        self.openai_controller = OpenAIController()
+
+    def send(self):
+
+        def callback(request, response):
+            text = response['choices'][0].get('text').lstrip()
+
+            lab = Label(text=text, font_size=16, padding_x=20, padding_y=5)
+            lab.texture_update()
+            w, h = lab.texture_size
+
+            if w > 300:
+                lab = Label(text=text, font_size=16, padding_x=20, padding_y=5, text_size=(300, None))
+                lab.texture_update()
+                w, h = lab.texture_size
+
+            msg = {
+                'width': w,
+                'height': h,
+                'text': text,
+                'theme_text_color': 'Custom',
+                'text_color': (1, 1, 1, 1),
+                'bg_color': (.2, .2, .2, 1),
+                'radius': [10, 10, 10, 10],
+                'pos_hint': {'left': 1},
+            }
+
+            self.ids.chat_gpt.data.append(msg)
+
+        if self.prompt:
+
+            label = Label(text=self.prompt, font_size=16, padding_x=20, padding_y=5)
+            label.texture_update()
+            width, height = label.texture_size
+
+            if width > 300:
+                label = Label(text=self.prompt, font_size=16, padding_x=20, padding_y=5, text_size=(300, None))
+                label.texture_update()
+                width, height = label.texture_size
+
+            print(label.texture_size)
+            print(label.text)
+
+            message = {
+                'width': width,
+                'height': height,
+                'text': self.prompt,
+                'theme_text_color': 'Custom',
+                'text_color': (1, 1, 1, 1),
+                'bg_color': (.2, .2, .2, 1),
+                'radius': [10, 10, 10, 10],
+                'pos_hint': {'right': 1},
+            }
+
+            self.ids.chat_gpt.data.append(message)
+
+            self.openai_controller.text_completion(
+                prompt=self.prompt,
+                callback=callback,
+            )
 
 
 class CollectionScreen(MDScreen):

@@ -1,10 +1,12 @@
 from kivy.core.image import Image as CoreImage
 from kivy.graphics import Color, Ellipse, Line
-from kivy.properties import ObjectProperty, ColorProperty, NumericProperty, ListProperty
+from kivy.properties import ObjectProperty, ColorProperty, NumericProperty, ListProperty, ReferenceListProperty
+from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.recycleboxlayout import RecycleBoxLayout
 from kivymd.uix.segmentedcontrol import MDSegmentedControl, MDSegmentedControlItem
 from kivy.uix.image import AsyncImage
 from kivy.uix.screenmanager import RiseInTransition
-from kivymd.uix.list import MDList
+from kivymd.uix.list import MDList, OneLineListItem, ILeftBody, ILeftBodyTouch, IRightBody, IRightBodyTouch
 from kivymd.uix.selection import MDSelectionList
 from kivymd.uix.selection.selection import SelectionItem, SelectionIconCheck
 
@@ -175,5 +177,10 @@ class MySelectionList(MDSelectionList):
             self.toolbar.title = str(len(instance_selection_list.get_selected_list_items()))
 
 
+class Message(OneLineListItem):
 
-
+    def __init__(self, **kwargs):
+        super(Message, self).__init__(**kwargs)
+        self.ids._lbl_primary.shorten = False
+        self.ids._lbl_primary.size_hint_y = 1
+        #self.ids._lbl_primary.text_size = [300, None]

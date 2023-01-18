@@ -1,6 +1,9 @@
 <ChatGptScreen>
     name: 'chat_gpt_screen'
 
+    core: app
+    prompt: send_field.text
+
     MDFloatLayout:
 
         MDBoxLayout:
@@ -15,10 +18,25 @@
                 left_action_items: [['arrow-left', lambda x: app.back(screen='main_screen')]]
                 elevation: 0
 
-            MDScrollView:
+            MDRecycleView:
+                id: chat_gpt
+                viewclass: 'Message'
+                effect_cls: ScrollEffect
+                scroll_y: 0
 
-                MDList:
+                canvas.before:
+                    Color:
+                        rgba: (.2, .5, .7, 1)
+                    Rectangle:
+                        size: self.size
+                        pos: self.pos
 
+                RecycleBoxLayout:
+                    orientation: 'vertical'
+                    size_hint_y: None
+                    height: self.minimum_height
+                    spacing: 10
+                    padding: 10, 10, 10, 10
 
             MDRelativeLayout:
                 id: send_box
@@ -31,9 +49,11 @@
                     mode: 'round'
                     hint_text: 'Write message...'
 
+
                 MDIconButton:
                     icon: "send"
                     pos_hint: {"center_y": .5}
                     pos: send_field.width - self.width, 0
                     on_release:
-                        print('send')
+                        root.send()
+                        send_field.text = ''

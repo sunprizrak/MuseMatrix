@@ -10,6 +10,7 @@ class OpenAIController:
     path_image_generation = host_name + 'openai/image_generation/'
     path_image_edit = host_name + 'openai/image_edit/'
     path_image_variation = host_name + 'openai/image_variation/'
+    path_text_completion = host_name + 'openai/text_completion/'
 
     def image_generation(self, prompt, image_count, image_size, callback):
         # token = Cache.get('token', 'auth_token')
@@ -53,8 +54,22 @@ class OpenAIController:
                 'Content-type': 'application/json',
                 'Authorization': f"Token {token}",
             },
-            req_body=json.dumps(
-                {'image': image, 'image_count': image_count, 'image_size': image_size}),
+            req_body=json.dumps({'image': image, 'image_count': image_count, 'image_size': image_size}),
+        )
+
+    def text_completion(self, prompt, callback):
+        # token = Cache.get('token', 'auth_token')
+        token = '1be37f1ae2cbc7f90354ac42c8def1a29eaf21fb'
+
+        UrlRequest(
+            url=self.path_text_completion,
+            method='GET',
+            on_success=callback,
+            req_headers={
+                'Content-type': 'application/json',
+                'Authorization': f"Token {token}",
+            },
+            req_body=json.dumps({'prompt': prompt}),
         )
 
 
