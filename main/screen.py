@@ -343,9 +343,6 @@ class ChatGptScreen(MDScreen):
                 label.texture_update()
                 width, height = label.texture_size
 
-            print(label.texture_size)
-            print(label.text)
-
             message = {
                 'width': width,
                 'height': height,
@@ -359,10 +356,10 @@ class ChatGptScreen(MDScreen):
 
             self.ids.chat_gpt.data.append(message)
 
-            self.openai_controller.text_completion(
-                prompt=self.prompt,
-                callback=callback,
-            )
+            # self.openai_controller.text_completion(
+            #     prompt=self.prompt,
+            #     callback=callback,
+            # )
 
 
 class CollectionScreen(MDScreen):

@@ -8,7 +8,6 @@
 
         MDBoxLayout:
             orientation: 'vertical'
-            padding: 0, 0, 0, 15
 
             MDTopAppBar:
                 id: chat_gpt_top_bar
@@ -18,11 +17,12 @@
                 left_action_items: [['arrow-left', lambda x: app.back(screen='main_screen')]]
                 elevation: 0
 
-            MDRecycleView:
+            RecycleView:
                 id: chat_gpt
-                viewclass: 'Message'
-                effect_cls: ScrollEffect
+                do_scroll_y: False if chat_gpt_box.height < self.height else True
                 scroll_y: 0
+                effect_cls: ScrollEffect
+                viewclass: 'Message'
 
                 canvas.before:
                     Color:
@@ -32,28 +32,47 @@
                         pos: self.pos
 
                 RecycleBoxLayout:
+                    id: chat_gpt_box
                     orientation: 'vertical'
                     size_hint_y: None
                     height: self.minimum_height
                     spacing: 10
                     padding: 10, 10, 10, 10
 
-            MDRelativeLayout:
-                id: send_box
-                size_hint: .7, None
-                height: send_field.height
-                pos_hint: {'center_x': .5}
+            MDBoxLayout:
+                orientation: 'horizontal'
+                adaptive_height: True
+                padding: 10, 0, 0, 0
 
-                MDTextField:
+                canvas:
+                    Color:
+                        rgba: .3, .3, .9, 1
+                    Rectangle:
+                        size: self.size
+                        pos: self.pos
+
+                TextInput:
                     id: send_field
-                    mode: 'round'
-                    hint_text: 'Write message...'
-
+                    multiline: True
+                    auto_indent: True
+                    size_hint_y: None
+                    height: self.minimum_height if self.minimum_height <= 100 else 100
+                    background_color: 1, 1, 1, 0
+                    foreground_color: 'white'
+                    disabled_foreground_color: 'white'
+                    hint_text: 'message'
+                    hint_text_color: 'white'
+                    cursor_color: 'white'
+                    focus: True
+                    unfocus_on_touch: False
+                    pos_hint: {'center_y': .5}
 
                 MDIconButton:
                     icon: "send"
-                    pos_hint: {"center_y": .5}
-                    pos: send_field.width - self.width, 0
+                    size_hint_y: None
+                    icon_size: 25
+
                     on_release:
                         root.send()
                         send_field.text = ''
+                        print(send_field.minimum_height)
