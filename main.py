@@ -1,7 +1,6 @@
 from kivymd.app import MDApp
 from kivy.lang import Builder
 from kivy.core.window import Window
-from kivymd.theming import ThemeManager
 from kivymd.uix.button import MDFlatButton
 from kivymd.uix.dialog import MDDialog
 from kivymd.uix.filemanager import MDFileManager
@@ -12,11 +11,10 @@ import os
 
 from users.screen import LoginScreen, RegistrateScreen, ProfileScreen
 from main.screen import MainScreen
-Window.size = (360, 600)
+# Window.size = (360, 600)
 
 
 class ArtAIApp(MDApp):
-    theme_cls = ThemeManager()
 
     def __init__(self, **kwargs):
         super(ArtAIApp, self).__init__(**kwargs)

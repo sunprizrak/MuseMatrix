@@ -1,8 +1,6 @@
 from kivy.uix.label import Label
-from kivy.uix.recycleview import RecycleDataModelBehavior
 from kivy.uix.screenmanager import FallOutTransition
 from kivy.properties import StringProperty, ObjectProperty, BoundedNumericProperty
-from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.button import MDFlatButton
 from kivymd.uix.menu import MDDropdownMenu
 from kivymd.uix.screen import MDScreen
@@ -14,7 +12,6 @@ from .controller import OpenAIController
 from main.controller import ImageController
 import io
 import base64
-import random
 from PIL import Image
 
 
@@ -356,10 +353,10 @@ class ChatGptScreen(MDScreen):
 
             self.ids.chat_gpt.data.append(message)
 
-            # self.openai_controller.text_completion(
-            #     prompt=self.prompt,
-            #     callback=callback,
-            # )
+            self.openai_controller.text_completion(
+                prompt=self.prompt,
+                callback=callback,
+            )
 
 
 class CollectionScreen(MDScreen):
@@ -438,7 +435,7 @@ class OpenImageScreen(MDScreen):
 
                 self.image_controller.save_image(data_image=data_image)
 
-            image.save(f"./gallery/{''.join(['' + str(random.randint(0, 9)) for x in range(9)])}.png")
+            #image.save(f"./gallery/{''.join(['' + str(random.randint(0, 9)) for x in range(9)])}.png")
 
             self.core.dialog.dismiss()
 

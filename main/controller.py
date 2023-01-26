@@ -6,15 +6,15 @@ from .widget import MyImage
 
 
 class OpenAIController:
-    host_name = 'http://127.0.0.1:8000/'
+    host_name = 'https://drf-artai.herokuapp.com/'
     path_image_generation = host_name + 'openai/image_generation/'
     path_image_edit = host_name + 'openai/image_edit/'
     path_image_variation = host_name + 'openai/image_variation/'
     path_text_completion = host_name + 'openai/text_completion/'
 
     def image_generation(self, prompt, image_count, image_size, callback):
-        # token = Cache.get('token', 'auth_token')
-        token = '1be37f1ae2cbc7f90354ac42c8def1a29eaf21fb'
+        token = Cache.get('token', 'auth_token')
+        # token = '1be37f1ae2cbc7f90354ac42c8def1a29eaf21fb'
 
         UrlRequest(
             url=self.path_image_generation,
@@ -28,8 +28,8 @@ class OpenAIController:
         )
 
     def image_edit(self, image, mask, prompt, image_count, image_size, callback):
-        # token = Cache.get('token', 'auth_token')
-        token = '1be37f1ae2cbc7f90354ac42c8def1a29eaf21fb'
+        token = Cache.get('token', 'auth_token')
+        #token = '1be37f1ae2cbc7f90354ac42c8def1a29eaf21fb'
 
         UrlRequest(
             url=self.path_image_edit,
@@ -43,8 +43,8 @@ class OpenAIController:
         )
 
     def image_variation(self, image, image_count, image_size, callback):
-        # token = Cache.get('token', 'auth_token')
-        token = '1be37f1ae2cbc7f90354ac42c8def1a29eaf21fb'
+        token = Cache.get('token', 'auth_token')
+        #token = '1be37f1ae2cbc7f90354ac42c8def1a29eaf21fb'
 
         UrlRequest(
             url=self.path_image_variation,
@@ -58,8 +58,8 @@ class OpenAIController:
         )
 
     def text_completion(self, prompt, callback):
-        # token = Cache.get('token', 'auth_token')
-        token = '1be37f1ae2cbc7f90354ac42c8def1a29eaf21fb'
+        token = Cache.get('token', 'auth_token')
+        #token = '1be37f1ae2cbc7f90354ac42c8def1a29eaf21fb'
 
         UrlRequest(
             url=self.path_text_completion,
@@ -74,7 +74,7 @@ class OpenAIController:
 
 
 class ImageController:
-    host_name = 'http://127.0.0.1:8000/'
+    host_name = 'https://drf-artai.herokuapp.com/'
     path_image = host_name + 'image/'
     path_image_delete = path_image + 'delete/'
     object = Image

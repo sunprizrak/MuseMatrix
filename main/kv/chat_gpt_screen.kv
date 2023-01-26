@@ -63,6 +63,7 @@
                     hint_text: 'message'
                     hint_text_color: 'white'
                     cursor_color: 'white'
+                    cursor_width: 2
                     focus: True
                     unfocus_on_touch: False
                     pos_hint: {'center_y': .5}
@@ -75,4 +76,3 @@
                     on_release:
                         root.send()
                         send_field.text = ''
-                        print(send_field.minimum_height)

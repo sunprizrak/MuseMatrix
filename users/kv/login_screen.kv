@@ -10,7 +10,7 @@
         MDIconButton:
             icon: 'arrow-left-bold'
             theme_text_color: 'Secondary'
-            pos_hint: {'y': .9}
+            pos_hint: {'y': .93}
             on_release:
                 app.back(screen='start_screen')
                 email_field.text = ''
@@ -18,10 +18,16 @@
 
         MDBoxLayout:
             orientation: 'vertical'
-            spacing: 15
+            spacing: dp(15)
             pos_hint: {'center_x': .5, 'center_y': .5}
             size_hint: .8, .8
-            size_hint_max_x: 300
+            size_hint_max_x: dp(300)
+
+            MDLabel:
+                text: 'Вход в учётную запись'
+                theme_text_color: 'Secondary'
+                font_size: sp(17)
+                halign: 'center'
 
             MDTextField:
                 id: email_field
@@ -53,7 +59,7 @@
 
             MDRaisedButton:
                 text: 'Login'
-                font_size: 15
+                font_size: sp(15)
                 font_style: 'Button'
                 md_bg_color: 'green'
                 pos_hint: {'center_x': .5}
@@ -63,7 +69,7 @@
             MDRoundFlatIconButton:
                 text: 'Continue with Google'
                 icon: 'google'
-                font_size: 15
+                font_size: sp(15)
                 pos_hint: {'center_x': .5}
                 on_release:
                     False

@@ -8,7 +8,7 @@ import json
 
 class UserController:
     user = User()
-    host_name = 'http://127.0.0.1:8000/'
+    host_name = 'https://drf-artai.herokuapp.com/'
     path_reg = host_name + 'auth/users/'
     path_login = host_name + 'auth/token/login/'
     path_logout = host_name + 'auth/token/logout/'
