@@ -1,3 +1,4 @@
+from kivy.metrics import sp, dp
 from kivy.uix.label import Label
 from kivy.uix.screenmanager import FallOutTransition
 from kivy.properties import StringProperty, ObjectProperty, BoundedNumericProperty
@@ -307,12 +308,12 @@ class ChatGptScreen(MDScreen):
         def callback(request, response):
             text = response['choices'][0].get('text').lstrip()
 
-            lab = Label(text=text, font_size=16, padding_x=20, padding_y=5)
+            lab = Label(text=text, font_size=sp(16), padding_x=dp(20), padding_y=dp(5))
             lab.texture_update()
             w, h = lab.texture_size
 
-            if w > 300:
-                lab = Label(text=text, font_size=16, padding_x=20, padding_y=5, text_size=(300, None))
+            if w > dp(300):
+                lab = Label(text=text, font_size=sp(16), padding_x=dp(20), padding_y=dp(5), text_size=(dp(300), None))
                 lab.texture_update()
                 w, h = lab.texture_size
 
@@ -331,12 +332,12 @@ class ChatGptScreen(MDScreen):
 
         if self.prompt:
 
-            label = Label(text=self.prompt, font_size=16, padding_x=20, padding_y=5)
+            label = Label(text=self.prompt, font_size=sp(16), padding_x=dp(20), padding_y=dp(5))
             label.texture_update()
             width, height = label.texture_size
 
-            if width > 300:
-                label = Label(text=self.prompt, font_size=16, padding_x=20, padding_y=5, text_size=(300, None))
+            if width > dp(300):
+                label = Label(text=self.prompt, font_size=sp(16), padding_x=dp(20), padding_y=dp(5), text_size=(dp(300), None))
                 label.texture_update()
                 width, height = label.texture_size
 

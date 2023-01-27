@@ -11,7 +11,9 @@ import os
 
 from users.screen import LoginScreen, RegistrateScreen, ProfileScreen
 from main.screen import MainScreen
-# Window.size = (360, 600)
+
+if 'Ubuntu' in os.uname().version:
+    Window.size = (360, 600)
 
 
 class ArtAIApp(MDApp):

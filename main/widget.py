@@ -1,5 +1,6 @@
 from kivy.core.image import Image as CoreImage
 from kivy.graphics import Color, Ellipse, Line
+from kivy.metrics import sp, dp
 from kivy.properties import ObjectProperty, ColorProperty, NumericProperty, ListProperty
 from kivymd.uix.segmentedcontrol import MDSegmentedControl, MDSegmentedControlItem
 from kivy.uix.image import AsyncImage
@@ -119,9 +120,10 @@ class MySegmentedControl(MDSegmentedControl):
     def update_segment_panel_width(
         self, widget: MDSegmentedControlItem
     ) -> None:
-        widget.font_size = 12
+        widget.text_size = (None, None)
+        widget.font_size = sp(12)
         widget.texture_update()
-        self.ids.segment_panel.width = 300
+        self.ids.segment_panel.width = dp(300)
 
 
 class MySelectionList(MDSelectionList):

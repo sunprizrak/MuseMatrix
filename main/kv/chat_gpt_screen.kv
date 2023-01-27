@@ -35,14 +35,14 @@
                     id: chat_gpt_box
                     orientation: 'vertical'
                     size_hint_y: None
-                    height: self.minimum_height
-                    spacing: 10
-                    padding: 10, 10, 10, 10
+                    height: dp(self.minimum_height)
+                    spacing: dp(10)
+                    padding: dp(10)
 
             MDBoxLayout:
                 orientation: 'horizontal'
                 adaptive_height: True
-                padding: 10, 0, 0, 0
+                padding: dp(10), 0, 0, 0
 
                 canvas:
                     Color:
@@ -56,14 +56,14 @@
                     multiline: True
                     auto_indent: True
                     size_hint_y: None
-                    height: self.minimum_height if self.minimum_height <= 100 else 100
+                    height: self.minimum_height if self.minimum_height <= dp(100) else dp(100)
                     background_color: 1, 1, 1, 0
                     foreground_color: 'white'
                     disabled_foreground_color: 'white'
                     hint_text: 'message'
                     hint_text_color: 'white'
                     cursor_color: 'white'
-                    cursor_width: 2
+                    cursor_width: dp(2)
                     focus: True
                     unfocus_on_touch: False
                     pos_hint: {'center_y': .5}
@@ -71,8 +71,9 @@
                 MDIconButton:
                     icon: "send"
                     size_hint_y: None
-                    icon_size: 25
+                    icon_size: dp(25)
 
                     on_release:
                         root.send()
                         send_field.text = ''
+                        print(dp(10))

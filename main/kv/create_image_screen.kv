@@ -19,7 +19,7 @@
 
             MDBoxLayout:
                 id: image_section
-                padding: 0, 15, 0, 15
+                padding: 0, dp(15), 0, dp(15)
 
                 AsyncImage:
                     id: default_img
@@ -31,8 +31,8 @@
                 id: option_section
                 orientation: 'vertical'
                 adaptive_height: True
-                spacing: 10
-                padding: 15
+                spacing: dp(10)
+                padding: dp(15)
 
                 MySegmentedControl:
                     pos_hint: {'center_x': .5}
@@ -55,7 +55,7 @@
 
                     MDIconButton:
                         icon: 'minus-circle'
-                        icon_size: 20
+                        icon_size: dp(20)
                         theme_icon_color: "Custom"
                         icon_color: 'gray'
                         on_press:
@@ -70,13 +70,13 @@
                         halign: 'center'
                         pos_hint: {'center_y': .5}
                         size_hint: None, None
-                        height: 30
-                        width: 50
+                        height: dp(30)
+                        width: dp(50)
                         disabled: True
 
                     MDIconButton:
                         icon: 'plus-circle'
-                        icon_size: 20
+                        icon_size: dp(20)
                         theme_icon_color: "Custom"
                         icon_color: 'gray'
                         on_press:
@@ -88,9 +88,9 @@
                 MDTextFieldRect:
                     id: input_prompt
                     size_hint_y: None
-                    height: 100
+                    height: dp(100)
                     pos_hint: {'center_x': .5}
-                    padding: 10
+                    padding: dp(10)
                     auto_indent: True
 
                 MDFillRoundFlatButton:
@@ -104,6 +104,6 @@
         MDSpinner:
             id: create_spin
             size_hint: None, None
-            size: 38, 38
+            size: dp(38), dp(38)
             pos_hint: {'center_x': .5, 'center_y': .68}
             active: False
