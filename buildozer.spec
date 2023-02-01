@@ -38,7 +38,7 @@ version = 0.1
 # (list) Application requirements
 # comma separated e.g. requirements = sqlite3,kivy
 #requirements = python3,kivy
-requirements = python3, kivy==master, https://github.com/kivymd/KivyMD/archive/master.zip, pillow, pygments, sdl2_ttf, requests, urllib3, chardet, idna, certifi
+requirements = python3, kivy==master, https://github.com/kivymd/KivyMD/archive/master.zip, pillow, pygments, sdl2_ttf, requests, urllib3, chardet, idna, certifi, androidstorage4kivy
 
 # (str) Custom source folders for requirements
 # Sets custom source for any requirements with recipes
@@ -68,7 +68,7 @@ orientation = portrait
 osx.python_version = 3
 
 # Kivy version to use
-#osx.kivy_version = master
+osx.kivy_version = master
 
 #
 # Android specific
@@ -95,7 +95,7 @@ fullscreen = 0
 #icon.adaptive_background.filename = %(source.dir)s/data/icon_bg.png
 
 # (list) Permissions
-android.permissions = INTERNET
+android.permissions = INTERNET, READ_EXTERNAL_STORAGE, READ_MEDIA_IMAGES
 
 # (list) features (adds uses-feature -tags to manifest)
 #android.features = android.hardware.usb.host
@@ -110,7 +110,7 @@ android.api = 33
 #android.sdk = 20
 
 # (str) Android NDK version to use
-android.ndk = 25b
+#android.ndk = 25b
 
 # (int) Android NDK API to use. This is the minimum API your app will support, it should usually match android.minapi.
 #android.ndk_api = 21
