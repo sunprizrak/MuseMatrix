@@ -111,6 +111,8 @@ class EditImageScreen(MDScreen):
         )
 
         self.ids.image_section.add_widget(image)
+        self.ids.edit_top_bar.right_action_items.append(["autorenew", lambda x: self.reload_image()])
+        self.ids.edit_top_bar.right_action_items.append(["broom", lambda x: self.clear_selection()])
 
         with Image.open(path) as img:
             new = img.resize(size=(256, 256))
@@ -197,6 +199,9 @@ class EditImageScreen(MDScreen):
         self.image_original.truncate(0)
         self.image_mask.truncate(0)
         self.ids.add_image_button.disabled = False
+
+        while len(self.ids.edit_top_bar.right_action_items) !=0:
+            self.ids.edit_top_bar.right_action_items.remove(self.ids.edit_top_bar.right_action_items[-1])
 
 
 class VariableImageScreen(MDScreen):

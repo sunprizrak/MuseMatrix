@@ -7,20 +7,14 @@ from kivymd.uix.filemanager import MDFileManager
 from kivymd.toast import toast
 from kivymd.uix.transition import MDSlideTransition
 from kivy.utils import platform
-import os
 from kivy.clock import mainthread
 from kivy.logger import Logger
+import os
 
-if platform == 'linux':
-    Window.size = (360, 600)
-    #Window.bind(on_keyboard=self.events)
-    external_storage_path = os.path.expanduser('~')
-elif platform == 'android':
+if platform == 'android':
     from android import mActivity, autoclass, api_version
-    from android.permissions import request_permissions, Permission
+    from android.permissions import request_permissions, check_permission, Permission
     from androidstorage4kivy import SharedStorage, Chooser
-
-
 
     Environment = autoclass('android.os.Environment')
 
@@ -38,19 +32,20 @@ class ArtAIApp(MDApp):
         self.file_manager = MDFileManager(
             exit_manager=self.exit_manager,
             select_path=self.select_path,
-            preview=False,
+            preview=True,
         )
 
+        if platform == 'android':
+            self.chooser = Chooser(self.chooser_callback)
+            if api_version > 29:
+                self.permissions = [Permission.READ_EXTERNAL_STORAGE]
+            else:
+                self.permissions = [Permission.READ_EXTERNAL_STORAGE, Permission.WRITE_EXTERNAL_STORAGE]
+
     def build(self):
+        if platform == 'linux':
+            Window.size = (360, 600)
         Window.softinput_mode = 'pan'
-
-        self.chooser = Chooser(self.chooser_callback)
-
-
-        #primary_ext_storage = primary_external_storage_path()
-        #external_storage_path = primary_ext_storage
-
-
         kv_file = Builder.load_file('./core/kv/layout.kv')
         return kv_file
 
@@ -59,9 +54,7 @@ class ArtAIApp(MDApp):
             ss = SharedStorage()
             for shared_file in shared_file_list:
                 private_file = ss.copy_from_shared(shared_file)
-
                 self.select_path(path=private_file)
-
         except Exception as e:
             Logger.warning('SharedStorageExample.chooser_callback():')
             Logger.warning(str(e))
@@ -71,8 +64,13 @@ class ArtAIApp(MDApp):
             self.file_manager.show(os.path.expanduser('~'))
             self.manager_open = True
         elif platform == 'android':
-            request_permissions([Permission.READ_EXTERNAL_STORAGE, Permission.WRITE_EXTERNAL_STORAGE])
-            self.chooser.choose_content('image/*')
+            if all(list(map(check_permission, self.permissions))):
+                self.chooser.choose_content('image/*')
+            else:
+                if api_version > 29:
+                    request_permissions(self.permissions)
+                else:
+                    request_permissions(self.permissions)
 
     @mainthread
     def select_path(self, path: str):
@@ -81,22 +79,14 @@ class ArtAIApp(MDApp):
 
         toast(path)
 
-        if self.root.current == 'edit_image_screen':
-            self.root.ids.edit_image_screen.add_image(path=path)
-        elif self.root.current == 'variable_image_screen':
-            self.root.ids.variable_image_screen.add_image(path=path)
+        for screen in self.root.children:
+            if screen.name == self.root.current:
+                screen.add_image(path=path)
 
     def exit_manager(self, *args):
         if platform == 'linux':
             self.manager_open = False
             self.file_manager.close()
-
-    def events(self, instance, keyboard, keycode, text, modifiers):
-        if platform == 'linux':
-            if keyboard in (1001, 27):
-                if self.manager_open:
-                    self.file_manager.back()
-            return True
 
     def show_dialog(self, button=None):
         self.dialog = MDDialog(
