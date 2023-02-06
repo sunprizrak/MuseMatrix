@@ -10,6 +10,8 @@ from kivy.utils import platform
 from kivy.clock import mainthread
 from kivy.logger import Logger
 import os
+from core.settings import storage
+from users.controller import UserController
 
 if platform == 'android':
     from android import mActivity, autoclass, api_version
@@ -17,9 +19,6 @@ if platform == 'android':
     from androidstorage4kivy import SharedStorage, Chooser
 
     Environment = autoclass('android.os.Environment')
-
-from users.screen import LoginScreen, RegistrateScreen, ProfileScreen
-from main.screen import MainScreen, CreateImageScreen, EditImageScreen, VariableImageScreen, ChatGptScreen
 
 
 class ArtAIApp(MDApp):
@@ -45,9 +44,19 @@ class ArtAIApp(MDApp):
     def build(self):
         if platform == 'linux':
             Window.size = (360, 600)
+
         Window.softinput_mode = 'pan'
+
         kv_file = Builder.load_file('./core/kv/layout.kv')
         return kv_file
+
+    def on_start(self):
+        self.check_user_authentication()
+
+    def check_user_authentication(self):
+        if storage.exists('auth_token'):
+            user_controller = UserController(screen=self.root.children[0])
+            user_controller.authorized()
 
     def chooser_callback(self, shared_file_list):
         try:

@@ -1,14 +1,15 @@
 from kivy.network.urlrequest import UrlRequest
-from kivy.cache import Cache
+from kivy.uix.screenmanager import NoTransition
 from kivymd.uix.transition.transition import MDSwapTransition
 from .models import User
 from main.controller import ImageController
 import json
+from core.settings import storage
 
 
 class UserController:
     user = User()
-    host_name = 'https://drf-artai.herokuapp.com/'
+    host_name = 'http://18.214.87.35:8000/'
     path_reg = host_name + 'auth/users/'
     path_login = host_name + 'auth/token/login/'
     path_logout = host_name + 'auth/token/logout/'
@@ -88,8 +89,8 @@ class UserController:
                     self.screen.core.dialog.text = error_text
 
         def callback(request, response):
-            Cache.register('token', limit=None, timeout=None)
-            Cache.append('token', 'auth_token', response.get('auth_token'))
+
+            storage.put('auth_token', token=response.get('auth_token'))
 
             self.get_data_user()
             self.image_controller.get_image_list()
@@ -116,6 +117,13 @@ class UserController:
             req_body=json.dumps({'email': email, 'password': password}),
         )
 
+    def authorized(self):
+        self.get_data_user()
+        self.image_controller.get_image_list()
+
+        self.screen.parent.transition = NoTransition()
+        self.screen.parent.current = 'main_screen'
+
     def get_data_user(self):
 
         def callback(request, response):
@@ -128,7 +136,7 @@ class UserController:
             method='GET',
             on_success=callback,
             req_headers={'Content-type': 'application/json',
-                         'Authorization': f"Token {Cache.get('token', 'auth_token')}",
+                         'Authorization': f"Token {storage.get('auth_token').get('token')}",
                          },
         )
 

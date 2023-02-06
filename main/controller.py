@@ -1,19 +1,19 @@
-from kivy.cache import Cache
 from kivy.network.urlrequest import UrlRequest
 import json
 from .models import Image
 from .widget import MyImage
+from core.settings import storage
 
 
 class OpenAIController:
-    host_name = 'https://drf-artai.herokuapp.com/'
+    host_name = 'http://18.214.87.35:8000/'
     path_image_generation = host_name + 'openai/image_generation/'
     path_image_edit = host_name + 'openai/image_edit/'
     path_image_variation = host_name + 'openai/image_variation/'
     path_text_completion = host_name + 'openai/text_completion/'
 
     def image_generation(self, prompt, image_count, image_size, callback):
-        token = Cache.get('token', 'auth_token')
+        token = storage.get('auth_token').get('token')
         # token = '1be37f1ae2cbc7f90354ac42c8def1a29eaf21fb'
 
         UrlRequest(
@@ -28,7 +28,7 @@ class OpenAIController:
         )
 
     def image_edit(self, image, mask, prompt, image_count, image_size, callback):
-        token = Cache.get('token', 'auth_token')
+        token = storage.get('auth_token').get('token')
         #token = '1be37f1ae2cbc7f90354ac42c8def1a29eaf21fb'
 
         UrlRequest(
@@ -43,7 +43,7 @@ class OpenAIController:
         )
 
     def image_variation(self, image, image_count, image_size, callback):
-        token = Cache.get('token', 'auth_token')
+        token = storage.get('auth_token').get('token')
         #token = '1be37f1ae2cbc7f90354ac42c8def1a29eaf21fb'
 
         UrlRequest(
@@ -58,7 +58,7 @@ class OpenAIController:
         )
 
     def text_completion(self, prompt, callback):
-        token = Cache.get('token', 'auth_token')
+        token = storage.get('auth_token').get('token')
         #token = '1be37f1ae2cbc7f90354ac42c8def1a29eaf21fb'
 
         UrlRequest(
@@ -74,7 +74,7 @@ class OpenAIController:
 
 
 class ImageController:
-    host_name = 'https://drf-artai.herokuapp.com/'
+    host_name = 'http://18.214.87.35:8000/'
     path_image = host_name + 'image/'
     path_image_delete = path_image + 'delete/'
     object = Image
@@ -108,7 +108,7 @@ class ImageController:
             on_failure=callback_failure,
             req_headers={
                 'Content-type': 'application/json',
-                'Authorization': f"Token {Cache.get('token', 'auth_token')}",
+                'Authorization': f"Token {storage.get('auth_token').get('token')}",
             },
             req_body=json.dumps(data_image),
         )
@@ -138,7 +138,7 @@ class ImageController:
             on_success=callback,
             req_headers={
                 'Content-type': 'application/json',
-                'Authorization': f"Token {Cache.get('token', 'auth_token')}",
+                'Authorization': f"Token {storage.get('auth_token').get('token')}",
             },
         )
 
@@ -159,7 +159,7 @@ class ImageController:
             on_failure=callback_failure,
             req_headers={
                 'Content-type': 'application/json',
-                'Authorization': f"Token {Cache.get('token', 'auth_token')}",
+                'Authorization': f"Token {storage.get('auth_token').get('token')}",
             },
         )
 
@@ -183,7 +183,7 @@ class ImageController:
             on_failure=callback_failure,
             req_headers={
                 'Content-type': 'application/json',
-                'Authorization': f"Token {Cache.get('token', 'auth_token')}",
+                'Authorization': f"Token {storage.get('auth_token').get('token')}",
             },
             req_body=json.dumps(images_id),
         )

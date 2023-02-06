@@ -227,6 +227,7 @@ class VariableImageScreen(MDScreen):
         )
 
         self.ids.image_section.add_widget(image)
+        self.ids.variable_top_bar.right_action_items.append(["autorenew", lambda x: self.reload_image()])
 
         with Image.open(path) as img:
             new = img.resize(size=(256, 256))
@@ -239,6 +240,8 @@ class VariableImageScreen(MDScreen):
 
         self.image.truncate(0)
         self.ids.add_image_button.disabled = False
+
+        self.ids.variable_top_bar.right_action_items.remove(self.ids.variable_top_bar.right_action_items[-1])
 
     def generate(self):
 

@@ -1,3 +1,5 @@
+#:import ChatGptScreen main.screen
+
 <ChatGptScreen>
     name: 'chat_gpt_screen'
 
@@ -35,7 +37,7 @@
                     id: chat_gpt_box
                     orientation: 'vertical'
                     size_hint_y: None
-                    height: dp(self.minimum_height)
+                    height: self.minimum_height
                     spacing: dp(10)
                     padding: dp(10)
 
@@ -64,8 +66,6 @@
                     hint_text_color: 'white'
                     cursor_color: 'white'
                     cursor_width: dp(2)
-                    #focus: True
-                    #unfocus_on_touch: False
                     pos_hint: {'center_y': .5}
 
                 MDIconButton:
@@ -76,4 +76,3 @@
                     on_release:
                         root.send()
                         send_field.text = ''
-                        print(dp(10))

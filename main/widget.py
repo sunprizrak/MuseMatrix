@@ -18,9 +18,9 @@ class MyImage(AsyncImage):
         if self.disabled and self.collide_point(*touch.pos):
             with self.canvas:
                 Color(.5, .8, .2, 1)
-                setattr(self, 'rad', 16)
-                Ellipse(pos=(touch.x - self.rad/2, touch.y - self.rad/2), size=(self.rad, self.rad))
-                touch.ud['line'] = Line(points=(touch.x, touch.y), width=self.rad/2)
+                setattr(self, 'rad', 32)
+                Ellipse(pos=(touch.x - self.rad/2, touch.y - self.rad/2), size=(dp(self.rad), dp(self.rad)))
+                touch.ud['line'] = Line(points=(touch.x, touch.y), width=dp(self.rad/2))
             return True
         for child in self.children[:]:
             if child.dispatch('on_touch_down', touch):
