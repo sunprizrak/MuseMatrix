@@ -2,6 +2,7 @@
 
 <EditImageScreen>
     name: 'edit_image_screen'
+    md_bg_color: app.theme_cls.bg_light
 
     prompt: input_prompt.text
 
@@ -12,9 +13,8 @@
 
             MDTopAppBar:
                 id: edit_top_bar
-                specific_text_color: 'gray'
                 type_height: 'small'
-                md_bg_color: app.theme_cls.bg_dark
+                md_bg_color: root.md_bg_color
                 left_action_items: [['arrow-left', lambda x: app.back(screen='main_screen')]]
                 elevation: 0
 

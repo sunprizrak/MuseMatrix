@@ -4,6 +4,7 @@
 
 <StartScreen>
     name: 'start_screen'
+    md_bg_color: app.theme_cls.bg_light
 
     core: app
 
@@ -11,26 +12,30 @@
 
         MDTextButton:
             text: 'Sign in'
-            theme_text_color: 'Secondary'
-            font_size: dp(20)
-            pos_hint: {'x': .8, 'y': .94}
+            theme_text_color: 'Custom'
+            font_name: 'core/font/Barcelona-Graffiti-Bombing.otf'
+            text_color: "#5dff00"
+            font_size: sp(30)
+            pos_hint: {'x': .7, 'y': .9}
             on_release:
                 app.root.transition = MDSwapTransition()
                 app.root.current = 'login_screen'
 
         MDLabel:
             text: 'Art AI'
-            theme_text_color: 'Secondary'
-            font_size: dp(50)
+            font_name: 'core/font/Barcelona-Graffiti-Bombing.otf'
+            theme_text_color: 'Custom'
+            text_color: "#9b1fe8"
+            font_size: sp(100)
             halign: 'center'
 
-        MDFillRoundFlatButton:
+        MDTextButton:
             id: b_registration
             text: 'Sign up'
-            theme_text_color: 'Secondary'
-            #md_bg_color: 0, 1, 0, 1
-            text_color: 0, 0, 0, 0
-            font_size: dp(20)
+            font_name: 'core/font/Barcelona-Graffiti-Bombing.otf'
+            theme_text_color: 'Custom'
+            text_color: "#2525db"
+            font_size: sp(50)
             pos_hint: {'center_x': .5, 'y': .1}
             on_release:
                 app.root.transition = MDSlideTransition()

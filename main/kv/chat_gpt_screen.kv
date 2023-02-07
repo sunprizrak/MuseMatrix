@@ -2,6 +2,7 @@
 
 <ChatGptScreen>
     name: 'chat_gpt_screen'
+    md_bg_color: app.theme_cls.bg_light
 
     core: app
     prompt: send_field.text
@@ -13,9 +14,8 @@
 
             MDTopAppBar:
                 id: chat_gpt_top_bar
-                specific_text_color: 'gray'
                 type_height: 'small'
-                md_bg_color: app.theme_cls.bg_dark
+                md_bg_color: root.md_bg_color
                 left_action_items: [['arrow-left', lambda x: app.back(screen='main_screen')]]
                 elevation: 0
 
@@ -45,13 +45,7 @@
                 orientation: 'horizontal'
                 adaptive_height: True
                 padding: dp(10), 0, 0, 0
-
-                canvas:
-                    Color:
-                        rgba: .3, .3, .9, 1
-                    Rectangle:
-                        size: self.size
-                        pos: self.pos
+                md_bg_color: root.md_bg_color
 
                 TextInput:
                     id: send_field

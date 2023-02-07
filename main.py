@@ -25,7 +25,6 @@ class ArtAIApp(MDApp):
 
     def __init__(self, **kwargs):
         super(ArtAIApp, self).__init__(**kwargs)
-        self.theme_cls.material_style = 'M3'
         self.dialog = None
         self.manager_open = False
         self.file_manager = MDFileManager(
@@ -44,6 +43,8 @@ class ArtAIApp(MDApp):
     def build(self):
         if platform == 'linux':
             Window.size = (360, 600)
+
+        self.theme_cls.theme_style = "Dark"
 
         Window.softinput_mode = 'pan'
 

@@ -3,6 +3,7 @@
 
 <MainScreen>
     name: 'main_screen'
+    md_bg_color: app.theme_cls.bg_light
 
     MDRelativeLayout:
         orientation: 'vertical'
@@ -10,11 +11,10 @@
         MDTopAppBar:
             id: main_top_bar
             pos_hint: {'top': 1}
-            specific_text_color: 'gray'
             type_height: 'small'
-            md_bg_color: app.theme_cls.bg_dark
+            md_bg_color: root.md_bg_color
             left_action_items: [["menu", lambda x: nav_drawer.set_state("open")]]
-            elevation: 3
+            elevation: 0
 
         MDCircularLayout:
             size_hint_y: None
@@ -27,10 +27,7 @@
             MDFloatingActionButton:
                 icon: 'image'
                 theme_icon_color: "Custom"
-                size_hint: None, None
-                size: "50dp", "50dp"
-                md_bg_color: "#e9dff7"
-                text_color: "#211c29"
+                md_bg_color: "#9b1fe8"
                 on_release:
                     app.root.transition = MDSwapTransition()
                     app.root.current = 'create_image_screen'
@@ -38,10 +35,7 @@
             MDFloatingActionButton:
                 icon: 'image-edit'
                 theme_icon_color: "Custom"
-                size_hint: None, None
-                size: "50dp", "50dp"
-                md_bg_color: "#e9dff7"
-                text_color: "#211c29"
+                md_bg_color: "#9b1fe8"
                 on_release:
                     app.root.transition = MDSwapTransition()
                     app.root.current = 'edit_image_screen'
@@ -49,10 +43,7 @@
             MDFloatingActionButton:
                 icon: 'chat'
                 theme_icon_color: "Custom"
-                size_hint: None, None
-                size: "50dp", "50dp"
-                md_bg_color: "#e9dff7"
-                text_color: "#211c29"
+                md_bg_color: "#9b1fe8"
                 on_release:
                     app.root.transition = MDSwapTransition()
                     app.root.current = 'chat_gpt_screen'
@@ -60,10 +51,7 @@
             MDFloatingActionButton:
                 icon: 'image-sync'
                 theme_icon_color: "Custom"
-                size_hint: None, None
-                size: "50dp", "50dp"
-                md_bg_color: "#e9dff7"
-                text_color: "#211c29"
+                md_bg_color: "#9b1fe8"
                 on_release:
                     app.root.transition = MDSwapTransition()
                     app.root.current = 'variable_image_screen'
