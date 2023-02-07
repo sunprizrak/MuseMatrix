@@ -25,11 +25,4 @@ class RegistrateScreen(MDScreen):
         self.user_controller.registrate(email=email, password=password, re_password=re_password)
 
 
-class ProfileScreen(MDScreen):
-    core = ObjectProperty()
-
-    def __init__(self, **kwargs):
-        super(ProfileScreen, self).__init__(**kwargs)
-        self.user_controller = UserController(screen=self)
-
 

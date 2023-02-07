@@ -4,3 +4,7 @@ from kivymd.uix.screen import MDScreen
 
 class StartScreen(MDScreen):
     core = ObjectProperty()
+
+
+class SettingsScreen(MDScreen):
+    pass

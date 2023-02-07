@@ -8,71 +8,65 @@
         orientation: 'vertical'
 
         MDTopAppBar:
+            id: main_top_bar
             pos_hint: {'top': 1}
             specific_text_color: 'gray'
             type_height: 'small'
             md_bg_color: app.theme_cls.bg_dark
             left_action_items: [["menu", lambda x: nav_drawer.set_state("open")]]
-            elevation: 0
+            elevation: 3
 
-        MDBoxLayout:
-            orientation: 'vertical'
-            spacing: dp(8)
-            padding: dp(8)
-            adaptive_size: True
-            pos_hint: {'center_x': .5, 'center_y': .5}
+        MDCircularLayout:
+            size_hint_y: None
+            height: root.height - main_top_bar.height
+            row_spacing: min(self.size) * 0.1
+            start_from: 90
+            degree_spacing: 90
+            circular_padding: dp(100)
 
-
-            MDFillRoundFlatIconButton:
+            MDFloatingActionButton:
                 icon: 'image'
-                text: 'create image'
-                font_size: sp(15)
-                font_style: 'Button'
-                theme_icon_color: 'Custom'
-                md_bg_color: '#c462e5'
-                icon_color: 'white'
+                theme_icon_color: "Custom"
+                size_hint: None, None
+                size: "50dp", "50dp"
+                md_bg_color: "#e9dff7"
+                text_color: "#211c29"
                 on_release:
                     app.root.transition = MDSwapTransition()
                     app.root.current = 'create_image_screen'
 
-
-            MDFillRoundFlatIconButton:
+            MDFloatingActionButton:
                 icon: 'image-edit'
-                text: 'edit image'
-                font_style: 'Button'
-                font_size: sp(15)
-                theme_icon_color: 'Custom'
-                md_bg_color: '#c462e5'
-                icon_color: 'white'
+                theme_icon_color: "Custom"
+                size_hint: None, None
+                size: "50dp", "50dp"
+                md_bg_color: "#e9dff7"
+                text_color: "#211c29"
                 on_release:
                     app.root.transition = MDSwapTransition()
                     app.root.current = 'edit_image_screen'
 
-
-            MDFillRoundFlatIconButton:
-                icon: 'image-sync'
-                text: 'variable image'
-                font_style: 'Button'
-                font_size: sp(15)
-                theme_icon_color: 'Custom'
-                md_bg_color: '#c462e5'
-                icon_color: 'white'
-                on_release:
-                    app.root.transition = MDSwapTransition()
-                    app.root.current = 'variable_image_screen'
-
-
-            MDFillRoundFlatIconButton:
+            MDFloatingActionButton:
                 icon: 'chat'
-                text: 'chat'
-                font_style: 'Button'
-                font_size: sp(15)
-                theme_icon_color: 'Custom'
-                md_bg_color: '#c462e5'
-                icon_color: 'white'
+                theme_icon_color: "Custom"
+                size_hint: None, None
+                size: "50dp", "50dp"
+                md_bg_color: "#e9dff7"
+                text_color: "#211c29"
                 on_release:
                     app.root.transition = MDSwapTransition()
                     app.root.current = 'chat_gpt_screen'
+
+            MDFloatingActionButton:
+                icon: 'image-sync'
+                theme_icon_color: "Custom"
+                size_hint: None, None
+                size: "50dp", "50dp"
+                md_bg_color: "#e9dff7"
+                text_color: "#211c29"
+                on_release:
+                    app.root.transition = MDSwapTransition()
+                    app.root.current = 'variable_image_screen'
 
     MDNavigationLayout:
 
@@ -86,7 +80,7 @@
                     id: nav_drawer_header
                     title: "Text"
                     title_font_size: '17sp'
-                    text: "User text"
+                    text: "5 токенов"
                     source: "path"
                     spacing: dp(15)
                     padding: dp(10), 0, 0, dp(10)
@@ -94,10 +88,11 @@
                 MDNavigationDrawerDivider:
 
                 MDNavigationDrawerItem:
-                    icon: "account"
-                    text: "profile"
+                    icon: "cog"
+                    text: "settings"
                     on_release:
-                        print('profile')
+                        app.root.transition = MDSwapTransition()
+                        app.root.current = 'settings_screen'
 
                 MDNavigationDrawerDivider:
 

@@ -1,7 +1,7 @@
 #:include core/kv/start_screen.kv
+#:include core/kv/settings_screen.kv
 #:include users/kv/login_screen.kv
 #:include users/kv/registrate_screen.kv
-#:include users/kv/profile_screen.kv
 #:include main/kv/main_screen.kv
 #:include main/kv/open_image_screen.kv
 #:include main/kv/create_image_screen.kv
@@ -24,9 +24,6 @@ SM:
     LoginScreen:
         id: login_screen
 
-    ProfileScreen:
-        id: profile_screen
-
     MainScreen:
         id: main_screen
 
@@ -41,6 +38,9 @@ SM:
 
     ChatGptScreen:
         id: chat_gpt_screen
+
+    SettingsScreen:
+        id: settings_screen
 
     CollectionScreen:
         id: collection_screen
