@@ -47,6 +47,7 @@ class ArtAIApp(MDApp):
         self.theme_cls.theme_style = "Dark"
 
         Window.softinput_mode = 'pan'
+        Window.bind(on_keyboard=self.key_input)
 
         kv_file = Builder.load_file('./core/kv/layout.kv')
         return kv_file
@@ -119,9 +120,33 @@ class ArtAIApp(MDApp):
         self.dialog.dismiss()
 
     def back(self, screen):
+        if screen == 'start_screen':
+            for scr in self.root.screens:
+                if scr.name == self.root.current:
+                    for field_name in scr.ids.keys():
+                        if 'field' in field_name:
+                            scr.ids[field_name].text = ''
+
         self.root.transition = MDSlideTransition()
         self.root.transition.direction = 'right'
         self.root.current = screen
+
+    def key_input(self, window, key, scancode, codepoint, modifier):
+        if key == 27:
+            if self.root.current not in ('start_screen', 'main_screen'):
+                if self.root.current in ('reg_screen', 'login_screen'):
+                    self.back(screen='start_screen')
+                elif self.root.current == 'open_img_screen':
+                    for scr in self.root.screens:
+                        if scr.name == self.root.current:
+                            scr.back(screen=scr.ids.full_image.back_screen)
+                else:
+                    self.back(screen='main_screen')
+                return True
+            else:
+                return False
+        else:
+            return False
 
 
 if __name__ == '__main__':

@@ -1,5 +1,6 @@
 #:import LoginScreen users.screen
 #:import MDSlideTransition kivymd.uix.transition.transition.MDSlideTransition
+#:import platform kivy.utils
 
 <LoginScreen>
     name: 'login_screen'
@@ -16,8 +17,6 @@
             pos_hint: {'y': .93}
             on_release:
                 app.back(screen='start_screen')
-                email_field.text = ''
-                password_field.text = ''
 
         MDLabel:
             text: 'Login'
@@ -27,7 +26,6 @@
             font_size: sp(50)
             halign: 'center'
             pos_hint: {'center_y': .8}
-
 
         MDBoxLayout:
             orientation: 'vertical'
@@ -70,6 +68,7 @@
                     icon_left: 'key-variant'
                     password: True
                     helper_text_mode: 'on_error'
+                    unfocus_on_touch: False if platform == 'android' else True
 
                 MDIconButton:
                     icon: "eye-off"
@@ -81,19 +80,19 @@
                         self.icon = "eye" if self.icon == "eye-off" else "eye-off"
                         password_field.password = False if password_field.password is True else True
 
-            MDRaisedButton:
-                text: 'Login'
-                font_name: 'core/font/Barcelona-Graffiti-Bombing.otf'
-                font_size: sp(30)
-                md_bg_color: 'green'
-                pos_hint: {'center_x': .5}
-                on_release:
-                    root.login(email_field.text, password_field.text)
+        MDRaisedButton:
+            text: 'Login'
+            font_name: 'core/font/Barcelona-Graffiti-Bombing.otf'
+            font_size: sp(30)
+            md_bg_color: 'green'
+            pos_hint: {'center_x': .5, 'center_y': .3}
+            on_release:
+                root.login(email_field.text, password_field.text)
 
         MDBoxLayout:
             orientation: 'vertical'
             spacing: dp(20)
-            pos_hint: {'center_x': .5, 'center_y': .15}
+            pos_hint: {'center_x': .5, 'center_y': .1}
             adaptive_height: True
 
             MDRoundFlatIconButton:

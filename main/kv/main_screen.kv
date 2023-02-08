@@ -7,12 +7,13 @@
 
     MDRelativeLayout:
         orientation: 'vertical'
+        md_bg_color: root.md_bg_color if nav_drawer.state == 'close' else app.theme_cls.bg_dark
 
         MDTopAppBar:
             id: main_top_bar
             pos_hint: {'top': 1}
             type_height: 'small'
-            md_bg_color: root.md_bg_color
+            md_bg_color: self.parent.md_bg_color
             left_action_items: [["menu", lambda x: nav_drawer.set_state("open")]]
             elevation: 0
 
@@ -68,7 +69,7 @@
                     id: nav_drawer_header
                     title: "Text"
                     title_font_size: '17sp'
-                    text: "5 токенов"
+                    text: "5 tokens"
                     source: "path"
                     spacing: dp(15)
                     padding: dp(10), 0, 0, dp(10)
@@ -78,6 +79,9 @@
                 MDNavigationDrawerItem:
                     icon: "cog"
                     text: "settings"
+                    theme_text_color: 'Custom'
+                    text_color: 'white'
+                    selected_color: "white"
                     on_release:
                         app.root.transition = MDSwapTransition()
                         app.root.current = 'settings_screen'
@@ -88,6 +92,9 @@
                     id: collection
                     icon: 'image-multiple'
                     text: 'MyCollection'
+                    theme_text_color: 'Custom'
+                    text_color: 'white'
+                    selected_color: "white"
                     on_release:
                         screen = app.root.current
                         app.root.ids.collection_screen.ids.selection_list.back_item = ['arrow-left', lambda x: app.back(screen=screen)]
