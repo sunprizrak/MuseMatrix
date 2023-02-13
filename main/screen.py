@@ -13,7 +13,10 @@ from .controller import OpenAIController
 from main.controller import ImageController
 import io
 import base64
+import uuid
+from os.path import join, exists
 from PIL import Image
+from kivy.utils import platform
 
 
 class MainScreen(MDScreen):
@@ -430,7 +433,16 @@ class OpenImageScreen(MDScreen):
         def save_image():
             image = CoreImage(img.texture)
 
-            if img.back_screen == 'create_image_screen':
+            if platform == 'android':
+                private_path = join(self.core.ss.get_cache_dir(), f'{str(uuid.uuid4())}.png')
+                print(img.source)
+
+                image.save(private_path)
+
+                if exists(private_path):
+                    self.core.ss.copy_to_shared(private_path)
+
+            if img.back_screen in ('create_image_screen', 'edit_image_screen', 'variable_image_screen'):
                 data = io.BytesIO()
                 image.save(data, fmt='png')
                 png_bytes = data.read()
@@ -443,8 +455,6 @@ class OpenImageScreen(MDScreen):
                 }
 
                 self.image_controller.save_image(data_image=data_image)
-
-            #image.save(f"./gallery/{''.join(['' + str(random.randint(0, 9)) for x in range(9)])}.png")
 
             self.core.dialog.dismiss()
 

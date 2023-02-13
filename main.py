@@ -10,15 +10,14 @@ from kivy.utils import platform
 from kivy.clock import mainthread
 from kivy.logger import Logger
 import os
+from shutil import rmtree
 from core.settings import storage
 from users.controller import UserController
 
 if platform == 'android':
-    from android import mActivity, autoclass, api_version
+    from android import api_version
     from android.permissions import request_permissions, check_permission, Permission
     from androidstorage4kivy import SharedStorage, Chooser
-
-    Environment = autoclass('android.os.Environment')
 
 
 class ArtAIApp(MDApp):
@@ -34,6 +33,7 @@ class ArtAIApp(MDApp):
         )
 
         if platform == 'android':
+            self.ss = SharedStorage()
             self.chooser = Chooser(self.chooser_callback)
             if api_version > 29:
                 self.permissions = [Permission.READ_EXTERNAL_STORAGE]
@@ -43,6 +43,14 @@ class ArtAIApp(MDApp):
     def build(self):
         if platform == 'linux':
             Window.size = (360, 600)
+        elif platform == 'android':
+            if not self.check_android_permissions():
+                self.req_android_permissions()
+
+            cache = self.ss.get_cache_dir()
+
+            if cache and os.path.exists(cache):
+                rmtree(cache)
 
         self.theme_cls.theme_style = "Dark"
 
@@ -60,11 +68,19 @@ class ArtAIApp(MDApp):
             user_controller = UserController(screen=self.root.children[0])
             user_controller.authorized()
 
+    def check_android_permissions(self):
+        if all(list(map(check_permission, self.permissions))):
+            return True
+        else:
+            return False
+
+    def req_android_permissions(self):
+        request_permissions(self.permissions)
+
     def chooser_callback(self, shared_file_list):
         try:
-            ss = SharedStorage()
             for shared_file in shared_file_list:
-                private_file = ss.copy_from_shared(shared_file)
+                private_file = self.ss.copy_from_shared(shared_file)
                 self.select_path(path=private_file)
         except Exception as e:
             Logger.warning('SharedStorageExample.chooser_callback():')
@@ -75,13 +91,10 @@ class ArtAIApp(MDApp):
             self.file_manager.show(os.path.expanduser('~'))
             self.manager_open = True
         elif platform == 'android':
-            if all(list(map(check_permission, self.permissions))):
+            if self.check_android_permissions():
                 self.chooser.choose_content('image/*')
             else:
-                if api_version > 29:
-                    request_permissions(self.permissions)
-                else:
-                    request_permissions(self.permissions)
+                self.req_android_permissions()
 
     @mainthread
     def select_path(self, path: str):
