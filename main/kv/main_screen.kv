@@ -5,6 +5,8 @@
     name: 'main_screen'
     md_bg_color: app.theme_cls.bg_light
 
+    core: app
+
     MDRelativeLayout:
         orientation: 'vertical'
         md_bg_color: root.md_bg_color if nav_drawer.state == 'close' else app.theme_cls.bg_dark
@@ -79,13 +81,12 @@
 
                 MDNavigationDrawerItem:
                     icon: "cog"
-                    text: "settings"
+                    text: "Settings"
                     theme_text_color: 'Custom'
                     text_color: 'white'
                     selected_color: "white"
                     on_release:
-                        app.root.transition = MDSwapTransition()
-                        app.root.current = 'settings_screen'
+                        root.open_settings()
 
                 MDNavigationDrawerDivider:
 
@@ -97,11 +98,19 @@
                     text_color: 'white'
                     selected_color: "white"
                     on_release:
-                        screen = app.root.current
-                        app.root.ids.collection_screen.ids.selection_list.back_item = ['arrow-left', lambda x: app.back(screen=screen)]
-                        nav_drawer.set_state("close")
-                        app.root.transition = MDSwapTransition()
-                        app.root.current = 'collection_screen'
+                        root.open_collection()
+
+                MDNavigationDrawerDivider:
+
+                MDNavigationDrawerItem:
+                    icon: 'location-exit'
+                    text: 'Exit'
+                    theme_text_color: 'Custom'
+                    text_color: 'white'
+                    selected_color: 'white'
+                    on_release:
+                        root.exit()
+
 
 
 

@@ -1,5 +1,5 @@
 from kivy.network.urlrequest import UrlRequest
-from kivy.uix.screenmanager import NoTransition
+from kivy.uix.screenmanager import NoTransition, FallOutTransition
 from kivymd.uix.transition.transition import MDSwapTransition
 from .models import User
 from main.controller import ImageController
@@ -123,6 +123,15 @@ class UserController:
 
         self.screen.parent.transition = NoTransition()
         self.screen.parent.current = 'main_screen'
+
+    def un_login(self):
+        if storage.exists('auth_token'):
+            storage.delete('auth_token')
+
+            self.image_controller.clear_image_list(self.screen.core.root.ids.collection_screen.ids.selection_list.children)
+
+            self.screen.core.root.transition = FallOutTransition()
+            self.screen.core.root.current = 'start_screen'
 
     def get_data_user(self):
 

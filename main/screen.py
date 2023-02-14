@@ -7,7 +7,7 @@ from kivymd.uix.menu import MDDropdownMenu
 from kivymd.uix.screen import MDScreen
 from kivymd.uix.swiper import MDSwiperItem, MDSwiper
 from kivy.core.image import Image as CoreImage
-from users.controller import UserController
+from kivymd.uix.transition import MDSwapTransition
 from .widget import MyImage
 from .controller import OpenAIController
 from main.controller import ImageController
@@ -17,10 +17,29 @@ import uuid
 from os.path import join, exists
 from PIL import Image
 from kivy.utils import platform
+from users.controller import UserController
 
 
 class MainScreen(MDScreen):
-    pass
+    core = ObjectProperty()
+
+    def __init__(self, **kwargs):
+        super(MainScreen, self).__init__(**kwargs)
+        self.user_controller = UserController(screen=self)
+
+    def open_settings(self):
+        self.core.root.transition = MDSwapTransition()
+        self.core.root.current = 'settings_screen'
+
+    def open_collection(self):
+        screen = self.core.root.current
+        self.core.root.ids.collection_screen.ids.selection_list.back_item = ['arrow-left', lambda x: self.core.back(screen=screen)]
+        self.ids.nav_drawer.set_state("close")
+        self.core.root.transition = MDSwapTransition()
+        self.core.root.current = 'collection_screen'
+
+    def exit(self):
+        self.user_controller.un_login()
 
 
 class CreateImageScreen(MDScreen):

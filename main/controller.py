@@ -188,6 +188,11 @@ class ImageController:
             req_body=json.dumps(images_id),
         )
 
+    def clear_image_list(self, widget_list):
+        self.object.images.clear()
+        widget_list.clear()
+
+
 
 
 
