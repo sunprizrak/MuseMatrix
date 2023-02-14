@@ -3,7 +3,6 @@
 #:import platform kivy.utils
 <RegistrateScreen@MDScreen>
     name: 'reg_screen'
-    md_bg_color: app.theme_cls.bg_light
 
     core: app
 
@@ -11,8 +10,8 @@
 
         MDIconButton:
             icon: 'arrow-left-bold'
-            theme_text_color: 'Custom'
-            text_color: 'white'
+            #theme_text_color: 'Custom'
+            #text_color: 'white'
             pos_hint: {'y': .93}
             on_release:
                 app.back(screen='start_screen')
@@ -35,9 +34,9 @@
             MDTextField:
                 id: email_field
                 theme_text_color: 'Custom'
-                text_color_normal: 'white'
-                hint_text_color_normal: 'white'
-                icon_left_color_normal: 'white'
+                #text_color_normal: 'white'
+                #hint_text_color_normal: 'white'
+                #icon_left_color_normal: 'white'
                 hint_text: 'email'
                 icon_left: 'email'
                 pos_hint: {'center_x': .5}
@@ -51,9 +50,9 @@
                 MDTextField:
                     id: password_field
                     theme_text_color: 'Custom'
-                    text_color_normal: 'white'
-                    hint_text_color_normal: 'white'
-                    icon_left_color_normal: 'white'
+                    #text_color_normal: 'white'
+                    #hint_text_color_normal: 'white'
+                    #icon_left_color_normal: 'white'
                     hint_text: 'Password'
                     icon_left: 'key-variant'
                     password: True
@@ -64,8 +63,8 @@
                     icon: "eye-off"
                     pos_hint: {"center_y": .5}
                     pos: password_field.width - self.width, 0
-                    theme_text_color: "Custom"
-                    text_color: 'white'
+                    #theme_text_color: "Custom"
+                    #text_color: 'white'
                     on_release:
                         self.icon = "eye" if self.icon == "eye-off" else "eye-off"
                         password_field.password = False if password_field.password is True else True
@@ -78,9 +77,9 @@
                 MDTextField:
                     id: re_password_field
                     theme_text_color: 'Custom'
-                    text_color_normal: 'white'
-                    hint_text_color_normal: 'white'
-                    icon_left_color_normal: 'white'
+                    #text_color_normal: 'white'
+                    #hint_text_color_normal: 'white'
+                    #icon_left_color_normal: 'white'
                     hint_text: 'Password repeat'
                     icon_left: 'key-variant'
                     password: True
@@ -91,8 +90,8 @@
                     icon: "eye-off"
                     pos_hint: {"center_y": .5}
                     pos: re_password_field.width - self.width, 0
-                    theme_text_color: "Custom"
-                    text_color: 'white'
+                    #theme_text_color: "Custom"
+                    #text_color: 'white'
                     on_release:
                         self.icon = "eye" if self.icon == "eye-off" else "eye-off"
                         re_password_field.password = False if re_password_field.password is True else True

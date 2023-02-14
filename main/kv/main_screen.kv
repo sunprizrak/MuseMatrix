@@ -3,7 +3,6 @@
 
 <MainScreen>
     name: 'main_screen'
-    md_bg_color: app.theme_cls.bg_light
 
     core: app
 
@@ -15,7 +14,8 @@
             id: main_top_bar
             pos_hint: {'top': 1}
             type_height: 'small'
-            md_bg_color: self.parent.md_bg_color
+            #specific_text_color: 'gray'
+            #md_bg_color: self.parent.md_bg_color
             left_action_items: [["menu", lambda x: nav_drawer.set_state("open")]]
             elevation: 0
 
@@ -82,9 +82,9 @@
                 MDNavigationDrawerItem:
                     icon: "cog"
                     text: "Settings"
-                    theme_text_color: 'Custom'
-                    text_color: 'white'
-                    selected_color: "white"
+                    #theme_text_color: 'Custom'
+                    #text_color: 'white'
+                    #selected_color: "white"
                     on_release:
                         root.open_settings()
 
@@ -94,9 +94,9 @@
                     id: collection
                     icon: 'image-multiple'
                     text: 'MyCollection'
-                    theme_text_color: 'Custom'
-                    text_color: 'white'
-                    selected_color: "white"
+                    #theme_text_color: 'Custom'
+                    #text_color: 'white'
+                    #selected_color: "white"
                     on_release:
                         root.open_collection()
 
@@ -105,9 +105,9 @@
                 MDNavigationDrawerItem:
                     icon: 'location-exit'
                     text: 'Exit'
-                    theme_text_color: 'Custom'
-                    text_color: 'white'
-                    selected_color: 'white'
+                    #theme_text_color: 'Custom'
+                    #text_color: 'white'
+                    #selected_color: 'white'
                     on_release:
                         root.exit()
 

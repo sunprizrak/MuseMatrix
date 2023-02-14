@@ -2,7 +2,6 @@
 
 <ChatGptScreen>
     name: 'chat_gpt_screen'
-    md_bg_color: app.theme_cls.bg_light
 
     core: app
     prompt: send_field.text
@@ -54,11 +53,11 @@
                     size_hint_y: None
                     height: self.minimum_height if self.minimum_height <= dp(100) else dp(100)
                     background_color: 1, 1, 1, 0
-                    foreground_color: 'white'
-                    disabled_foreground_color: 'white'
+                    foreground_color: 'blue'
+                    disabled_foreground_color: 'blue'
                     hint_text: 'message'
-                    hint_text_color: 'white'
-                    cursor_color: 'white'
+                    hint_text_color: 'blue'
+                    cursor_color: 'blue'
                     cursor_width: dp(2)
                     pos_hint: {'center_y': .5}
 

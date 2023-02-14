@@ -14,6 +14,7 @@ class UserController:
     path_login = host_name + 'auth/token/login/'
     path_logout = host_name + 'auth/token/logout/'
     path_data_user = host_name + 'auth/users/me/'
+    path_set_password = host_name + 'auth/users/set_password/'
 
     def __init__(self, screen):
         self.screen = screen
@@ -147,6 +148,28 @@ class UserController:
             req_headers={'Content-type': 'application/json',
                          'Authorization': f"Token {storage.get('auth_token').get('token')}",
                          },
+        )
+
+    def set_password(self, current_password, new_password, re_new_password):
+
+        def callback(request, response):
+            print(response)
+
+        def callback_failure(request, response):
+            print(response)
+
+        UrlRequest(
+            url=self.path_set_password,
+            method='POST',
+            on_success=callback,
+            on_failure=callback_failure,
+            req_headers={'Content-type': 'application/json',
+                         'Authorization': f'Token {"token"}',
+                         },
+            req_body=json.dumps({'new_password': new_password,
+                                 're_new_password': re_new_password,
+                                 'current_password': current_password,
+                                 }),
         )
 
     def del_token(self):

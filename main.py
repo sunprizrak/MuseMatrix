@@ -52,8 +52,6 @@ class ArtAIApp(MDApp):
             if cache and os.path.exists(cache):
                 rmtree(cache)
 
-        self.theme_cls.theme_style = "Dark"
-
         Window.softinput_mode = 'pan'
         Window.bind(on_keyboard=self.key_input)
 

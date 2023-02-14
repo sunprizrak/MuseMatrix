@@ -2,7 +2,6 @@
 
 <CreateImageScreen>
     name: 'create_image_screen'
-    md_bg_color: app.theme_cls.bg_light
 
     default_img: default_img
     prompt: input_prompt.text
@@ -15,6 +14,7 @@
             MDTopAppBar:
                 id: create_top_bar
                 type_height: 'small'
+                #specific_text_color: 'gray'
                 md_bg_color: root.md_bg_color
                 left_action_items: [['arrow-left', lambda x: app.back(screen='main_screen')]]
                 elevation: 0

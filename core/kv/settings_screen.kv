@@ -2,3 +2,48 @@
 
 <SettingsScreen>
     name: 'settings_screen'
+
+    MDBoxLayout:
+        orientation: 'vertical'
+
+        MDTopAppBar:
+            id: settings_top_bar
+            title: 'Settings'
+            left_action_items: [['arrow-left', lambda x: app.back(screen='main_screen')]]
+            elevation: 0
+
+        MDBoxLayout:
+            orientation: 'vertical'
+            adaptive_height: True
+            padding: dp(24)
+
+            MDLabel:
+                text: 'Account'
+                color: 'green'
+                bold: True
+                adaptive_height: True
+                padding_x: dp(16)
+
+            OneLineRightIconListItem:
+                text: 'Change password'
+                on_release:
+                    app.root.transition = MDSlideTransition()
+                    app.root.transition.direction = 'left'
+                    app.root.current = 'change_password_screen'
+
+                IconRightWidget:
+                    icon: 'chevron-right'
+
+            MDSeparator:
+
+
+        MDWidget:
+
+
+    MDIcon:
+        icon: 'cog'
+        font_size: sp(200)
+        theme_text_color: 'Custom'
+        text_color: '#60675B'
+        pos_hint: {'center_x': .5, 'center_y': .5}
+        opacity: .4

@@ -28,6 +28,7 @@ class MainScreen(MDScreen):
         self.user_controller = UserController(screen=self)
 
     def open_settings(self):
+        self.ids.nav_drawer.set_state("close")
         self.core.root.transition = MDSwapTransition()
         self.core.root.current = 'settings_screen'
 
