@@ -131,7 +131,7 @@ class ArtAIApp(MDApp):
         self.dialog.dismiss()
 
     def back(self, screen):
-        if screen == 'start_screen':
+        if self.root.current in ('login_screen', 'reg_screen', 'change_password_screen'):
             for scr in self.root.screens:
                 if scr.name == self.root.current:
                     for field_name in scr.ids.keys():

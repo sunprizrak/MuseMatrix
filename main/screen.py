@@ -40,6 +40,7 @@ class MainScreen(MDScreen):
         self.core.root.current = 'collection_screen'
 
     def exit(self):
+        self.ids.nav_drawer.set_state("close")
         self.user_controller.un_login()
 
 

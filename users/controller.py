@@ -152,19 +152,52 @@ class UserController:
 
     def set_password(self, current_password, new_password, re_new_password):
 
+        def output_error(error):
+            if type(error) is str:
+                self.screen.core.show_dialog()
+                self.screen.core.dialog.text = error
+            elif type(error) is dict:
+                if {'current_password', 'new_password', 're_new_password'} & set(error):
+                    for el in {'current_password', 'new_password', 're_new_password'} & set(error):
+                        error_text = error.get(el)[0]
+                        field = self.screen.ids.get(f'{el}_field')
+                        field.error = True
+                        field.helper_text = error_text
+                elif {'non_field_errors'} & set(error):
+                    error_text = error.get('non_field_errors')[0]
+                    for el in self.screen.ids:
+                        if 'new_password' in el:
+                            field = self.screen.ids.get(f'{el}')
+                            field.error = True
+                            field.helper_text = error_text
+                else:
+                    error_text = ''
+                    for value in error.values():
+                        error_text += f'{value[0]}\n'
+                    self.screen.core.show_dialog()
+                    self.screen.core.dialog.text = error_text
+
         def callback(request, response):
-            print(response)
+            self.screen.core.show_dialog()
+            self.screen.core.dialog.title = 'success!'
+            self.screen.core.dialog.text = 'Password has been successfully changed!'
 
         def callback_failure(request, response):
+            output_error(error=response)
             print(response)
+
+        def callback_error(request, error):
+            output_error(error=error)
+            print(error)
 
         UrlRequest(
             url=self.path_set_password,
             method='POST',
             on_success=callback,
+            on_error=callback_error,
             on_failure=callback_failure,
             req_headers={'Content-type': 'application/json',
-                         'Authorization': f'Token {"token"}',
+                         'Authorization': f"Token {storage.get('auth_token').get('token')}",
                          },
             req_body=json.dumps({'new_password': new_password,
                                  're_new_password': re_new_password,
