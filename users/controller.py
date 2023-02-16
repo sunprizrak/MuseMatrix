@@ -4,7 +4,7 @@ from kivymd.uix.transition.transition import MDSwapTransition
 from .models import User
 from main.controller import ImageController
 import json
-from core.settings import storage
+from main.settings import storage
 
 
 class UserController:

@@ -11,7 +11,7 @@ from kivy.clock import mainthread
 from kivy.logger import Logger
 import os
 from shutil import rmtree
-from core.settings import storage
+from main.settings import storage
 from users.controller import UserController
 
 if platform == 'android':
@@ -52,10 +52,13 @@ class ArtAIApp(MDApp):
             if cache and os.path.exists(cache):
                 rmtree(cache)
 
+        self.theme_cls.theme_style = 'Dark'
+        self.theme_cls.primary_palette = 'Red'
+
         Window.softinput_mode = 'pan'
         Window.bind(on_keyboard=self.key_input)
 
-        kv_file = Builder.load_file('./core/kv/layout.kv')
+        kv_file = Builder.load_file('main/kv/layout.kv')
         return kv_file
 
     def on_start(self):

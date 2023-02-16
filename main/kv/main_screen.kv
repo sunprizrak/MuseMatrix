@@ -1,8 +1,9 @@
-#:import MainScreen main.screen
+#:import MainScreen main.screens
 #:import ScrollEffect kivy.effects.scroll.ScrollEffect
 
 <MainScreen>
     name: 'main_screen'
+    md_bg_color: app.theme_cls.bg_light
 
     core: app
 
@@ -14,8 +15,7 @@
             id: main_top_bar
             pos_hint: {'top': 1}
             type_height: 'small'
-            #specific_text_color: 'gray'
-            #md_bg_color: self.parent.md_bg_color
+            md_bg_color: self.parent.md_bg_color
             left_action_items: [["menu", lambda x: nav_drawer.set_state("open")]]
             elevation: 0
 

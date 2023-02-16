@@ -8,7 +8,7 @@ from kivymd.uix.screen import MDScreen
 from kivymd.uix.swiper import MDSwiperItem, MDSwiper
 from kivy.core.image import Image as CoreImage
 from kivymd.uix.transition import MDSwapTransition
-from .widget import MyImage
+from .widgets import MyImage
 from .controller import OpenAIController
 from main.controller import ImageController
 import io
@@ -18,6 +18,14 @@ from os.path import join, exists
 from PIL import Image
 from kivy.utils import platform
 from users.controller import UserController
+
+
+class StartScreen(MDScreen):
+    core = ObjectProperty()
+
+
+class SettingsScreen(MDScreen):
+    pass
 
 
 class MainScreen(MDScreen):

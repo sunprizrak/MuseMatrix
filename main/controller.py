@@ -1,8 +1,8 @@
 from kivy.network.urlrequest import UrlRequest
 import json
 from .models import Image
-from .widget import MyImage
-from core.settings import storage
+from .widgets import MyImage
+from main.settings import storage
 
 
 class OpenAIController:

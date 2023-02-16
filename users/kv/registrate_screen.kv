@@ -1,20 +1,20 @@
-#:import RegistrateScreen users.screen
+#:import RegistrateScreen users.screens
 #:import SlideTransition kivymd.uix.transition.transition.MDSlideTransition
 #:import platform kivy.utils
 <RegistrateScreen@MDScreen>
     name: 'reg_screen'
+    md_bg_color: app.theme_cls.bg_light
 
     core: app
 
     MDFloatLayout:
 
-        MDIconButton:
-            icon: 'arrow-left-bold'
-            #theme_text_color: 'Custom'
-            #text_color: 'white'
-            pos_hint: {'y': .93}
-            on_release:
-                app.back(screen='start_screen')
+        MDTopAppBar:
+            pos_hint: {'top': 1}
+            type_height: 'small'
+            md_bg_color: root.md_bg_color
+            left_action_items: [['arrow-left-bold', lambda x: app.back(screen='start_screen')]]
+            elevation: 0
 
         MDBoxLayout:
             orientation: 'vertical'
@@ -25,7 +25,7 @@
 
             MDLabel:
                 text: 'Registrate'
-                font_name: 'core/font/Barcelona-Graffiti-Bombing.otf'
+                font_name: 'main/font/Barcelona-Graffiti-Bombing.otf'
                 theme_text_color: 'Custom'
                 text_color: "#2525db"
                 font_size: sp(50)
@@ -34,9 +34,9 @@
             MDTextField:
                 id: email_field
                 theme_text_color: 'Custom'
-                #text_color_normal: 'white'
-                #hint_text_color_normal: 'white'
-                #icon_left_color_normal: 'white'
+                text_color_normal: 'white'
+                hint_text_color_normal: 'white'
+                icon_left_color_normal: 'white'
                 hint_text: 'email'
                 icon_left: 'email'
                 pos_hint: {'center_x': .5}
@@ -50,9 +50,9 @@
                 MDTextField:
                     id: password_field
                     theme_text_color: 'Custom'
-                    #text_color_normal: 'white'
-                    #hint_text_color_normal: 'white'
-                    #icon_left_color_normal: 'white'
+                    text_color_normal: 'white'
+                    hint_text_color_normal: 'white'
+                    icon_left_color_normal: 'white'
                     hint_text: 'Password'
                     icon_left: 'key-variant'
                     password: True
@@ -63,8 +63,8 @@
                     icon: "eye-off"
                     pos_hint: {"center_y": .5}
                     pos: password_field.width - self.width, 0
-                    #theme_text_color: "Custom"
-                    #text_color: 'white'
+                    theme_text_color: "Custom"
+                    text_color: 'white'
                     on_release:
                         self.icon = "eye" if self.icon == "eye-off" else "eye-off"
                         password_field.password = False if password_field.password is True else True
@@ -77,9 +77,9 @@
                 MDTextField:
                     id: re_password_field
                     theme_text_color: 'Custom'
-                    #text_color_normal: 'white'
-                    #hint_text_color_normal: 'white'
-                    #icon_left_color_normal: 'white'
+                    text_color_normal: 'white'
+                    hint_text_color_normal: 'white'
+                    icon_left_color_normal: 'white'
                     hint_text: 'Password repeat'
                     icon_left: 'key-variant'
                     password: True
@@ -90,15 +90,15 @@
                     icon: "eye-off"
                     pos_hint: {"center_y": .5}
                     pos: re_password_field.width - self.width, 0
-                    #theme_text_color: "Custom"
-                    #text_color: 'white'
+                    theme_text_color: "Custom"
+                    text_color: 'white'
                     on_release:
                         self.icon = "eye" if self.icon == "eye-off" else "eye-off"
                         re_password_field.password = False if re_password_field.password is True else True
 
             MDRaisedButton:
                 text: 'Registrate'
-                font_name: 'core/font/Barcelona-Graffiti-Bombing.otf'
+                font_name: 'main/font/Barcelona-Graffiti-Bombing.otf'
                 font_size: sp(30)
                 md_bg_color: 'blue'
                 pos_hint: {'center_x': .5}

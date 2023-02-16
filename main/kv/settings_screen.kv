@@ -1,4 +1,4 @@
-#:import SettingsScreen core.screen
+#:import SettingsScreen main.screens
 
 <SettingsScreen>
     name: 'settings_screen'
@@ -24,15 +24,12 @@
                 adaptive_height: True
                 padding_x: dp(16)
 
-            OneLineRightIconListItem:
+            OneLineListItem:
                 text: 'Change password'
                 on_release:
                     app.root.transition = MDSlideTransition()
                     app.root.transition.direction = 'left'
                     app.root.current = 'change_password_screen'
-
-                IconRightWidget:
-                    icon: 'chevron-right'
 
             MDSeparator:
 

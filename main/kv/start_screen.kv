@@ -1,9 +1,10 @@
-#:import StartScreen core.screen
+#:import StartScreen main.screens
 #:import MDSwapTransition kivymd.uix.transition.transition.MDSwapTransition
 #:import MDSlideTransition kivymd.uix.transition.transition.MDSlideTransition
 
 <StartScreen>
     name: 'start_screen'
+    md_bg_color: app.theme_cls.bg_light
 
     core: app
 
@@ -11,8 +12,9 @@
 
         MDTextButton:
             text: 'Sign in'
+            font_name: 'main/font/Barcelona-Graffiti-Bombing.otf'
             theme_text_color: 'Custom'
-            font_name: 'core/font/Barcelona-Graffiti-Bombing.otf'
+            text_color: '#5dff00'
             font_size: sp(30)
             pos_hint: {'x': .7, 'y': .9}
             on_release:
@@ -21,16 +23,17 @@
 
         MDLabel:
             text: 'Art AI'
-            font_name: 'core/font/Barcelona-Graffiti-Bombing.otf'
+            font_name: 'main/font/Barcelona-Graffiti-Bombing.otf'
             theme_text_color: 'Custom'
             text_color: "#9b1fe8"
+            md_bg_color: self.parent.md_bg_color
             font_size: sp(100)
             halign: 'center'
 
         MDTextButton:
             id: b_registration
             text: 'Sign up'
-            font_name: 'core/font/Barcelona-Graffiti-Bombing.otf'
+            font_name: 'main/font/Barcelona-Graffiti-Bombing.otf'
             theme_text_color: 'Custom'
             text_color: "#2525db"
             font_size: sp(50)
