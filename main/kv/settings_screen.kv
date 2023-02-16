@@ -2,6 +2,7 @@
 
 <SettingsScreen>
     name: 'settings_screen'
+    md_bg_color: app.theme_cls.bg_light
 
     MDBoxLayout:
         orientation: 'vertical'
@@ -9,6 +10,7 @@
         MDTopAppBar:
             id: settings_top_bar
             title: 'Settings'
+            md_bg_color: root.md_bg_color
             left_action_items: [['arrow-left', lambda x: app.back(screen='main_screen')]]
             elevation: 0
 

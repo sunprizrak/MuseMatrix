@@ -2,6 +2,7 @@
 
 <CollectionScreen>
     name: 'collection_screen'
+    md_bg_color: app.theme_cls.bg_light
 
     core: app
 
@@ -11,8 +12,7 @@
         MDTopAppBar:
             id: collection_app_bar
             type_height: 'small'
-            md_bg_color: app.theme_cls.bg_normal
-            specific_text_color: 'gray'
+            md_bg_color: root.md_bg_color
             left_action_items: [selection_list.back_item]
             right_action_items: [['dots-vertical', lambda x: root.menu_callback(x)]]
             elevation: 0

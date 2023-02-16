@@ -2,6 +2,7 @@
 
 <OpenImageScreen>
     name: 'open_img_screen'
+    md_bg_color: app.theme_cls.bg_light
 
     core: app
 
@@ -10,9 +11,8 @@
 
         MDTopAppBar:
             id: app_bar
-            specific_text_color: 'gray'
             type_height: 'small'
-            md_bg_color: app.theme_cls.bg_normal
+            md_bg_color: root.md_bg_color
             left_action_items: [['arrow-left', lambda x: root.back(full_image.back_screen)]]
             right_action_items: [['download', lambda x: root.download(full_image)]]
             elevation: 0

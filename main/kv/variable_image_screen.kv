@@ -2,6 +2,7 @@
 
 <VariableImageScreen>
     name: 'variable_image_screen'
+    md_bg_color: app.theme_cls.bg_light
 
     MDFloatLayout:
 
@@ -10,8 +11,8 @@
 
             MDTopAppBar:
                 id: variable_top_bar
-                specific_text_color: 'gray'
                 type_height: 'small'
+                md_bg_color: root.md_bg_color
                 left_action_items: [['arrow-left', lambda x: app.back(screen='main_screen')]]
                 elevation: 0
 
@@ -22,6 +23,7 @@
             MDBoxLayout:
                 id: option_section
                 orientation: 'vertical'
+                adaptive_height: True
                 spacing: dp(10)
                 padding: dp(15)
 
@@ -55,11 +57,8 @@
                         icon: 'minus-circle'
                         icon_size: dp(20)
                         theme_icon_color: "Custom"
-                        icon_color: 'gray'
-                        on_press:
-                            self.icon_color = app.theme_cls.primary_color
+                        icon_color: 'white'
                         on_release:
-                            self.icon_color = 'gray'
                             root.image_count -= 1
 
                     MDTextFieldRect:
@@ -76,11 +75,8 @@
                         icon: 'plus-circle'
                         icon_size: dp(20)
                         theme_icon_color: "Custom"
-                        icon_color: 'gray'
-                        on_press:
-                            self.icon_color = app.theme_cls.primary_color
+                        icon_color: 'white'
                         on_release:
-                            self.icon_color = 'gray'
                             root.image_count += 1
 
                 MDFillRoundFlatButton:

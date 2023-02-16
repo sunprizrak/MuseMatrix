@@ -3,6 +3,8 @@ from kivy.uix.label import Label
 from kivy.uix.screenmanager import FallOutTransition
 from kivy.properties import StringProperty, ObjectProperty, BoundedNumericProperty
 from kivymd.uix.button import MDFlatButton
+from kivymd.uix.card import MDCard
+from kivymd.uix.fitimage import FitImage
 from kivymd.uix.menu import MDDropdownMenu
 from kivymd.uix.screen import MDScreen
 from kivymd.uix.swiper import MDSwiperItem, MDSwiper
@@ -77,10 +79,21 @@ class CreateImageScreen(MDScreen):
                     allow_stretch=True,
                     mipmap=True,
                 )
+                # image = FitImage(
+                #     source=url,
+                #     mipmap=True,
+                #     size_hint=(None, None),
+                #     height=dp(256),
+                #     width=dp(256),
+                # )
+                # print(self.ids.image_section.height)
 
                 self.ids.image_section.add_widget(image)
+
             elif len(response['data']) > 1:
-                swiper = MDSwiper()
+                swiper = MDSwiper(
+                    size_hint_y=None,
+                )
 
                 for el in response['data']:
                     url = el.get('url')

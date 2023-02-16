@@ -2,6 +2,7 @@
 
 <CreateImageScreen>
     name: 'create_image_screen'
+    md_bg_color: app.theme_cls.bg_light
 
     default_img: default_img
     prompt: input_prompt.text
@@ -14,7 +15,6 @@
             MDTopAppBar:
                 id: create_top_bar
                 type_height: 'small'
-                #specific_text_color: 'gray'
                 md_bg_color: root.md_bg_color
                 left_action_items: [['arrow-left', lambda x: app.back(screen='main_screen')]]
                 elevation: 0
@@ -23,10 +23,9 @@
                 id: image_section
                 padding: 0, dp(15), 0, dp(15)
 
-                AsyncImage:
+                Image:
                     id: default_img
                     source: 'main/img/default.png'
-                    allow_stretch: True
                     mipmap: True
 
             MDBoxLayout:
@@ -38,6 +37,9 @@
 
                 MySegmentedControl:
                     pos_hint: {'center_x': .5}
+                    md_bg_color: '#8e1a89'
+                    segment_color: '#29bbaa'
+                    separator_color: "white"
                     on_active:
                         root.image_size = self.current_active_segment.text
 
@@ -98,7 +100,7 @@
                 MDFillRoundFlatButton:
                     text: 'Generate'
                     font_style: 'Button'
-                    md_bg_color: 'gray'
+                    md_bg_color: '#7f5cab'
                     pos_hint: {'center_x': .5}
                     on_release:
                         root.create()
