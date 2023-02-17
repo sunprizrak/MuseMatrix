@@ -29,8 +29,9 @@
 
             MDFloatingActionButton:
                 icon: 'image'
+                type: 'large'
                 theme_icon_color: "Custom"
-                md_bg_color: "#9b1fe8"
+                md_bg_color: app.theme_cls.primary_color
                 on_release:
                     app.root.transition = MDSwapTransition()
                     app.root.current = 'create_image_screen'
@@ -38,27 +39,37 @@
 
             MDFloatingActionButton:
                 icon: 'image-edit'
+                type: 'large'
                 theme_icon_color: "Custom"
-                md_bg_color: "#9b1fe8"
+                md_bg_color: app.theme_cls.primary_color
                 on_release:
                     app.root.transition = MDSwapTransition()
                     app.root.current = 'edit_image_screen'
 
             MDFloatingActionButton:
                 icon: 'chat'
+                type: 'large'
                 theme_icon_color: "Custom"
-                md_bg_color: "#9b1fe8"
+                md_bg_color: app.theme_cls.primary_color
                 on_release:
                     app.root.transition = MDSwapTransition()
                     app.root.current = 'chat_gpt_screen'
 
             MDFloatingActionButton:
                 icon: 'image-sync'
+                type: 'large'
                 theme_icon_color: "Custom"
-                md_bg_color: "#9b1fe8"
+                md_bg_color: app.theme_cls.primary_color
                 on_release:
                     app.root.transition = MDSwapTransition()
                     app.root.current = 'variable_image_screen'
+
+    Image:
+        source: 'main/img/chip_ai.png'
+        size_hint: None, None
+        size: dp(130), dp(130)
+        mipmap: True
+        pos_hint: {'center_x': .5, 'center_y': .445}
 
     MDNavigationLayout:
 

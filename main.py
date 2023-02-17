@@ -53,7 +53,7 @@ class ArtAIApp(MDApp):
                 rmtree(cache)
 
         self.theme_cls.theme_style = 'Dark'
-        self.theme_cls.primary_palette = 'Red'
+        self.theme_cls.primary_palette = 'Purple'
 
         Window.softinput_mode = 'pan'
         Window.bind(on_keyboard=self.key_input)

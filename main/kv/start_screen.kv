@@ -12,32 +12,40 @@
 
         MDTextButton:
             text: 'Sign in'
-            font_name: 'main/font/Barcelona-Graffiti-Bombing.otf'
+            font_name: 'main/font/hacked.ttf'
             theme_text_color: 'Custom'
-            text_color: '#5dff00'
+            text_color: '#acf4f3'
             font_size: sp(30)
             pos_hint: {'x': .7, 'y': .9}
             on_release:
                 app.root.transition = MDSwapTransition()
                 app.root.current = 'login_screen'
 
+        Image:
+            source: 'main/img/head_ii.png'
+            size_hint_y: None
+            height: dp(300)
+            mipmap: True
+            pos_hint: {'center_x': .5, 'center_y': .65}
+
         MDLabel:
             text: 'Art AI'
-            font_name: 'main/font/Barcelona-Graffiti-Bombing.otf'
+            font_name: 'main/font/hacked.ttf'
             theme_text_color: 'Custom'
             text_color: "#9b1fe8"
             md_bg_color: self.parent.md_bg_color
             font_size: sp(100)
             halign: 'center'
+            pos_hint: {'center_y': .3}
 
         MDTextButton:
             id: b_registration
             text: 'Sign up'
-            font_name: 'main/font/Barcelona-Graffiti-Bombing.otf'
+            font_name: 'main/font/hacked.ttf'
             theme_text_color: 'Custom'
             text_color: "#2525db"
             font_size: sp(50)
-            pos_hint: {'center_x': .5, 'y': .1}
+            pos_hint: {'center_x': .5, 'y': .05}
             on_release:
                 app.root.transition = MDSlideTransition()
                 app.root.transition.direction = 'up'
