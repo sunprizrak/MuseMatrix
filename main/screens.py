@@ -15,9 +15,12 @@ import io
 import base64
 import uuid
 from os.path import join, exists
-from PIL import Image
+from PIL import Image as PilImage
 from kivy.utils import platform
 from users.controller import UserController
+import logging
+
+logging.getLogger('PIL').setLevel(logging.WARNING)
 
 
 class StartScreen(MDScreen):
@@ -82,19 +85,14 @@ class CreateImageScreen(MDScreen):
             elif len(response['data']) > 1:
                 swiper = MDSwiper(
                     size_hint_y=None,
-                    pos_hint={'center_x': .5, 'center_y':.5}
+                    pos_hint={'center_x': .5, 'center_y': .5},
+                    height=self.ids.image_section.height,
                 )
-
-                self.ids.image_section.add_widget(swiper)
-                swiper.height = self.ids.image_section.height
 
                 for el in response['data']:
                     url = el.get('url')
 
-                    item = MDSwiperItem(
-                        size_hint_y=None,
-                        height=swiper.height,
-                    )
+                    item = MDSwiperItem()
 
                     image = MyImage(
                         sm=self.parent,
@@ -106,8 +104,8 @@ class CreateImageScreen(MDScreen):
                     item.add_widget(image)
                     swiper.add_widget(item)
 
+                self.ids.image_section.add_widget(swiper)
         if all([self.prompt, self.image_count, self.image_size]):
-
             for widget in self.ids.image_section.children:
                 if isinstance(widget, MyImage) or isinstance(widget, MDSwiper):
                     self.ids.image_section.remove_widget(widget)
@@ -153,7 +151,7 @@ class EditImageScreen(MDScreen):
         self.ids.edit_top_bar.right_action_items.append(["autorenew", lambda x: self.reload_image()])
         self.ids.edit_top_bar.right_action_items.append(["broom", lambda x: self.clear_selection()])
 
-        with Image.open(path) as img:
+        with PilImage.open(path) as img:
             new = img.resize(size=(256, 256))
             new.save(self.image_original, format='png')
 

@@ -63,18 +63,18 @@
                     icon_left_color_normal: 'white'
                     icon_left_color_focus: '#acf4f3'
                     line_color_focus: '#acf4f3'
-                    hint_text: 'Password'
                     icon_left: 'key-variant'
                     password: True
                     helper_text_mode: 'on_error'
+                    hint_text: 'Password'
                     unfocus_on_touch: False if platform == 'android' else True
 
                 MDIconButton:
-                    icon: "eye-off"
+                    icon: "eye"
                     pos_hint: {"center_y": .5}
-                    pos: password_field.width - self.width, 0
                     theme_text_color: "Custom"
                     text_color: 'white'
+                    pos: password_field.width - self.width, 0
                     on_release:
                         self.icon = "eye" if self.icon == "eye-off" else "eye-off"
                         password_field.password = False if password_field.password is True else True
