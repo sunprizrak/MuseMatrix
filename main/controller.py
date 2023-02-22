@@ -27,7 +27,7 @@ class OpenAIController:
             req_body=json.dumps({'prompt': prompt, 'image_count': image_count, 'image_size': image_size}),
         )
 
-    def image_edit(self, image, mask, prompt, image_count, image_size, callback):
+    def image_edit(self, image, mask, prompt, image_count, image_size, callback, on_error, on_failure):
         token = storage.get('auth_token').get('token')
         #token = '1be37f1ae2cbc7f90354ac42c8def1a29eaf21fb'
 
@@ -35,6 +35,8 @@ class OpenAIController:
             url=self.path_image_edit,
             method='GET',
             on_success=callback,
+            on_error=on_error,
+            on_failure=on_failure,
             req_headers={
                 'Content-type': 'application/json',
                 'Authorization': f"Token {token}",
