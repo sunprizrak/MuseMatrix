@@ -1,7 +1,9 @@
 #:import RegistrateScreen users.screens
 #:import SlideTransition kivymd.uix.transition.transition.MDSlideTransition
 #:import platform kivy.utils
-<RegistrateScreen@MDScreen>
+
+
+<RegistrateScreen>
     name: 'reg_screen'
     md_bg_color: app.theme_cls.bg_light
 
@@ -25,7 +27,7 @@
 
             MDLabel:
                 text: 'Registrate'
-                font_name: 'main/font/Barcelona-Graffiti-Bombing.otf'
+                font_name: 'main/font/hacked.ttf'
                 theme_text_color: 'Custom'
                 text_color: "#2525db"
                 font_size: sp(50)
@@ -98,7 +100,7 @@
 
             MDRaisedButton:
                 text: 'Registrate'
-                font_name: 'main/font/Barcelona-Graffiti-Bombing.otf'
+                font_name: 'main/font/hacked.ttf'
                 font_size: sp(30)
                 md_bg_color: 'blue'
                 pos_hint: {'center_x': .5}

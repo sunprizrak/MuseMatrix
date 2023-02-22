@@ -11,6 +11,7 @@
 
         MDBoxLayout:
             orientation: 'vertical'
+            md_bg_color: '#71b4f2'
 
             MDTopAppBar:
                 id: chat_gpt_top_bar
@@ -21,7 +22,6 @@
 
             MDRecycleView:
                 id: chat_gpt
-                md_bg_color: 'blue'
                 do_scroll_y: False if chat_gpt_box.height < self.height else True
                 scroll_y: 0
                 effect_cls: ScrollEffect

@@ -27,62 +27,58 @@
                 spacing: dp(10)
                 padding: dp(15)
 
-                canvas:
-                    Color:
-                        rgba: .5, .3, .4, 1
-                    Rectangle:
-                        pos: self.pos
-                        size: self.size
-
                 MySegmentedControl:
                     pos_hint: {'center_x': .5}
+                    md_bg_color: app.theme_cls.primary_color
+                    segment_color: root.md_bg_color
+                    separator_color: "white"
                     on_active:
                         root.image_size = self.current_active_segment.text
 
                     MDSegmentedControlItem:
                         text: '256x256'
+                        bold: True
 
                     MDSegmentedControlItem:
                         text: '512x512'
+                        bold: True
 
                     MDSegmentedControlItem:
                         text: '1024x1024'
+                        bold: True
 
                 MDBoxLayout:
                     orientation: 'horizontal'
                     pos_hint: {'center_x': .5}
-                    adaptive_size: True
+                    size_hint_x: None
+                    width: dp(130)
+                    adaptive_height: True
 
                     MDIconButton:
                         icon: 'minus-circle'
-                        icon_size: dp(20)
+                        icon_size: sp(20)
                         theme_icon_color: "Custom"
-                        icon_color: 'white'
+                        icon_color: app.theme_cls.primary_color
                         on_release:
                             root.image_count -= 1
 
-                    MDTextFieldRect:
+                    MDLabel:
                         id: img_count
                         text: str(root.image_count)
                         halign: 'center'
-                        pos_hint: {'center_y': .5}
-                        size_hint: None, None
-                        height: dp(30)
-                        width: dp(50)
-                        disabled: True
 
                     MDIconButton:
                         icon: 'plus-circle'
-                        icon_size: dp(20)
+                        icon_size: sp(20)
                         theme_icon_color: "Custom"
-                        icon_color: 'white'
+                        icon_color: app.theme_cls.primary_color
                         on_release:
                             root.image_count += 1
 
                 MDFillRoundFlatButton:
                     text: 'Generate'
                     font_style: 'Button'
-                    md_bg_color: 'gray'
+                    md_bg_color: app.theme_cls.primary_color
                     pos_hint: {'center_x': .5}
                     on_release:
                         root.generate()

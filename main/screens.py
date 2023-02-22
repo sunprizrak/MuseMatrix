@@ -266,7 +266,7 @@ class VariableImageScreen(MDScreen):
         self.ids.image_section.add_widget(image)
         self.ids.variable_top_bar.right_action_items.append(["autorenew", lambda x: self.reload_image()])
 
-        with Image.open(path) as img:
+        with PilImage.open(path) as img:
             new = img.resize(size=(256, 256))
             new.save(self.image, format='png')
 
@@ -316,6 +316,12 @@ class VariableImageScreen(MDScreen):
 
                 self.ids.image_section.add_widget(swiper)
 
+        def callback_failure(request, response):
+            print(response)
+
+        def callback_error(request, error):
+            print(error)
+
         self.image.seek(0)
         if len(self.image.read()) > 0:
 
@@ -337,6 +343,8 @@ class VariableImageScreen(MDScreen):
                     image_count=self.image_count,
                     image_size=self.image_size,
                     callback=callback,
+                    on_error=callback_error,
+                    on_failure=callback_failure,
                 )
 
 
