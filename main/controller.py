@@ -14,7 +14,6 @@ class OpenAIController:
 
     def image_generation(self, prompt, image_count, image_size, callback):
         token = storage.get('auth_token').get('token')
-        # token = '1be37f1ae2cbc7f90354ac42c8def1a29eaf21fb'
 
         UrlRequest(
             url=self.path_image_generation,
@@ -29,7 +28,6 @@ class OpenAIController:
 
     def image_edit(self, image, mask, prompt, image_count, image_size, callback, on_error, on_failure):
         token = storage.get('auth_token').get('token')
-        #token = '1be37f1ae2cbc7f90354ac42c8def1a29eaf21fb'
 
         UrlRequest(
             url=self.path_image_edit,
@@ -46,7 +44,6 @@ class OpenAIController:
 
     def image_variation(self, image, image_count, image_size, callback, on_error, on_failure):
         token = storage.get('auth_token').get('token')
-        #token = '1be37f1ae2cbc7f90354ac42c8def1a29eaf21fb'
 
         UrlRequest(
             url=self.path_image_variation,
@@ -63,7 +60,6 @@ class OpenAIController:
 
     def text_completion(self, prompt, callback):
         token = storage.get('auth_token').get('token')
-        #token = '1be37f1ae2cbc7f90354ac42c8def1a29eaf21fb'
 
         UrlRequest(
             url=self.path_text_completion,
@@ -128,10 +124,10 @@ class ImageController:
                 img = MyImage(
                     sm=self.screen.core.root,
                     source=image.source,
-                    keep_ratio=False,
                     allow_stretch=True,
                     mipmap=True,
                     img_id=image.id,
+                    prompt=image.description,
                 )
 
                 self.screen.core.root.ids.collection_screen.ids.selection_list.add_widget(img)

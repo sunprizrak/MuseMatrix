@@ -8,6 +8,7 @@
 
     MDBoxLayout:
         orientation: 'vertical'
+        pos_hint: {'top': 1}
 
         MDTopAppBar:
             id: app_bar
@@ -17,12 +18,10 @@
             right_action_items: [['download', lambda x: root.download(full_image)]]
             elevation: 0
 
-        MDBoxLayout:
-
-            AsyncImage:
-                id: full_image
-                mipmap: True
-                allow_stretch: True
+        Image:
+            id: full_image
+            mipmap: True
+            allow_stretch: True
 
 
 

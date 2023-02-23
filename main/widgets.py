@@ -1,7 +1,7 @@
 from kivy.core.image import Image as CoreImage
 from kivy.graphics import Color, Ellipse, Line
 from kivy.metrics import sp, dp
-from kivy.properties import ObjectProperty, ColorProperty, NumericProperty, ListProperty
+from kivy.properties import ObjectProperty, ColorProperty, NumericProperty, ListProperty, StringProperty
 from kivymd.uix.segmentedcontrol import MDSegmentedControl, MDSegmentedControlItem
 from kivy.uix.image import AsyncImage
 from kivy.uix.screenmanager import RiseInTransition
@@ -13,6 +13,7 @@ from kivymd.uix.selection.selection import SelectionItem, SelectionIconCheck
 class MyImage(AsyncImage):
     sm = ObjectProperty()
     img_id = NumericProperty()
+    prompt = StringProperty()
 
     def on_touch_down(self, touch):
         if self.disabled and self.collide_point(*touch.pos):
@@ -55,7 +56,7 @@ class MyImage(AsyncImage):
 
     def full_screen(self):
         if self.sm:
-            self.sm.ids.open_img_screen.ids.full_image.source = self.source
+            self.sm.ids.open_img_screen.ids.full_image.texture = self.texture
             self.sm.transition = RiseInTransition()
             self.sm.ids.open_img_screen.ids.full_image.back_screen = self.sm.current
             if self.sm.current == 'collection_screen':
