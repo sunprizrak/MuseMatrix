@@ -21,12 +21,15 @@
                 app.root.transition = MDSwapTransition()
                 app.root.current = 'login_screen'
 
-        Image:
-            source: 'main/img/head_ii.png'
-            size_hint_y: None
-            height: dp(300)
-            mipmap: True
+        MDBoxLayout:
+            padding: dp(10)
             pos_hint: {'center_x': .5, 'center_y': .65}
+
+            Image:
+                source: 'main/img/head_ii.png'
+                allow_stretch: True
+                mipmap: True
+
 
         MDLabel:
             text: 'Art AI'
