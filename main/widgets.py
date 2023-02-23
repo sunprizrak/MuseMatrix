@@ -18,9 +18,9 @@ class MyImage(AsyncImage):
         if self.disabled and self.collide_point(*touch.pos):
             with self.canvas:
                 Color(.5, .8, .2, 1)
-                setattr(self, 'rad', 32)
-                Ellipse(pos=(touch.x - self.rad/2, touch.y - self.rad/2), size=(dp(self.rad), dp(self.rad)))
-                touch.ud['line'] = Line(points=(touch.x, touch.y), width=dp(self.rad/2))
+                setattr(self, 'rad', dp(32))
+                Ellipse(pos=(touch.x - self.rad/2, touch.y - self.rad/2), size=(self.rad, self.rad))
+                touch.ud['line'] = Line(points=(touch.x, touch.y), width=self.rad/2)
             return True
         for child in self.children[:]:
             if child.dispatch('on_touch_down', touch):
@@ -63,7 +63,7 @@ class MyImage(AsyncImage):
             self.sm.current = 'open_img_screen'
 
     def get_mask_image(self):
-        change_texture = self.texture.create(size=(256, 256), colorfmt='rgba')
+        change_texture = self.texture.create(size=self.norm_image_size, colorfmt='rgba')
 
         # Get the pixel data from the texture
         pixels = bytearray(change_texture.pixels)
@@ -80,7 +80,7 @@ class MyImage(AsyncImage):
 
         self.texture = change_texture
 
-        transparent_texture = self.texture.create(size=(64, 64), colorfmt='rgba')
+        transparent_texture = self.texture.create(colorfmt='rgba')
         transparent_texture.mag_filter = 'linear'
         transparent_texture.min_filter = 'linear_mipmap_linear'
 

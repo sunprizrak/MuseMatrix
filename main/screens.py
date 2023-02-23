@@ -123,6 +123,7 @@ class CreateImageScreen(MDScreen):
 
 
 class EditImageScreen(MDScreen):
+    core = ObjectProperty()
     prompt = StringProperty()
     image_count = BoundedNumericProperty(1, min=1, max=10, errorhandler=lambda x: 10 if x > 10 else 1)
     image_size = StringProperty('256x256')
@@ -201,21 +202,30 @@ class EditImageScreen(MDScreen):
             self.ids.add_image_button.disabled = False
             print('error')
 
+        self.image_original.seek(0)
         if len(self.image_original.getvalue()) > 0:
             if all([self.prompt, self.image_count, self.image_size]):
                 for widget in self.ids.image_section.children:
                     if isinstance(widget, MyImage) or isinstance(widget, MDSwiper):
                         if isinstance(widget, MyImage) and widget.disabled:
                             mask_img = self.ids.image_section.children[0].get_mask_image()
-                            mask_img.save(self.image_mask, flipped=True, fmt='png')
+                            mask_data = io.BytesIO()
+                            mask_img.save(mask_data, flipped=True, fmt='png')
+
+                            with PilImage.open(mask_data) as img:
+                                new = img.resize(size=(256, 256))
+                                new.save(self.image_mask, format='png')
+
                         self.ids.image_section.remove_widget(widget)
 
                 self.ids.add_image_button.disabled = True
                 self.ids.edit_spin.active = True
 
+                self.image_original.seek(0)
                 png_image_original = self.image_original.getvalue()
                 im_b64_image_original = base64.b64encode(png_image_original).decode('utf-8')
 
+                self.image_mask.seek(0)
                 png_image_mask = self.image_mask.getvalue()
                 im_b64_image_mask = base64.b64encode(png_image_mask).decode('utf-8')
 
@@ -334,7 +344,7 @@ class VariableImageScreen(MDScreen):
             self.ids.add_image_button.disabled = False
 
         self.image.seek(0)
-        if len(self.image.read()) > 0:
+        if len(self.image.getvalue()) > 0:
 
             if all([self.image_count, self.image_size]):
 
@@ -345,6 +355,7 @@ class VariableImageScreen(MDScreen):
                 self.ids.add_image_button.disabled = True
                 self.ids.variable_spin.active = True
 
+                self.image.seek(0)
                 image_png = self.image.getvalue()
                 im_b64_image = base64.b64encode(image_png).decode('utf-8')
 
