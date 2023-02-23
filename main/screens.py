@@ -498,7 +498,6 @@ class OpenImageScreen(MDScreen):
 
             if platform == 'android':
                 private_path = join(self.core.ss.get_cache_dir(), f'{str(uuid.uuid4())}.png')
-                print(img.source)
 
                 image.save(private_path)
 
@@ -514,8 +513,11 @@ class OpenImageScreen(MDScreen):
                 data_image = {
                     'user': self.user_controller.user.id,
                     'source': im_b64,
-                    'description': self.core.root.ids.create_image_screen.prompt,
                 }
+
+                for screen in self.core.root.screens:
+                    if screen.name == img.back_screen and screen.name != 'variable_image_screen':
+                        data_image['description'] = screen.prompt
 
                 self.image_controller.save_image(data_image=data_image)
 

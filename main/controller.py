@@ -127,7 +127,6 @@ class ImageController:
                     allow_stretch=True,
                     mipmap=True,
                     img_id=image.id,
-                    prompt=image.description,
                 )
 
                 self.screen.core.root.ids.collection_screen.ids.selection_list.add_widget(img)

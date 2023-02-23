@@ -13,7 +13,6 @@ from kivymd.uix.selection.selection import SelectionItem, SelectionIconCheck
 class MyImage(AsyncImage):
     sm = ObjectProperty()
     img_id = NumericProperty()
-    prompt = StringProperty()
 
     def on_touch_down(self, touch):
         if self.disabled and self.collide_point(*touch.pos):
