@@ -1,6 +1,8 @@
+from kivy.core.text import LabelBase
 from kivymd.app import MDApp
 from kivy.lang import Builder
 from kivy.core.window import Window
+from kivymd.theming import ThemeManager
 from kivymd.uix.button import MDFlatButton
 from kivymd.uix.dialog import MDDialog
 from kivymd.uix.filemanager import MDFileManager
@@ -20,10 +22,32 @@ if platform == 'android':
     from androidstorage4kivy import SharedStorage, Chooser
 
 
+class CustomThemeManager(ThemeManager):
+    def __init__(self, **kwargs):
+        super(CustomThemeManager, self).__init__(**kwargs)
+        self.font_styles.update({
+            "H1": ["Hacked", 96, False, -1.5],
+            "H2": ["Hacked", 60, False, -0.5],
+            "H3": ["Hacked", 48, False, 0],
+            "H4": ["Hacked", 34, False, 0.25],
+            "H5": ["Hacked", 24, False, 0],
+            "H6": ["Hacked", 20, False, 0.15],
+            "Subtitle1": ["Hacked", 16, False, 0.15],
+            "Subtitle2": ["Hacked", 14, False, 0.1],
+            "Body1": ["Hacked", 16, False, 0.5],
+            "Body2": ["Hacked", 14, False, 0.25],
+            "Button": ["Hacked", 14, True, 1.25],
+            "Caption": ["Hacked", 12, False, 0.4],
+            "Overline": ["Hacked", 10, True, 1.5],
+        })
+        LabelBase.register(name='Hacked', fn_regular='main/font/hacked.ttf')
+
+
 class ArtAIApp(MDApp):
 
     def __init__(self, **kwargs):
         super(ArtAIApp, self).__init__(**kwargs)
+        self.theme_cls = CustomThemeManager()
         self.dialog = None
         self.manager_open = False
         self.file_manager = MDFileManager(

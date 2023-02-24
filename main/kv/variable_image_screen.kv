@@ -38,15 +38,12 @@
 
                     MDSegmentedControlItem:
                         text: '256x256'
-                        font_name: 'main/font/hacked.ttf'
 
                     MDSegmentedControlItem:
                         text: '512x512'
-                        font_name: 'main/font/hacked.ttf'
 
                     MDSegmentedControlItem:
                         text: '1024x1024'
-                        font_name: 'main/font/hacked.ttf'
 
                 MDBoxLayout:
                     orientation: 'horizontal'
@@ -66,7 +63,6 @@
                     MDLabel:
                         id: img_count
                         text: str(root.image_count)
-                        font_name: 'main/font/hacked.ttf'
                         font_size: sp(30)
                         halign: 'center'
 
@@ -82,7 +78,6 @@
                     text: 'Generate'
                     md_bg_color: app.theme_cls.primary_color
                     pos_hint: {'center_x': .5}
-                    font_name: 'main/font/hacked.ttf'
                     font_size: sp(25)
                     on_release:
                         root.generate()
