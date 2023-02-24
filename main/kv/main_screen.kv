@@ -1,6 +1,7 @@
 #:import MainScreen main.screens
 #:import ScrollEffect kivy.effects.scroll.ScrollEffect
 
+
 <MainScreen>
     name: 'main_screen'
     md_bg_color: app.theme_cls.bg_light
@@ -31,6 +32,7 @@
                 icon: 'image'
                 theme_icon_color: "Custom"
                 md_bg_color: app.theme_cls.primary_color
+                shadow_color: 'white'
                 on_release:
                     app.root.transition = MDSwapTransition()
                     app.root.current = 'create_image_screen'
@@ -40,6 +42,7 @@
                 icon: 'image-edit'
                 theme_icon_color: "Custom"
                 md_bg_color: app.theme_cls.primary_color
+                shadow_color: 'white'
                 on_release:
                     app.root.transition = MDSwapTransition()
                     app.root.current = 'edit_image_screen'
@@ -48,6 +51,7 @@
                 icon: 'chat'
                 theme_icon_color: "Custom"
                 md_bg_color: app.theme_cls.primary_color
+                shadow_color: 'white'
                 on_release:
                     app.root.transition = MDSwapTransition()
                     app.root.current = 'chat_gpt_screen'
@@ -56,6 +60,7 @@
                 icon: 'image-sync'
                 theme_icon_color: "Custom"
                 md_bg_color: app.theme_cls.primary_color
+                shadow_color: 'white'
                 on_release:
                     app.root.transition = MDSwapTransition()
                     app.root.current = 'variable_image_screen'

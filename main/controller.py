@@ -2,11 +2,10 @@ from kivy.network.urlrequest import UrlRequest
 import json
 from .models import Image
 from .widgets import MyImage
-from main.settings import storage
+from main.settings import storage, host_name
 
 
 class OpenAIController:
-    host_name = 'http://18.214.87.35:8000/'
     path_image_generation = host_name + 'openai/image_generation/'
     path_image_edit = host_name + 'openai/image_edit/'
     path_image_variation = host_name + 'openai/image_variation/'
@@ -74,7 +73,6 @@ class OpenAIController:
 
 
 class ImageController:
-    host_name = 'http://18.214.87.35:8000/'
     path_image = host_name + 'image/'
     path_image_delete = path_image + 'delete/'
     object = Image

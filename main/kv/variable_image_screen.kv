@@ -13,7 +13,7 @@
                 id: variable_top_bar
                 type_height: 'small'
                 md_bg_color: root.md_bg_color
-                left_action_items: [['arrow-left', lambda x: app.back(screen='main_screen')]]
+                left_action_items: [['arrow-left-bold', lambda x: app.back(screen='main_screen')]]
                 elevation: 0
 
             MDBoxLayout:
@@ -24,7 +24,7 @@
                 id: option_section
                 orientation: 'vertical'
                 adaptive_height: True
-                spacing: dp(10)
+                spacing: dp(15)
                 padding: dp(15)
 
                 MySegmentedControl:
@@ -32,31 +32,32 @@
                     md_bg_color: app.theme_cls.primary_color
                     segment_color: root.md_bg_color
                     separator_color: "white"
+                    radius: dp(5)
                     on_active:
                         root.image_size = self.current_active_segment.text
 
                     MDSegmentedControlItem:
                         text: '256x256'
-                        bold: True
+                        font_name: 'main/font/hacked.ttf'
 
                     MDSegmentedControlItem:
                         text: '512x512'
-                        bold: True
+                        font_name: 'main/font/hacked.ttf'
 
                     MDSegmentedControlItem:
                         text: '1024x1024'
-                        bold: True
+                        font_name: 'main/font/hacked.ttf'
 
                 MDBoxLayout:
                     orientation: 'horizontal'
                     pos_hint: {'center_x': .5}
                     size_hint_x: None
-                    width: dp(130)
+                    width: dp(150)
                     adaptive_height: True
 
                     MDIconButton:
-                        icon: 'minus-circle'
-                        icon_size: sp(20)
+                        icon: 'minus-box-outline'
+                        icon_size: sp(30)
                         theme_icon_color: "Custom"
                         icon_color: app.theme_cls.primary_color
                         on_release:
@@ -65,21 +66,24 @@
                     MDLabel:
                         id: img_count
                         text: str(root.image_count)
+                        font_name: 'main/font/hacked.ttf'
+                        font_size: sp(30)
                         halign: 'center'
 
                     MDIconButton:
-                        icon: 'plus-circle'
-                        icon_size: sp(20)
+                        icon: 'plus-box-outline'
+                        icon_size: sp(30)
                         theme_icon_color: "Custom"
                         icon_color: app.theme_cls.primary_color
                         on_release:
                             root.image_count += 1
 
-                MDFillRoundFlatButton:
+                MDRaisedButton:
                     text: 'Generate'
-                    font_style: 'Button'
                     md_bg_color: app.theme_cls.primary_color
                     pos_hint: {'center_x': .5}
+                    font_name: 'main/font/hacked.ttf'
+                    font_size: sp(25)
                     on_release:
                         root.generate()
 

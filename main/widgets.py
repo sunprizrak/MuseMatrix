@@ -1,7 +1,7 @@
 from kivy.core.image import Image as CoreImage
 from kivy.graphics import Color, Ellipse, Line
 from kivy.metrics import sp, dp
-from kivy.properties import ObjectProperty, ColorProperty, NumericProperty, ListProperty, StringProperty
+from kivy.properties import ObjectProperty, ColorProperty, NumericProperty, ListProperty
 from kivymd.uix.segmentedcontrol import MDSegmentedControl, MDSegmentedControlItem
 from kivy.uix.image import AsyncImage
 from kivy.uix.screenmanager import RiseInTransition
@@ -121,7 +121,7 @@ class MySegmentedControl(MDSegmentedControl):
         self, widget: MDSegmentedControlItem
     ) -> None:
         widget.text_size = (None, None)
-        widget.font_size = sp(12)
+        widget.font_size = sp(14)
         widget.texture_update()
         self.ids.segment_panel.width = dp(300)
 
@@ -130,7 +130,7 @@ class MySelectionList(MDSelectionList):
     screen: ObjectProperty()
     toolbar = ObjectProperty()
     progress_round_color = ColorProperty('#ed1c1c')
-    back_item = ListProperty(['arrow-left'])
+    back_item = ListProperty(['arrow-left-bold'])
 
     def add_widget(self, widget, index=0, canvas=None):
 
