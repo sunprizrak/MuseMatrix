@@ -39,6 +39,7 @@ class CustomThemeManager(ThemeManager):
             "Button": ["Hacked", 14, True, 1.25],
             "Caption": ["Hacked", 12, False, 0.4],
             "Overline": ["Hacked", 10, True, 1.5],
+            'Message': ['Roboto', 16, False, 0.5],
         })
         LabelBase.register(name='Hacked', fn_regular='main/font/hacked.ttf')
 
