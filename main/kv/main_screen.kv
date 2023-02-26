@@ -9,6 +9,7 @@
     core: app
 
     MDRelativeLayout:
+        id: test
         orientation: 'vertical'
         md_bg_color: root.md_bg_color if nav_drawer.state == 'close' else app.theme_cls.bg_dark
 
@@ -26,10 +27,11 @@
             row_spacing: min(self.size) * 0.1
             start_from: 90
             degree_spacing: 90
-            circular_padding: dp(100)
+            circular_radius: dp(90)
 
             MDFloatingActionButton:
                 icon: 'image'
+                type: 'large'
                 theme_icon_color: "Custom"
                 md_bg_color: app.theme_cls.primary_color
                 shadow_color: 'white'
@@ -40,6 +42,7 @@
 
             MDFloatingActionButton:
                 icon: 'image-edit'
+                type: 'large'
                 theme_icon_color: "Custom"
                 md_bg_color: app.theme_cls.primary_color
                 shadow_color: 'white'
@@ -49,6 +52,7 @@
 
             MDFloatingActionButton:
                 icon: 'chat'
+                type: 'large'
                 theme_icon_color: "Custom"
                 md_bg_color: app.theme_cls.primary_color
                 shadow_color: 'white'
@@ -58,12 +62,20 @@
 
             MDFloatingActionButton:
                 icon: 'image-sync'
+                type: 'large'
                 theme_icon_color: "Custom"
                 md_bg_color: app.theme_cls.primary_color
                 shadow_color: 'white'
                 on_release:
                     app.root.transition = MDSwapTransition()
                     app.root.current = 'variable_image_screen'
+
+        Button:
+            text: 'Show Rewarded Ad'
+            size_hint: None, None
+            size: dp(150), dp(50)
+            on_release:
+                app.ads.show_interstitial()
 
     MDNavigationLayout:
 
@@ -75,10 +87,10 @@
 
                 MDNavigationDrawerHeader:
                     id: nav_drawer_header
-                    title: "Text"
+                    title: root.email
                     title_font_size: '17sp'
-                    text: "5 tokens"
-                    source: "path"
+                    text: str(root.credit) + ' credit'
+                    source: root.avatar
                     spacing: dp(15)
                     padding: dp(10), 0, 0, dp(10)
 

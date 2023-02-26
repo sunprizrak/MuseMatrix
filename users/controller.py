@@ -137,8 +137,9 @@ class UserController:
 
         def callback(request, response):
             self.user.update(data_user=response)
-            self.screen.core.root.ids.main_screen.ids.nav_drawer_header.title = self.user.email
-            self.screen.core.root.ids.main_screen.ids.nav_drawer_header.source = self.user.avatar
+            self.screen.core.root.ids.main_screen.email = self.user.email
+            self.screen.core.root.ids.main_screen.credit = self.user.credit
+            self.screen.core.root.ids.main_screen.avatar = self.user.avatar
 
         UrlRequest(
             url=self.path_data_user,

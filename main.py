@@ -15,6 +15,7 @@ import os
 from shutil import rmtree
 from main.settings import storage
 from users.controller import UserController
+from kivmob import KivMob, TestIds
 
 if platform == 'android':
     from android import api_version
@@ -80,11 +81,18 @@ class ArtAIApp(MDApp):
         self.theme_cls.theme_style = 'Dark'
         self.theme_cls.primary_palette = 'Purple'
 
-        Window.softinput_mode = 'pan'
+        Window.softinput_mode = 'below_target'
         Window.bind(on_keyboard=self.key_input)
+
+        self.ads = KivMob(TestIds.APP)
+        self.ads.new_interstitial(TestIds.INTERSTITIAL)
+        self.ads.request_interstitial()
 
         kv_file = Builder.load_file('main/kv/layout.kv')
         return kv_file
+
+    def on_resume(self):
+        self.ads.request_interstitial()
 
     def on_start(self):
         self.check_user_authentication()

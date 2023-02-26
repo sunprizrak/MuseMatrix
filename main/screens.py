@@ -1,7 +1,7 @@
 from kivy.metrics import sp, dp
 from kivy.uix.label import Label
 from kivy.uix.screenmanager import FallOutTransition
-from kivy.properties import StringProperty, ObjectProperty, BoundedNumericProperty
+from kivy.properties import StringProperty, ObjectProperty, BoundedNumericProperty, NumericProperty
 from kivymd.uix.button import MDFlatButton
 from kivymd.uix.menu import MDDropdownMenu
 from kivymd.uix.screen import MDScreen
@@ -33,6 +33,9 @@ class SettingsScreen(MDScreen):
 
 class MainScreen(MDScreen):
     core = ObjectProperty()
+    email = StringProperty('email')
+    credit = NumericProperty()
+    avatar = StringProperty('avatar')
 
     def __init__(self, **kwargs):
         super(MainScreen, self).__init__(**kwargs)
