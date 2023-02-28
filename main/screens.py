@@ -19,6 +19,7 @@ from PIL import Image as PilImage
 from kivy.utils import platform
 from users.controller import UserController
 import logging
+from kivmob import KivMob, TestIds
 
 logging.getLogger('PIL').setLevel(logging.WARNING)
 
@@ -40,6 +41,15 @@ class MainScreen(MDScreen):
     def __init__(self, **kwargs):
         super(MainScreen, self).__init__(**kwargs)
         self.user_controller = UserController(screen=self)
+        self.ads = KivMob(TestIds.APP)
+
+    def show_ads(self):
+        self.ads.new_interstitial(TestIds.INTERSTITIAL)
+        self.ads.request_interstitial()
+        self.ads.show_interstitial()
+
+    def on_resume(self):
+        self.ads.request_interstitial()
 
     def open_settings(self):
         self.ids.nav_drawer.set_state("close")

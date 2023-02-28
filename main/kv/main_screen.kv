@@ -59,6 +59,7 @@
                 on_release:
                     app.root.transition = MDSwapTransition()
                     app.root.current = 'chat_gpt_screen'
+                    Window.softinput_mode = 'pan'
 
             MDFloatingActionButton:
                 icon: 'image-sync'
@@ -75,7 +76,7 @@
             size_hint: None, None
             size: dp(150), dp(50)
             on_release:
-                app.ads.show_interstitial()
+                root.show_ads()
 
     MDNavigationLayout:
 
