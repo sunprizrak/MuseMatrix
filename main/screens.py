@@ -50,7 +50,6 @@ class MainScreen(MDScreen):
         self.ads.show_interstitial()
 
     def on_pre_enter(self, *args):
-        print(Window.softinput_mode)
         self.ads.new_interstitial(TestIds.INTERSTITIAL)
         self.ads.request_interstitial()
 
@@ -395,6 +394,12 @@ class ChatGptScreen(MDScreen):
     def __init__(self, **kwargs):
         super(ChatGptScreen, self).__init__(*kwargs)
         self.openai_controller = OpenAIController()
+
+    def on_pre_enter(self, *args):
+        Window.softinput_mode = 'pan'
+
+    def on_pre_leave(self, *args):
+        Window.softinput_mode = 'below_target'
 
     def send(self):
 
