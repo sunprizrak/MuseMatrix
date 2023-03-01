@@ -1,3 +1,4 @@
+from kivy.core.window import Window
 from kivy.properties import ObjectProperty
 from kivymd.uix.screen import MDScreen
 from .controller import UserController
@@ -42,6 +43,7 @@ class ChangePasswordScreen(MDScreen):
         self.user_controller = UserController(screen=self)
 
     def on_pre_leave(self, *args):
+        print(Window.softinput_mode)
         for field_name in self.ids.keys():
             if 'field' in field_name:
                 self.ids[field_name].text = ''
