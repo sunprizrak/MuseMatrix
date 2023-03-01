@@ -159,15 +159,6 @@ class ArtAIApp(MDApp):
         self.dialog.dismiss()
 
     def back(self, screen):
-        if self.root.current in ('login_screen', 'reg_screen', 'change_password_screen'):
-            for scr in self.root.screens:
-                if scr.name == self.root.current:
-                    for field_name in scr.ids.keys():
-                        if 'field' in field_name:
-                            scr.ids[field_name].text = ''
-        elif self.root.current == 'chat_gpt_screen':
-            Window.softinput_mode = 'below_target'
-
         self.root.transition = MDSlideTransition()
         self.root.transition.direction = 'right'
         self.root.current = screen

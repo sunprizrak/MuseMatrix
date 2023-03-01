@@ -1,3 +1,4 @@
+from kivy.core.window import Window
 from kivy.metrics import sp, dp
 from kivy.uix.label import Label
 from kivy.uix.screenmanager import FallOutTransition
@@ -44,9 +45,13 @@ class MainScreen(MDScreen):
         self.ads = KivMob(TestIds.APP)
 
     def show_ads(self):
+
+        print(self.ads.is_interstitial_loaded())
+        self.ads.show_interstitial()
+
+    def on_pre_enter(self, *args):
         self.ads.new_interstitial(TestIds.INTERSTITIAL)
         self.ads.request_interstitial()
-        self.ads.show_interstitial()
 
     def on_resume(self):
         self.ads.request_interstitial()
@@ -389,6 +394,12 @@ class ChatGptScreen(MDScreen):
     def __init__(self, **kwargs):
         super(ChatGptScreen, self).__init__(*kwargs)
         self.openai_controller = OpenAIController()
+
+    def on_pre_enter(self, *args):
+        Window.softinput_mode = 'below_target'
+
+    def on_pre_leave(self, *args):
+        Window.softinput_mode = 'pan'
 
     def send(self):
 

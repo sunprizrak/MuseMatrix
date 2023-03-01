@@ -95,8 +95,6 @@ class UserController:
             self.get_data_user()
             self.image_controller.get_image_list()
 
-            self.screen.ids.email_field.text = ''
-            self.screen.ids.password_field.text = ''
             self.screen.parent.transition = MDSwapTransition()
             self.screen.parent.current = 'main_screen'
 
