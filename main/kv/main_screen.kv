@@ -71,11 +71,11 @@
                     app.root.current = 'variable_image_screen'
 
         Button:
-            text: 'Show Rewarded Ad'
+            text: 'Show Interstitial Ad'
             size_hint: None, None
             size: dp(150), dp(50)
             on_release:
-                root.show_ads()
+                app.ads.show_interstitial() if app.ads.is_interstitial_loaded() else print('Неудача')
 
     MDNavigationLayout:
 
