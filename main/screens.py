@@ -42,16 +42,13 @@ class MainScreen(MDScreen):
     def __init__(self, **kwargs):
         super(MainScreen, self).__init__(**kwargs)
         self.user_controller = UserController(screen=self)
+
         self.ads = KivMob(TestIds.APP)
-
-    def show_ads(self):
-
-        print(self.ads.is_interstitial_loaded())
-        self.ads.show_interstitial()
-
-    def on_pre_enter(self, *args):
         self.ads.new_interstitial(TestIds.INTERSTITIAL)
         self.ads.request_interstitial()
+
+    def show_ads(self):
+        self.ads.show_interstitial()
 
     def on_resume(self):
         self.ads.request_interstitial()
