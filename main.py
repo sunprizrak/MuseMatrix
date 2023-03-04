@@ -61,7 +61,7 @@ class ArtAIApp(MDApp):
         if platform == 'android':
             self.ss = SharedStorage()
             self.chooser = Chooser(self.chooser_callback)
-            if api_version > 29:
+            if api_version >= 29:
                 self.permissions = [Permission.READ_EXTERNAL_STORAGE]
             else:
                 self.permissions = [Permission.READ_EXTERNAL_STORAGE, Permission.WRITE_EXTERNAL_STORAGE]
