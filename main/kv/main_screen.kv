@@ -75,7 +75,7 @@
             size_hint: None, None
             size: dp(150), dp(50)
             on_release:
-                app.ads.show_interstitial() if app.ads.is_interstitial_loaded() else print('Неудача')
+                root.show_ads()
 
     MDNavigationLayout:
 

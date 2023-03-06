@@ -21,6 +21,8 @@ if platform == 'android':
     from android import api_version
     from android.permissions import request_permissions, check_permission, Permission
     from androidstorage4kivy import SharedStorage, Chooser
+elif platform == 'linux':
+    Window.size = (360, 600)
 
 
 class CustomThemeManager(ThemeManager):
@@ -50,6 +52,8 @@ class ArtAIApp(MDApp):
     def __init__(self, **kwargs):
         super(ArtAIApp, self).__init__(**kwargs)
         self.theme_cls = CustomThemeManager()
+        self.theme_cls.theme_style = 'Dark'
+        self.theme_cls.primary_palette = 'Purple'
         self.dialog = None
         self.manager_open = False
         self.file_manager = MDFileManager(
@@ -61,15 +65,14 @@ class ArtAIApp(MDApp):
         if platform == 'android':
             self.ss = SharedStorage()
             self.chooser = Chooser(self.chooser_callback)
+            self.ads = KivMob(TestIds.APP)
             if api_version >= 29:
                 self.permissions = [Permission.READ_EXTERNAL_STORAGE]
             else:
                 self.permissions = [Permission.READ_EXTERNAL_STORAGE, Permission.WRITE_EXTERNAL_STORAGE]
 
     def build(self):
-        if platform == 'linux':
-            Window.size = (360, 600)
-        elif platform == 'android':
+        if platform == 'android':
             if not self.check_android_permissions():
                 self.req_android_permissions()
 
@@ -78,15 +81,8 @@ class ArtAIApp(MDApp):
             if cache and os.path.exists(cache):
                 rmtree(cache)
 
-        self.theme_cls.theme_style = 'Dark'
-        self.theme_cls.primary_palette = 'Purple'
-
         Window.softinput_mode = 'below_target'
         Window.bind(on_keyboard=self.key_input)
-
-        self.ads = KivMob(TestIds.APP)
-        self.ads.new_interstitial(TestIds.INTERSTITIAL)
-        self.ads.request_interstitial()
 
         kv_file = Builder.load_file('main/kv/layout.kv')
         return kv_file
