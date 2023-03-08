@@ -15,7 +15,6 @@ import os
 from shutil import rmtree
 from main.settings import storage
 from users.controller import UserController
-from kivmob import KivMob, TestIds
 
 if platform == 'android':
     from android import api_version
@@ -65,7 +64,6 @@ class ArtAIApp(MDApp):
         if platform == 'android':
             self.ss = SharedStorage()
             self.chooser = Chooser(self.chooser_callback)
-            self.ads = KivMob(TestIds.APP)
             if api_version >= 29:
                 self.permissions = [Permission.READ_EXTERNAL_STORAGE]
             else:
@@ -89,9 +87,6 @@ class ArtAIApp(MDApp):
 
     def on_start(self):
         self.check_user_authentication()
-
-    def on_resume(self):
-        self.ads.request_interstitial()
 
     def check_user_authentication(self):
         if storage.exists('auth_token'):

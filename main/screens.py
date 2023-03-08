@@ -20,7 +20,6 @@ from PIL import Image as PilImage
 from kivy.utils import platform
 from users.controller import UserController
 import logging
-from kivmob import TestIds
 
 logging.getLogger('PIL').setLevel(logging.WARNING)
 
@@ -43,17 +42,10 @@ class MainScreen(MDScreen):
         super(MainScreen, self).__init__(**kwargs)
         self.user_controller = UserController(screen=self)
 
-    def on_pre_enter(self, *args):
-        if platform == 'android':
-            self.core.ads.new_interstitial(TestIds.INTERSTITIAL)
-            self.core.ads.request_interstitial()
-
     def show_ads(self):
         if platform == 'android':
-            if self.core.ads.is_interstitial_loaded():
-                self.core.show_interstitial()
-            else:
-                print('ads not loaded')
+            #self.core.interstitial.show()
+            pass
 
     def open_settings(self):
         self.ids.nav_drawer.set_state("close")

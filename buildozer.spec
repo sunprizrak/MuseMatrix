@@ -65,7 +65,7 @@ orientation = portrait
 # author = © Copyright Info
 
 # change the major version of python used by the app
-osx.python_version = 3.11
+osx.python_version = 3
 
 # Kivy version to use
 osx.kivy_version = master
@@ -108,7 +108,7 @@ android.api = 33
 android.minapi = 21
 
 # (int) Android SDK version to use
-android.sdk = 33
+#android.sdk = 33
 
 # (str) Android NDK version to use
 android.ndk = 25b
@@ -202,7 +202,7 @@ android.accept_sdk_license = True
 #android.add_resources =
 
 # (list) Gradle dependencies to add
-android.gradle_dependencies = com.google.firebase:firebase-ads:21.5.0
+android.gradle_dependencies = com.google.android.gms:play-services-ads:21.5.0
 
 # (bool) Enable AndroidX support. Enable when 'android.gradle_dependencies'
 # contains an 'androidx' package, or any package from Kotlin source.
@@ -271,7 +271,7 @@ android.meta_data = com.google.android.gms.ads.APPLICATION_ID=ca-app-pub-3940256
 #android.uses_library =
 
 # (str) Android logcat filters to use
-#android.logcat_filters = *:S python:D
+android.logcat_filters = *:S python:D
 
 # (bool) Android logcat only display log for activity's pid
 #android.logcat_pid_only = False
