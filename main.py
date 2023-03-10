@@ -20,6 +20,23 @@ if platform == 'android':
     from android import api_version
     from android.permissions import request_permissions, check_permission, Permission
     from androidstorage4kivy import SharedStorage, Chooser
+    from kivmob import KivMob, TestIds, RewardedListenerInterface
+
+    class RewardsHandler(RewardedListenerInterface):
+
+        def __init__(self, app, user_controller):
+            self.AppObj = app
+            self.user_controller = user_controller
+
+        def on_rewarded(self, reward_name, reward_amount):
+            reward_name = 'credit'
+            reward_amount = '10'
+            self.user_controller.update_user(field_name=reward_name, field_value=int(reward_amount))
+
+        def on_rewarded_video_ad_started(self):
+            self.AppObj.load_ads_video()
+
+
 elif platform == 'linux':
     Window.size = (360, 600)
 
@@ -64,6 +81,8 @@ class ArtAIApp(MDApp):
         if platform == 'android':
             self.ss = SharedStorage()
             self.chooser = Chooser(self.chooser_callback)
+            self.ads = KivMob(TestIds.APP)
+
             if api_version >= 29:
                 self.permissions = [Permission.READ_EXTERNAL_STORAGE]
             else:
@@ -87,6 +106,17 @@ class ArtAIApp(MDApp):
 
     def on_start(self):
         self.check_user_authentication()
+        if platform == 'android':
+            self.ads.load_rewarded_ad(TestIds.REWARDED_VIDEO)
+            setattr(self, 'rewards', RewardsHandler(app=self, user_controller=UserController(screen=self.root.get_screen(name='main_screen'))))
+            self.ads.set_rewarded_ad_listener(getattr(self, 'rewards'))
+
+    def on_resume(self):
+        if platform == 'android':
+            self.ads.load_rewarded_ad(TestIds.REWARDED_VIDEO)
+
+    def load_ads_video(self):
+        self.ads.load_rewarded_ad(TestIds.REWARDED_VIDEO)
 
     def check_user_authentication(self):
         if storage.exists('auth_token'):

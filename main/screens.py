@@ -44,8 +44,7 @@ class MainScreen(MDScreen):
 
     def show_ads(self):
         if platform == 'android':
-            #self.core.interstitial.show()
-            pass
+            self.core.ads.show_rewarded_ad()
 
     def open_settings(self):
         self.ids.nav_drawer.set_state("close")

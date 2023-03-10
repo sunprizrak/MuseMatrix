@@ -70,13 +70,6 @@
                     app.root.transition = MDSwapTransition()
                     app.root.current = 'variable_image_screen'
 
-        Button:
-            text: 'Show Interstitial Ad'
-            size_hint: None, None
-            size: dp(150), dp(50)
-            on_release:
-                root.show_ads()
-
     MDNavigationLayout:
 
         MDNavigationDrawer:
@@ -110,12 +103,23 @@
                 MDNavigationDrawerItem:
                     id: collection
                     icon: 'image-multiple'
-                    text: 'MyCollection'
+                    text: 'My Collection'
                     theme_text_color: 'Custom'
                     text_color: 'white'
                     selected_color: "white"
                     on_release:
                         root.open_collection()
+
+                MDNavigationDrawerDivider:
+
+                MDNavigationDrawerItem:
+                    icon: 'hand-coin'
+                    text: 'Earn Credits'
+                    theme_text_color: 'Custom'
+                    text_color: 'white'
+                    selected_color: "white"
+                    on_release:
+                        root.show_ads()
 
                 MDNavigationDrawerDivider:
 

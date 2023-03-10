@@ -148,6 +148,23 @@ class UserController:
                          },
         )
 
+    def update_user(self, field_name, field_value):
+
+        def callback(request, response):
+            self.user.update(data_user=response)
+            if field_name == 'credit':
+                self.screen.ids.nav_drawer_header.text = f'{str(self.user.credit)} credit'
+
+        UrlRequest(
+            url=self.path_data_user,
+            method='PATCH',
+            on_success=callback,
+            req_headers={'Content-type': 'application/json',
+                         'Authorization': f"Token {storage.get('auth_token').get('token')}",
+                         },
+            req_body=json.dumps({field_name: self.user.credit + field_value}),
+        )
+
     def set_password(self, current_password, new_password, re_new_password):
 
         def output_error(error):
