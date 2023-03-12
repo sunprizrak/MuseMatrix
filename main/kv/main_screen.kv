@@ -9,8 +9,6 @@
     core: app
 
     MDRelativeLayout:
-        id: test
-        orientation: 'vertical'
         md_bg_color: root.md_bg_color if nav_drawer.state == 'close' else app.theme_cls.bg_dark
 
         MDTopAppBar:
@@ -70,13 +68,12 @@
                     app.root.transition = MDSwapTransition()
                     app.root.current = 'variable_image_screen'
 
-    MDNavigationLayout:
-
         MDNavigationDrawer:
             id: nav_drawer
             radius: (0, 16, 16, 0)
 
             MDNavigationDrawerMenu:
+                do_scroll_y: False
 
                 MDNavigationDrawerHeader:
                     id: nav_drawer_header
@@ -94,6 +91,7 @@
                     text: "Settings"
                     theme_text_color: 'Custom'
                     text_color: 'white'
+                    focus_color: app.theme_cls.primary_color
                     selected_color: "white"
                     on_release:
                         root.open_settings()
@@ -106,6 +104,7 @@
                     text: 'My Collection'
                     theme_text_color: 'Custom'
                     text_color: 'white'
+                    focus_color: app.theme_cls.primary_color
                     selected_color: "white"
                     on_release:
                         root.open_collection()
@@ -117,6 +116,7 @@
                     text: 'Earn Credits'
                     theme_text_color: 'Custom'
                     text_color: 'white'
+                    focus_color: app.theme_cls.primary_color
                     selected_color: "white"
                     on_release:
                         root.show_ads()
@@ -128,6 +128,7 @@
                     text: 'Exit'
                     theme_text_color: 'Custom'
                     text_color: 'white'
+                    focus_color: app.theme_cls.primary_color
                     selected_color: 'white'
                     on_release:
                         root.exit()
