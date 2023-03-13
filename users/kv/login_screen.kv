@@ -101,8 +101,10 @@
                     False
 
             MDTextButton:
-                text: "Forget Password?"
+                text: "Forgot Password?"
                 theme_text_color: "Custom"
                 font_size: sp(25)
                 text_color: "orange"
                 pos_hint: {'center_x': .5}
+                on_release:
+                    root.forgot_password()

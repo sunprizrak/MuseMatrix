@@ -14,6 +14,7 @@ class UserController:
     path_logout = host_name + 'auth/token/logout/'
     path_data_user = host_name + 'auth/users/me/'
     path_set_password = host_name + 'auth/users/set_password/'
+    path_reset_password = host_name + 'auth/users/reset_password/'
 
     def __init__(self, screen):
         self.screen = screen
@@ -199,11 +200,9 @@ class UserController:
 
         def callback_failure(request, response):
             output_error(error=response)
-            print(response)
 
         def callback_error(request, error):
             output_error(error=error)
-            print(error)
 
         UrlRequest(
             url=self.path_set_password,
@@ -218,6 +217,36 @@ class UserController:
                                  're_new_password': re_new_password,
                                  'current_password': current_password,
                                  }),
+        )
+
+    def reset_password(self, email):
+
+        def output_error(error):
+            if type(error) is dict:
+                self.screen.core.dialog.dismiss()
+                error_text = ''
+                for value in error.values():
+                    error_text += f'{value[0]}\n'
+                self.screen.core.show_dialog()
+                self.screen.core.dialog.text = error_text
+
+        def callback(request, response):
+            self.screen.core.dialog.dismiss()
+
+        def callback_failure(request, response):
+            output_error(error=response)
+
+        def callback_error(request, error):
+            output_error(error=error)
+
+        UrlRequest(
+            url=self.path_reset_password,
+            method='POST',
+            on_success=callback,
+            on_error=callback_error,
+            on_failure=callback_failure,
+            req_headers={'Content-type': 'application/json'},
+            req_body=json.dumps({'email': email}),
         )
 
     def del_token(self):

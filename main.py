@@ -3,6 +3,7 @@ from kivymd.app import MDApp
 from kivy.lang import Builder
 from kivy.core.window import Window
 from kivymd.theming import ThemeManager
+from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.button import MDFlatButton
 from kivymd.uix.dialog import MDDialog
 from kivymd.uix.filemanager import MDFileManager
@@ -167,11 +168,12 @@ class ArtAIApp(MDApp):
             self.manager_open = False
             self.file_manager.close()
 
-    def show_dialog(self, button=None):
+    def show_dialog(self, button=None, content=None):
         self.dialog = MDDialog(
             title='Notice!',
             type='custom',
             radius=[20, 7, 20, 7],
+            content_cls=content,
             buttons=[
                 button,
                 MDFlatButton(
