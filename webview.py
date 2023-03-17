@@ -1,6 +1,7 @@
 from kivy.uix.modalview import ModalView
 from kivy.clock import Clock
 from kivy.utils import platform
+from main.settings import host_name
 
 if platform == 'android':
     from android.runnable import run_on_ui_thread
@@ -99,7 +100,7 @@ if platform == 'android':
 
         def google_complete(self, dt):
             url = self.webview.getUrl()
-            if 'http://127.0.0.1:8000/users/google_complete/' in url:
+            if f'{host_name}/users/google_complete/' in url:
                 print(url)
 
         @run_on_ui_thread
