@@ -23,6 +23,14 @@ class LoginScreen(MDScreen):
     def login(self, email, password):
         self.user_controller.auth(email=email, password=password)
 
+    def google_login(self):
+
+        def callback(request, response):
+            url = response.get('authorization_url')
+            self.core.view_browser(url=url)
+
+        self.user_controller.google_oauth2(callback=callback)
+
     def forgot_password(self):
 
         content = MDBoxLayout(
@@ -49,7 +57,6 @@ class LoginScreen(MDScreen):
 
         self.core.dialog.title = 'Enter your Email'
         #self.core.dialog.content_cls.add_widget(email_field)
-
 
 
 class RegistrateScreen(MDScreen):

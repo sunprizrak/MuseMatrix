@@ -1,9 +1,9 @@
 from kivy.core.text import LabelBase
+from kivy.metrics import dp
 from kivymd.app import MDApp
 from kivy.lang import Builder
 from kivy.core.window import Window
 from kivymd.theming import ThemeManager
-from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.button import MDFlatButton
 from kivymd.uix.dialog import MDDialog
 from kivymd.uix.filemanager import MDFileManager
@@ -17,11 +17,13 @@ from shutil import rmtree
 from main.settings import storage
 from users.controller import UserController
 
+
 if platform == 'android':
     from android import api_version
     from android.permissions import request_permissions, check_permission, Permission
     from androidstorage4kivy import SharedStorage, Chooser
     from kivmob import KivMob, TestIds, RewardedListenerInterface
+    from webview import WebView
 
     class RewardsHandler(RewardedListenerInterface):
 
@@ -72,6 +74,7 @@ class ArtAIApp(MDApp):
         self.theme_cls.theme_style = 'Dark'
         self.theme_cls.primary_palette = 'Purple'
         self.dialog = None
+        self.browser = None
         self.manager_open = False
         self.file_manager = MDFileManager(
             exit_manager=self.exit_manager,
@@ -112,9 +115,23 @@ class ArtAIApp(MDApp):
             setattr(self, 'rewards', RewardsHandler(app=self, user_controller=UserController(screen=self.root.get_screen(name='main_screen'))))
             self.ads.set_rewarded_ad_listener(getattr(self, 'rewards'))
 
+    def on_pause(self):
+        if platform == 'android':
+            if self.browser:
+                self.browser.pause()
+
     def on_resume(self):
         if platform == 'android':
             self.ads.load_rewarded_ad(TestIds.REWARDED_VIDEO)
+
+            if self.browser:
+                self.browser.resume()
+
+    def view_browser(self, url=None):
+        self.browser = WebView(
+            url,
+            enable_javascript=True,
+        )
 
     def load_ads_video(self):
         self.ads.load_rewarded_ad(TestIds.REWARDED_VIDEO)

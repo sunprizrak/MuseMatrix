@@ -4,7 +4,7 @@ from kivymd.uix.transition.transition import MDSwapTransition
 from .models import User
 from main.controller import ImageController
 import json
-from main.settings import storage, host_name
+from main.settings import storage, host_name, google_redirect_url
 
 
 class UserController:
@@ -15,6 +15,7 @@ class UserController:
     path_data_user = host_name + 'auth/users/me/'
     path_set_password = host_name + 'auth/users/set_password/'
     path_reset_password = host_name + 'auth/users/reset_password/'
+    path_google_oauth2 = host_name + 'auth/o/google-oauth2/'
 
     def __init__(self, screen):
         self.screen = screen
@@ -122,6 +123,17 @@ class UserController:
 
         self.screen.parent.transition = NoTransition()
         self.screen.parent.current = 'main_screen'
+
+    def google_oauth2(self, callback):
+
+        UrlRequest(
+            url=f'{self.path_google_oauth2}?redirect_uri={google_redirect_url}',
+            method='GET',
+            on_success=callback,
+            #on_error=callback_error,
+            #on_failure=callback_failure,
+            req_headers={'Content-type': 'application/json'},
+        )
 
     def un_login(self):
         if storage.exists('auth_token'):
