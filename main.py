@@ -1,5 +1,4 @@
 from kivy.core.text import LabelBase
-from kivy.metrics import dp
 from kivymd.app import MDApp
 from kivy.lang import Builder
 from kivy.core.window import Window
