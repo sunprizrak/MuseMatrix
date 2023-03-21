@@ -1,4 +1,3 @@
-from kivy.core.window import Window
 from kivy.properties import ObjectProperty
 from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.button import MDFlatButton

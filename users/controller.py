@@ -161,12 +161,20 @@ class UserController:
                          },
         )
 
-    def update_user(self, field_name, field_value):
+    def update_user(self, field_name, field_value, credit=None):
 
         def callback(request, response):
             self.user.update(data_user=response)
-            if field_name == 'credit':
-                self.screen.ids.nav_drawer_header.text = f'{str(self.user.credit)} credit'
+            if credit:
+                self.screen.core.root.ids.main_screen.ids.nav_drawer_header.text = f'{str(self.user.credit)} credit'
+
+        req_body = json.dumps({field_name: field_value})
+
+        if credit:
+            if credit == 'plus':
+                req_body = json.dumps({field_name: self.user.credit + field_value})
+            elif credit == 'minus':
+                req_body = json.dumps({field_name: self.user.credit - field_value})
 
         UrlRequest(
             url=self.path_data_user,
@@ -175,7 +183,7 @@ class UserController:
             req_headers={'Content-type': 'application/json',
                          'Authorization': f"Token {storage.get('auth_token').get('token')}",
                          },
-            req_body=json.dumps({field_name: self.user.credit + field_value}),
+            req_body=req_body,
         )
 
     def set_password(self, current_password, new_password, re_new_password):

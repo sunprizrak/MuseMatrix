@@ -10,6 +10,7 @@
 #:include main/kv/variable_image_screen.kv
 #:include main/kv/chat_gpt_screen.kv
 #:include main/kv/collection_screen.kv
+#:include main/kv/buy_credits_screen.kv
 
 
 <SM@MDScreenManager>
@@ -48,6 +49,9 @@ SM:
 
     CollectionScreen:
         id: collection_screen
+
+    BuyCreditsScreen:
+        id: buy_credits_screen
 
     OpenImageScreen:
         id: open_img_screen

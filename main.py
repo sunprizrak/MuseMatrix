@@ -32,8 +32,8 @@ if platform == 'android':
 
         def on_rewarded(self, reward_name, reward_amount):
             reward_name = 'credit'
-            reward_amount = '10'
-            self.user_controller.update_user(field_name=reward_name, field_value=int(reward_amount))
+            reward_amount = '1'
+            self.user_controller.update_user(field_name=reward_name, field_value=int(reward_amount), credit='plus')
 
         def on_rewarded_video_ad_started(self):
             self.AppObj.load_ads_video()
@@ -216,9 +216,8 @@ class ArtAIApp(MDApp):
                 if self.root.current in ('reg_screen', 'login_screen'):
                     self.back(screen='start_screen')
                 elif self.root.current == 'open_img_screen':
-                    for scr in self.root.screens:
-                        if scr.name == self.root.current:
-                            scr.back(screen=scr.ids.full_image.back_screen)
+                    screen = self.root.get_screen(self.root.current)
+                    screen.back(screen=screen.ids.full_image.back_screen)
                 else:
                     self.back(screen='main_screen')
                 return True

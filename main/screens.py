@@ -20,16 +20,13 @@ from PIL import Image as PilImage
 from kivy.utils import platform
 from users.controller import UserController
 import logging
+from .settings import credit_one_generate
 
 logging.getLogger('PIL').setLevel(logging.WARNING)
 
 
 class StartScreen(MDScreen):
     core = ObjectProperty()
-
-
-class SettingsScreen(MDScreen):
-    pass
 
 
 class MainScreen(MDScreen):
@@ -58,25 +55,34 @@ class MainScreen(MDScreen):
         self.core.root.transition = MDSwapTransition()
         self.core.root.current = 'collection_screen'
 
+    def open_buy_credits(self):
+        self.ids.nav_drawer.set_state('close')
+        self.core.root.transition = MDSwapTransition()
+        self.core.root.current = 'buy_credits_screen'
+
     def exit(self):
         self.ids.nav_drawer.set_state("close")
         self.user_controller.un_login()
 
 
 class CreateImageScreen(MDScreen):
+    core = ObjectProperty()
     prompt = StringProperty()
     image_count = BoundedNumericProperty(1, min=1, max=10, errorhandler=lambda x: 10 if x > 10 else 1)
     image_size = StringProperty('256x256')
     default_img = ObjectProperty()
+    price = NumericProperty()
 
     def __init__(self, **kwargs):
         super(CreateImageScreen, self).__init__(**kwargs)
         self.openai_controller = OpenAIController()
-        self.image_controller = ImageController(screen=self)
+        self.user_controller = UserController(screen=self)
 
     def create(self):
 
         def callback(request, response):
+            self.user_controller.update_user(field_name='credit', field_value=self.price, credit='minus')
+
             self.ids.create_spin.active = False
 
             if len(response['data']) == 1:
@@ -113,21 +119,28 @@ class CreateImageScreen(MDScreen):
                     swiper.add_widget(item)
 
                 self.ids.image_section.add_widget(swiper)
+
         if all([self.prompt, self.image_count, self.image_size]):
-            for widget in self.ids.image_section.children:
-                if isinstance(widget, MyImage) or isinstance(widget, MDSwiper):
-                    self.ids.image_section.remove_widget(widget)
+            self.price = self.image_count * credit_one_generate
+            if self.price <= self.user_controller.user.credit:
+                for widget in self.ids.image_section.children:
+                    if isinstance(widget, MyImage) or isinstance(widget, MDSwiper):
+                        self.ids.image_section.remove_widget(widget)
 
-            self.ids.image_section.remove_widget(self.default_img)
+                self.ids.image_section.remove_widget(self.default_img)
 
-            self.ids.create_spin.active = True
+                self.ids.create_spin.active = True
 
-            self.openai_controller.image_generation(
-                prompt=self.prompt,
-                image_count=self.image_count,
-                image_size=self.image_size,
-                callback=callback,
-            )
+                self.openai_controller.image_generation(
+                    prompt=self.prompt,
+                    image_count=self.image_count,
+                    image_size=self.image_size,
+                    callback=callback,
+                )
+            else:
+                self.core.show_dialog()
+                self.core.dialog.title = 'success!'
+                self.core.dialog.text = 'You dont have enough credits'
 
 
 class EditImageScreen(MDScreen):
@@ -566,3 +579,11 @@ class OpenImageScreen(MDScreen):
         self.core.show_dialog(button=button)
         self.core.dialog.title = 'Delete'
         self.core.dialog.text = 'Are you sure you want to delete??'
+
+
+class SettingsScreen(MDScreen):
+    pass
+
+
+class BuyCreditsScreen(MDScreen):
+    pass
