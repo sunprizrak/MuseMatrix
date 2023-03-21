@@ -20,22 +20,22 @@
             orientation: 'vertical'
             spacing: dp(15)
             size_hint_x: None
-            width: dp(300)
+            width: dp(250)
+            pos_hint: {'center_x': .5, 'center_y': .5}
+            adaptive_height: True
 
             MDBoxLayout:
                 orientation: 'horizontal'
                 spacing: dp(5)
                 size_hint_y: None
                 height: button1.height
-                size_hint_x: .8
-                pos_hint: {'center_x': .5}
 
                 MDLabel:
                     text: '$99.99'
 
                 MDRaisedButton:
                     id: button1
-                    text: '1000 credits'
+                    text: '4000 credits'
                     font_size: sp(25)
                     md_bg_color: app.theme_cls.primary_color
                     on_release:
@@ -52,7 +52,7 @@
 
                 MDRaisedButton:
                     id: button2
-                    text: '2000 credits'
+                    text: '3000 credits'
                     font_size: sp(25)
                     md_bg_color: app.theme_cls.primary_color
                     on_release:
@@ -69,7 +69,7 @@
 
                 MDRaisedButton:
                     id: button3
-                    text: '3000 credits'
+                    text: '2000 credits'
                     font_size: sp(25)
                     md_bg_color: app.theme_cls.primary_color
                     on_release:
@@ -86,7 +86,7 @@
 
                 MDRaisedButton:
                     id: button4
-                    text: '4000 credits'
+                    text: '1000 credits'
                     font_size: sp(25)
                     md_bg_color: app.theme_cls.primary_color
                     on_release:
