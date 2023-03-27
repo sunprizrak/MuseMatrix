@@ -16,46 +16,14 @@ import os
 from shutil import rmtree
 from main.settings import storage
 from users.controller import UserController
-from kivymd.uix.bottomsheet import MDCustomBottomSheet
 
 
 if platform == 'android':
-    from android import api_version, python_act as PythonActivity
+    from android import api_version
     from android.permissions import request_permissions, check_permission, Permission
-    from android.runnable import run_on_ui_thread
     from androidstorage4kivy import SharedStorage, Chooser
     from kivmob import KivMob, TestIds, RewardedListenerInterface
     from webview import WebView
-    from IABKivy import oiabilling
-    from jnius import autoclass, cast
-
-    Toast = autoclass('android.widget.Toast')
-    String = autoclass('java.lang.String')
-    CharSequence = autoclass('java.lang.CharSequence')
-
-    LayoutParams = autoclass('android.view.WindowManager$LayoutParams')
-    AndroidColor = autoclass('android.graphics.Color')
-
-    context = PythonActivity.mActivity
-
-    PROD_ONETIME = "onetime"
-    PROD_MONTHLY_1 = "month1"
-    PROD_MONTHLY_2 = "month2"
-    PROD_MONTHLY_3 = "month3"
-    PROD_ANNUAL_1 = "annual1"
-    PROD_ANNUAL_2 = "annual2"
-
-    @run_on_ui_thread
-    def show_toast(text):
-        text = cast(CharSequence, String(text))
-        t = Toast.makeText(context, text, Toast.LENGTH_SHORT)
-        t.show()
-
-    @run_on_ui_thread
-    def set_statusbar_color(color):
-        window = context.getWindow()
-        window.addFlags(LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
-        window.setStatusBarColor(AndroidColor.parseColor(color))
 
     class RewardsHandler(RewardedListenerInterface):
 
@@ -134,28 +102,6 @@ class ArtAIApp(MDApp):
             if cache and os.path.exists(cache):
                 rmtree(cache)
 
-            self.billing = oiabilling.Billing(
-                [
-                    PROD_ONETIME,
-                    PROD_MONTHLY_1,
-                    PROD_MONTHLY_2,
-                    PROD_MONTHLY_3,
-                    PROD_ANNUAL_1,
-                    PROD_ANNUAL_2
-                ],
-                'com.example.billingapp.Config')
-
-            # gets consumed every month
-            self.billing.setConsumable(PROD_MONTHLY_1)
-            self.billing.setConsumable(PROD_MONTHLY_2)
-            self.billing.setConsumable(PROD_MONTHLY_3)
-
-            # gets consumed every year
-            self.billing.setConsumable(PROD_ANNUAL_1)
-            self.billing.setConsumable(PROD_ANNUAL_2)
-
-            self.billing.bind(consumed=self.check_purchase)
-
         Window.softinput_mode = 'below_target'
         Window.bind(on_keyboard=self.key_input)
 
@@ -173,6 +119,7 @@ class ArtAIApp(MDApp):
         if platform == 'android':
             if self.browser:
                 self.browser.pause()
+        return True
 
     def on_resume(self):
         if platform == 'android':
@@ -180,22 +127,6 @@ class ArtAIApp(MDApp):
 
             if self.browser:
                 self.browser.resume()
-
-    def open_payment_layout(self, sku):
-        pml =MDBoxLayout()
-        setattr(self, 'product_id', sku)
-        setattr(self, 'custom_sheet', MDCustomBottomSheet(screen=pml))
-        self.custom_sheet.open()
-
-    def initiate_purchase(self, method_name):
-        if method_name == "gplay":
-            if self.billing.isConsumable(self.product_id) and self.product_id in self.billing.consumed.keys() and \
-                    self.billing.consumed[self.product_id]:
-                self.billing.consume(self.product_id)
-            else:
-                self.billing.purchase(self.product_id)
-        else:
-            show_toast("Payment method not implemented")
 
     def view_browser(self, url=None):
         self.browser = WebView(

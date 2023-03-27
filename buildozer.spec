@@ -96,7 +96,7 @@ fullscreen = 0
 
 # (list) Permissions
 # (See https://python-for-android.readthedocs.io/en/latest/buildoptions/#build-options-1 for all the supported syntaxes and properties)
-android.permissions = INTERNET, ACCESS_NETWORK_STATE, READ_EXTERNAL_STORAGE, READ_MEDIA_IMAGES
+android.permissions = INTERNET, ACCESS_NETWORK_STATE, READ_EXTERNAL_STORAGE, WRITE_EXTERNAL_STORAGE, READ_MEDIA_IMAGES
 
 # (list) features (adds uses-feature -tags to manifest)
 #android.features = android.hardware.usb.host
@@ -163,6 +163,9 @@ android.accept_sdk_license = True
 
 # (list) Pattern to whitelist for the whole project
 #android.whitelist =
+
+# (bool) If True, your application will be listed as a home app (launcher app)
+# android.home_app = False
 
 # (str) Path to a custom whitelist file
 #android.whitelist_src =
