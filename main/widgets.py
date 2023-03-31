@@ -2,10 +2,11 @@ from kivy.core.image import Image as CoreImage
 from kivy.graphics import Color, Ellipse, Line
 from kivy.metrics import sp, dp
 from kivy.properties import ObjectProperty, ColorProperty, NumericProperty, ListProperty
+from kivymd.uix.label import MDLabel
 from kivymd.uix.segmentedcontrol import MDSegmentedControl, MDSegmentedControlItem
 from kivy.uix.image import AsyncImage
 from kivy.uix.screenmanager import RiseInTransition
-from kivymd.uix.list import MDList, OneLineListItem
+from kivymd.uix.list import MDList, OneLineListItem, IRightBodyTouch
 from kivymd.uix.selection import MDSelectionList
 from kivymd.uix.selection.selection import SelectionItem, SelectionIconCheck
 
@@ -184,3 +185,6 @@ class Message(OneLineListItem):
         self.ids._lbl_primary.shorten = False
         self.ids._lbl_primary.size_hint_y = 1
 
+
+class RightLabel(IRightBodyTouch, MDLabel):
+    pass

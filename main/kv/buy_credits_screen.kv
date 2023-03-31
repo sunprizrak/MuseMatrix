@@ -1,5 +1,21 @@
 #:import BuyCreditsScreen main.screens
 
+<ListItemWithLabel@OneLineAvatarIconListItem>:
+    recent: False
+    icon: ""
+    method_name: ""
+    right_label_text: "Recent" if self.recent else ""
+
+    IconLeftWidget:
+        icon: root.icon
+
+    RightLabel:
+        text: root.right_label_text
+        theme_text_color: "Custom"
+        text_color: [0,0,0,.4] if app.theme_cls.theme_style == "Light" else [1, 1, 1, 1]
+        font_size: sp(12)
+
+
 <BuyCreditsScreen>
     name: 'buy_credits_screen'
     md_bg_color: app.theme_cls.bg_light
@@ -39,7 +55,7 @@
                     font_size: sp(25)
                     md_bg_color: app.theme_cls.primary_color
                     on_release:
-                        False
+                        root.open_payment_layout("onetime")
 
             MDBoxLayout:
                 orientation: 'horizontal'
@@ -56,7 +72,7 @@
                     font_size: sp(25)
                     md_bg_color: app.theme_cls.primary_color
                     on_release:
-                        False
+                        root.open_payment_layout("onetime")
 
             MDBoxLayout:
                 orientation: 'horizontal'
@@ -73,7 +89,7 @@
                     font_size: sp(25)
                     md_bg_color: app.theme_cls.primary_color
                     on_release:
-                        False
+                        root.open_payment_layout("onetime")
 
             MDBoxLayout:
                 orientation: 'horizontal'
@@ -90,5 +106,52 @@
                     font_size: sp(25)
                     md_bg_color: app.theme_cls.primary_color
                     on_release:
-                        False
+                        root.open_payment_layout('onetime')
+
+    MDBottomSheet:
+        id: bottom_sheet
+        bg_color: "grey"
+        max_opening_height: self.height
+        default_opening_height: self.max_opening_height
+        adaptive_height: True
+
+
+        MDBottomSheetContent:
+            padding: "5dp"
+
+            MDBoxLayout:
+                orientation: 'vertical'
+                size_hint_y: None
+                height: '200dp'
+
+                MDBoxLayout:
+                    size_hint_y: None
+                    height: dp(40)
+
+                    Widget:
+                        size_hint_x: None
+                        width: dp(20)
+
+                    MDLabel:
+                        text: 'Select Payment Method'
+                        font_size: sp(14)
+                        bold: True
+                        theme_text_color: 'Custom'
+                        text_color: [0, 0, 0, .5] if app.theme_cls.theme_style == 'Light' else [1, 1, 1, 1]
+
+                ScrollView:
+
+                    MDGridLayout:
+                        cols: 1
+                        adaptive_height: True
+
+                        ListItemWithLabel:
+                            icon: "google-play"
+                            text: "Google Play"
+                            method_name: "gplay"
+                            recent: True
+                            on_release:
+                                root.initiate_purchase(self.method_name)
+
+
 

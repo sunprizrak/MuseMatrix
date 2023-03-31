@@ -1,8 +1,10 @@
+from kivy import Logger
 from kivy.core.window import Window
 from kivy.metrics import sp, dp
 from kivy.uix.label import Label
 from kivy.uix.screenmanager import FallOutTransition
 from kivy.properties import StringProperty, ObjectProperty, BoundedNumericProperty, NumericProperty
+from kivymd.toast import toast
 from kivymd.uix.button import MDFlatButton
 from kivymd.uix.menu import MDDropdownMenu
 from kivymd.uix.screen import MDScreen
@@ -21,6 +23,9 @@ from kivy.utils import platform
 from users.controller import UserController
 import logging
 from .settings import credit_one_generate
+
+if platform == 'android':
+    from iabwrapper import BillingProcessor
 
 logging.getLogger('PIL').setLevel(logging.WARNING)
 
@@ -586,4 +591,116 @@ class SettingsScreen(MDScreen):
 
 
 class BuyCreditsScreen(MDScreen):
-    pass
+    LICENSE_KEY = ''
+
+    PROD_ONETIME = "onetime"
+    PROD_CONSUME = "consumable"
+    PROD_MONTHLY_1 = "one_month"
+    PROD_ANNUAL_1 = "one_year"
+
+    products = [PROD_ONETIME, PROD_CONSUME]
+    subscriptions = [PROD_MONTHLY_1, PROD_ANNUAL_1]
+
+    def __init__(self, **kwargs):
+        super(BuyCreditsScreen, self).__init__(**kwargs)
+        if platform == 'android':
+            self.bp = BillingProcessor(self.LICENSE_KEY, self.product_purchased, self.billing_error,
+                                       onBillingInitializedMethod=self.billing_initialized)
+
+    def on_pre_enter(self, *args):
+        if platform == 'android':
+
+            Logger.info(f"is_initialized: {self.bp.is_initialized()}")
+            Logger.info(f"is_iab_service_available: {self.bp.is_iab_service_available()}")
+            Logger.info(f"is_subscription_update_supported: {self.bp.is_subscription_update_supported()}")
+
+            owned_products = self.bp.list_owned_products()
+            owned_subscriptions = self.bp.list_owned_subscriptions()
+
+            for product in owned_products:
+                Logger.info(f"Product: {product}")
+
+            for subscription in owned_subscriptions:
+                Logger.info(f"Subscription: {subscription}")
+
+    def open_payment_layout(self, sku):
+        if self.bp.is_purchased(sku):
+            toast("Already Purchased")
+            pi = self.bp.get_purchase_info(sku)
+            details = {
+                "responseData": pi.responseData,
+                "signature": pi.signature,
+                "purchaseData": {
+                    "orderId": pi.purchaseData.orderId,
+                    "productId": pi.purchaseData.productId,
+                    "purchaseTime": pi.purchaseData.purchaseTime,
+                    "purchaseToken": pi.purchaseData.purchaseToken,
+                    "purchaseState": pi.purchaseData.purchaseState,
+                    "autoRenewing": pi.purchaseData.autoRenewing,
+                }
+            }
+            Logger.info(f"get_purchase_info: {details}")
+            self.bp.consume_purchase_async(sku)
+            return
+        elif self.bp.is_subscribed(sku):
+            toast("Already Subscribed")
+            pi = self.bp.get_subscription_purchase_info(sku)
+            details = {
+                "responseData": pi.responseData,
+                "signature": pi.signature,
+                "purchaseData": {
+                    "orderId": pi.purchaseData.orderId,
+                    "productId": pi.purchaseData.productId,
+                    "purchaseTime": pi.purchaseData.purchaseTime,
+                    "purchaseToken": pi.purchaseData.purchaseToken,
+                    "purchaseState": pi.purchaseData.purchaseState,
+                    "autoRenewing": pi.purchaseData.autoRenewing,
+                }
+            }
+            Logger.info(f"get_subscription_purchase_info: {details}")
+            return
+        setattr(self, 'product_id', sku)
+        self.ids.bottom_sheet.open()
+
+    def initiate_purchase(self, method_name):
+
+        if method_name == "gplay":
+            if self.product_id in self.products:
+                # Get Details about a product
+                self.bp.get_purchase_listing_async(self.product_id, self.purchase_details_received)
+                self.bp.purchase_product(self.product_id)
+            elif self.product_id in self.subscriptions:
+                # Get Details about a subscription
+                self.bp.get_subscription_listing_async(self.product_id, self.purchase_details_received)
+                self.bp.subscribe_product(self.product_id)
+
+        else:
+            toast("Payment method not implemented")
+
+    def product_purchased(self, product_id, purchase_info):
+        toast("Product purchased")
+        self.ids.bottom_sheet.dismiss()
+
+    def billing_error(self, error_code, error_message):
+        Logger.info("Billing error")
+
+    def billing_initialized(self):
+        Logger.info("Billing initialized")
+
+    def purchase_details_received(self, product_info):
+        if product_info.size() != 0:
+            product_info = product_info[0]
+            details = {
+                "productId": product_info.productId,
+                "title": product_info.title,
+                "description": product_info.description,
+                "isSubscription": product_info.isSubscription,
+                "currency": product_info.currency,
+                "priceValue": product_info.priceValue,
+                "priceText": product_info.priceText,
+            }
+            Logger.info(details)
+            toast(f"Purchase details received {details}")
+        else:
+            toast("No purchase details received")
+

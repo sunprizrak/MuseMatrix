@@ -3,7 +3,6 @@ from kivymd.app import MDApp
 from kivy.lang import Builder
 from kivy.core.window import Window
 from kivymd.theming import ThemeManager
-from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.button import MDFlatButton
 from kivymd.uix.dialog import MDDialog
 from kivymd.uix.filemanager import MDFileManager
@@ -38,7 +37,6 @@ if platform == 'android':
 
         def on_rewarded_video_ad_started(self):
             self.AppObj.load_ads_video()
-
 
 elif platform == 'linux':
     Window.size = (360, 600)
