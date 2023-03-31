@@ -1,13 +1,13 @@
 [app]
 
 # (str) Title of your application
-title = ArtAI
+title = MindPics
 
 # (str) Package name
-package.name = artai
+package.name = mindpics
 
 # (str) Package domain (needed for android/ios packaging)
-package.domain = org.artai
+package.domain = org.mindpics
 
 # (str) Source code where the main.py live
 source.dir = .
