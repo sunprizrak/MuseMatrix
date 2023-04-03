@@ -23,7 +23,7 @@ if platform == 'android':
     from android.permissions import request_permissions, check_permission, Permission
     from androidstorage4kivy import SharedStorage, Chooser
     from kivmob import KivMob, TestIds, RewardedListenerInterface
-    from webview import WebView
+    from utility.webview import WebView
 
     class RewardsHandler(RewardedListenerInterface):
 
