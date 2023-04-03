@@ -1,12 +1,8 @@
-#:import CreateImageScreen main.screens
+#:import VariableImageScreen screens
 
-<CreateImageScreen>
-    name: 'create_image_screen'
+<VariableImageScreen>
+    name: 'variable_image_screen'
     md_bg_color: app.theme_cls.bg_light
-
-    core: app
-    default_img: default_img
-    prompt: input_prompt.text
 
     MDFloatLayout:
 
@@ -14,9 +10,9 @@
             orientation: 'vertical'
 
             MDTopAppBar:
-                id: create_top_bar
+                id: variable_top_bar
                 type_height: 'small'
-                title: 'create images'
+                title: 'variable images'
                 anchor_title: 'left'
                 md_bg_color: root.md_bg_color
                 left_action_items: [['arrow-left-bold', lambda x: app.back(screen='main_screen')]]
@@ -24,17 +20,13 @@
 
             MDBoxLayout:
                 id: image_section
-
-                Image:
-                    id: default_img
-                    source: 'main/img/default.png'
-                    mipmap: True
+                padding: 0, dp(15), 0, dp(15)
 
             MDBoxLayout:
                 id: option_section
                 orientation: 'vertical'
                 adaptive_height: True
-                spacing: dp(10)
+                spacing: dp(15)
                 padding: dp(15)
 
                 MySegmentedControl:
@@ -76,7 +68,6 @@
                         font_size: sp(30)
                         halign: 'center'
 
-
                     MDIconButton:
                         icon: 'plus-box-outline'
                         icon_size: sp(30)
@@ -85,28 +76,28 @@
                         on_release:
                             root.image_count += 1
 
-                MDTextFieldRect:
-                    id: input_prompt
-                    multiline: True
-                    auto_indent: True
-                    size_hint_y: None
-                    height: dp(100)
-                    pos_hint: {'center_x': .5}
-                    padding: dp(10)
-                    cursor_color: 0, 0, 0, 1
-                    line_anim: False
-
                 MDRaisedButton:
                     text: 'Generate'
-                    font_size: sp(25)
                     md_bg_color: app.theme_cls.primary_color
                     pos_hint: {'center_x': .5}
+                    font_size: sp(25)
                     on_release:
-                        root.create()
+                        root.generate()
 
         MDSpinner:
-            id: create_spin
+            id: variable_spin
             size_hint: None, None
             size: dp(38), dp(38)
             pos_hint: {'center_x': .5, 'center_y': .68}
             active: False
+
+        MDIconButton:
+            id: add_image_button
+            icon: 'image-plus'
+            icon_size: dp(70)
+            theme_icon_color: "Custom"
+            disabled_color: 1, 1, 1, 0
+            icon_color: 'gray'
+            pos_hint: {"center_x": .5, "center_y": .7}
+            on_release:
+                app.file_manager_open()

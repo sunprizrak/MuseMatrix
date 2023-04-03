@@ -1,4 +1,5 @@
 from kivy.core.text import LabelBase
+from kivy.metrics import dp
 from kivymd.app import MDApp
 from kivy.lang import Builder
 from kivy.core.window import Window
@@ -13,8 +14,8 @@ from kivy.clock import mainthread
 from kivy.logger import Logger
 import os
 from shutil import rmtree
-from main.settings import storage
-from users.controller import UserController
+from settings import storage
+from controller.user import UserController
 
 
 if platform == 'android':
@@ -61,7 +62,7 @@ class CustomThemeManager(ThemeManager):
             "Overline": ["Hacked", 10, True, 1.5],
             'Message': ['Roboto', 16, False, 0.5],
         })
-        LabelBase.register(name='Hacked', fn_regular='main/font/hacked.ttf')
+        LabelBase.register(name='Hacked', fn_regular='assets/font/hacked.ttf')
 
 
 class ArtAIApp(MDApp):
@@ -103,7 +104,7 @@ class ArtAIApp(MDApp):
         Window.softinput_mode = 'below_target'
         Window.bind(on_keyboard=self.key_input)
 
-        kv_file = Builder.load_file('main/kv/layout.kv')
+        kv_file = Builder.load_file('kv_files/layout.kv')
         return kv_file
 
     def on_start(self):
@@ -187,8 +188,9 @@ class ArtAIApp(MDApp):
     def show_dialog(self, button=None, content=None):
         self.dialog = MDDialog(
             title='Notice!',
+            md_bg_color=self.theme_cls.bg_light,
             type='custom',
-            radius=[20, 7, 20, 7],
+            radius=[dp(20), dp(7), dp(20), dp(7)],
             content_cls=content,
             buttons=[
                 button,

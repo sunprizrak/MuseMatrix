@@ -1,6 +1,20 @@
-#:import LoginScreen users.screens
+#:import LoginScreen screens
 #:import MDSlideTransition kivymd.uix.transition.transition.MDSlideTransition
 #:import platform kivy.utils
+
+
+<LogTextField@MDTextField>
+    theme_text_color: 'Custom'
+    text_color_normal: 'white'
+    text_color_focus: 'green'
+    hint_text_color_normal: 'white'
+    hint_text_color_focus: 'green'
+    icon_left_color_normal: 'white'
+    icon_left_color_focus: 'white'
+    line_color_focus: 'green'
+    helper_text_mode: 'on_error'
+
+
 
 <LoginScreen>
     name: 'login_screen'
@@ -20,10 +34,11 @@
         MDLabel:
             text: 'Login'
             theme_text_color: 'Custom'
-            text_color: "#acf4f3"
+            text_color: "green"
             font_size: sp(50)
             halign: 'center'
             pos_hint: {'center_y': .8}
+
 
         MDBoxLayout:
             orientation: 'vertical'
@@ -32,39 +47,21 @@
             adaptive_height: True
             size_hint_max_x: dp(300)
 
-            MDTextField:
+            LogTextField:
                 id: email_field
-                theme_text_color: 'Custom'
-                text_color_normal: 'white'
-                text_color_focus: '#acf4f3'
-                hint_text_color_normal: 'white'
-                hint_text_color_focus: '#acf4f3'
-                icon_left_color_normal: 'white'
-                icon_left_color_focus: '#acf4f3'
-                line_color_focus: '#acf4f3'
                 hint_text: 'email'
                 icon_left: 'email'
                 pos_hint: {'center_x': .5}
-                helper_text_mode: 'on_error'
 
             MDRelativeLayout:
                 size_hint: 1, None
                 height: password_field.height
                 pos_hint: {'center_x': .5}
 
-                MDTextField:
+                LogTextField:
                     id: password_field
-                    theme_text_color: 'Custom'
-                    text_color_normal: 'white'
-                    text_color_focus: '#acf4f3'
-                    hint_text_color_normal: 'white'
-                    hint_text_color_focus: '#acf4f3'
-                    icon_left_color_normal: 'white'
-                    icon_left_color_focus: '#acf4f3'
-                    line_color_focus: '#acf4f3'
                     icon_left: 'key-variant'
                     password: True
-                    helper_text_mode: 'on_error'
                     hint_text: 'Password'
                     unfocus_on_touch: False if platform == 'android' else True
 
@@ -81,7 +78,7 @@
         MDRaisedButton:
             text: 'Login'
             font_size: sp(25)
-            md_bg_color: '#acf4f3'
+            md_bg_color: 'green'
             pos_hint: {'center_x': .5, 'center_y': .3}
             on_release:
                 root.login(email_field.text, password_field.text)

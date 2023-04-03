@@ -1,6 +1,18 @@
-#:import RegistrateScreen users.screens
+#:import RegistrateScreen screens
 #:import SlideTransition kivymd.uix.transition.transition.MDSlideTransition
 #:import platform kivy.utils
+
+
+<RegTextField@MDTextField>
+    theme_text_color: 'Custom'
+    text_color_normal: 'white'
+    text_color_focus: '#2525db'
+    hint_text_color_normal: 'white'
+    hint_text_color_focus: '#2525db'
+    icon_left_color_normal: 'white'
+    icon_left_color_focus: 'white'
+    line_color_focus: '#2525db'
+    helper_text_mode: 'on_error'
 
 
 <RegistrateScreen>
@@ -32,32 +44,22 @@
                 font_size: sp(50)
                 halign: 'center'
 
-            MDTextField:
+            RegTextField:
                 id: email_field
-                theme_text_color: 'Custom'
-                text_color_normal: 'white'
-                hint_text_color_normal: 'white'
-                icon_left_color_normal: 'white'
                 hint_text: 'email'
                 icon_left: 'email'
                 pos_hint: {'center_x': .5}
-                helper_text_mode: 'on_error'
 
             MDRelativeLayout:
                 size_hint: 1, None
                 height: password_field.height
                 pos_hint: {'center_x': .5}
 
-                MDTextField:
+                RegTextField:
                     id: password_field
-                    theme_text_color: 'Custom'
-                    text_color_normal: 'white'
-                    hint_text_color_normal: 'white'
-                    icon_left_color_normal: 'white'
                     hint_text: 'Password'
                     icon_left: 'key-variant'
                     password: True
-                    helper_text_mode: 'on_error'
                     unfocus_on_touch: False if platform == 'android' else True
 
                 MDIconButton:
@@ -75,16 +77,11 @@
                 height: re_password_field.height
                 pos_hint: {'center_x': .5}
 
-                MDTextField:
+                RegTextField:
                     id: re_password_field
-                    theme_text_color: 'Custom'
-                    text_color_normal: 'white'
-                    hint_text_color_normal: 'white'
-                    icon_left_color_normal: 'white'
                     hint_text: 'Password repeat'
-                    icon_left: 'key-variant'
+                    icon_left: 'autorenew'
                     password: True
-                    helper_text_mode: 'on_error'
                     unfocus_on_touch: False if platform == 'android' else True
 
                 MDIconButton:

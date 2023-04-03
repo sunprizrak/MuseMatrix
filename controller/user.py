@@ -1,10 +1,10 @@
 from kivy.network.urlrequest import UrlRequest
 from kivy.uix.screenmanager import NoTransition, FallOutTransition
 from kivymd.uix.transition.transition import MDSwapTransition
-from .models import User
-from main.controller import ImageController
+from models import User
+from controller.image import ImageController
 import json
-from main.settings import storage, host_name, google_redirect_url
+from settings import storage, host_name, google_redirect_url
 
 
 class UserController:

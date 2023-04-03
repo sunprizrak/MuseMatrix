@@ -1,4 +1,4 @@
-#:import StartScreen main.screens
+#:import StartScreen screens
 #:import MDSwapTransition kivymd.uix.transition.transition.MDSwapTransition
 #:import MDSlideTransition kivymd.uix.transition.transition.MDSlideTransition
 
@@ -13,7 +13,7 @@
         MDTextButton:
             text: 'Sign in'
             theme_text_color: 'Custom'
-            text_color: '#acf4f3'
+            text_color: 'green'
             font_size: sp(30)
             pos_hint: {'x': .7, 'y': .9}
             on_release:
@@ -25,7 +25,7 @@
             pos_hint: {'center_x': .5, 'center_y': .65}
 
             Image:
-                source: 'main/img/head_ii.png'
+                source: 'assets/img/head_ii.png'
                 allow_stretch: True
                 mipmap: True
 

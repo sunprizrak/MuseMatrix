@@ -1,7 +1,7 @@
 from kivy.uix.modalview import ModalView
 from kivy.clock import Clock
 from kivy.utils import platform
-from main.settings import host_name
+from settings import host_name
 
 if platform == 'android':
     from android.runnable import run_on_ui_thread
