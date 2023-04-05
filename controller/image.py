@@ -21,8 +21,6 @@ class ImageController:
             img = MyImage(
                 sm=self.screen.core.root,
                 source=image.source,
-                keep_ratio=False,
-                allow_stretch=True,
                 mipmap=True,
                 img_id=image.id,
             )
