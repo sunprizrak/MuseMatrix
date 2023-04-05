@@ -12,6 +12,7 @@
 
         MDTopAppBar:
             id: app_bar
+            title: 'x'.join(str(full_image.texture_size).split(', ')) if full_image else ''
             type_height: 'small'
             md_bg_color: root.md_bg_color
             left_action_items: [['arrow-left-bold', lambda x: root.back(full_image.back_screen)]]
@@ -21,7 +22,8 @@
         Image:
             id: full_image
             mipmap: True
-            allow_stretch: True
+            fit_mode: 'contain'
+            pos_hint: {'center_y': .5}
 
 
 

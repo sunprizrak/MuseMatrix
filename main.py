@@ -16,6 +16,7 @@ import os
 from shutil import rmtree
 from settings import storage
 from controller.user import UserController
+from kivy.loader import Loader
 
 
 if platform == 'android':
@@ -103,6 +104,8 @@ class ArtAIApp(MDApp):
 
         Window.softinput_mode = 'below_target'
         Window.bind(on_keyboard=self.key_input)
+
+        # Loader.loading_image = Image('assets/img/image_spinner.gif')
 
         kv_file = Builder.load_file('kv_files/layout.kv')
         return kv_file

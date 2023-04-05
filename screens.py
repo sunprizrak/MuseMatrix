@@ -180,7 +180,7 @@ class CreateImageScreen(MDScreen):
                 image = MyImage(
                     sm=self.parent,
                     source=url,
-                    allow_stretch=True,
+                    fit_mode='contain',
                     mipmap=True,
                 )
 
@@ -201,7 +201,7 @@ class CreateImageScreen(MDScreen):
                         sm=self.parent,
                         source=url,
                         mipmap=True,
-                        allow_stretch=True,
+                        fit_mode='contain',
                     )
 
                     item.add_widget(image)
@@ -254,7 +254,7 @@ class EditImageScreen(MDScreen):
         image = MyImage(
             disabled=True,
             source=path,
-            allow_stretch=True,
+            fit_mode='contain',
             mipmap=True,
         )
 
@@ -277,7 +277,7 @@ class EditImageScreen(MDScreen):
                 image = MyImage(
                     sm=self.parent,
                     source=url,
-                    allow_stretch=True,
+                    fit_mode='contain',
                     mipmap=True,
                 )
 
@@ -294,7 +294,7 @@ class EditImageScreen(MDScreen):
                         sm=self.parent,
                         source=url,
                         mipmap=True,
-                        allow_stretch=True,
+                        fit_mode='contain',
                     )
 
                     item.add_widget(image)
@@ -386,7 +386,7 @@ class VariableImageScreen(MDScreen):
 
         image = MyImage(
             source=path,
-            allow_stretch=True,
+            fit_mode='contain',
             mipmap=True,
         )
 
@@ -418,7 +418,7 @@ class VariableImageScreen(MDScreen):
                 image = MyImage(
                     sm=self.parent,
                     source=url,
-                    allow_stretch=True,
+                    fit_mode='contain',
                     mipmap=True,
                 )
 
