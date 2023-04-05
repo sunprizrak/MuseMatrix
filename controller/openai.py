@@ -9,13 +9,15 @@ class OpenAIController:
     path_image_variation = host_name + 'openai/image_variation/'
     path_text_completion = host_name + 'openai/text_completion/'
 
-    def image_generation(self, prompt, image_count, image_size, callback):
+    def image_generation(self, prompt, image_count, image_size, callback, error, failure):
         token = storage.get('auth_token').get('token')
 
         UrlRequest(
             url=self.path_image_generation,
             method='GET',
             on_success=callback,
+            on_error=error,
+            on_failure=failure,
             req_headers={
                 'Content-type': 'application/json',
                 'Authorization': f"Token {token}",

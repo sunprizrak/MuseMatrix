@@ -1,6 +1,7 @@
 from kivy import Logger
 from kivy.core.window import Window
 from kivy.metrics import sp, dp
+from kivy.uix.image import Image
 from kivy.uix.label import Label
 from kivy.uix.screenmanager import FallOutTransition
 from kivy.properties import StringProperty, ObjectProperty, BoundedNumericProperty, NumericProperty
@@ -159,7 +160,6 @@ class CreateImageScreen(MDScreen):
     prompt = StringProperty()
     image_count = BoundedNumericProperty(1, min=1, max=10, errorhandler=lambda x: 10 if x > 10 else 1)
     image_size = StringProperty('256x256')
-    default_img = ObjectProperty()
     price = NumericProperty()
 
     def __init__(self, **kwargs):
@@ -209,14 +209,32 @@ class CreateImageScreen(MDScreen):
 
                 self.ids.image_section.add_widget(swiper)
 
+        def output_error(error):
+            self.ids.create_spin.active = False
+            if type(error) is dict:
+                if {'error'} & set(error):
+                    self.core.show_dialog()
+                    self.core.dialog.text = error.get('error')
+
+            image = Image(
+                source='assets/img/default.png',
+                mipmap=True,
+            )
+
+            self.ids.image_section.add_widget(image)
+
+        def callback_failure(request, response):
+            output_error(error=response)
+
+        def callback_error(request, error):
+            output_error(error=error)
+
         if all([self.prompt, self.image_count, self.image_size]):
             self.price = self.image_count * credit_one_generate
             if self.price <= self.user_controller.user.credit:
                 for widget in self.ids.image_section.children:
-                    if isinstance(widget, MyImage) or isinstance(widget, MDSwiper):
+                    if isinstance(widget, MyImage) or isinstance(widget, MDSwiper) or isinstance(widget, Image):
                         self.ids.image_section.remove_widget(widget)
-
-                self.ids.image_section.remove_widget(self.default_img)
 
                 self.ids.create_spin.active = True
 
@@ -225,6 +243,8 @@ class CreateImageScreen(MDScreen):
                     image_count=self.image_count,
                     image_size=self.image_size,
                     callback=callback,
+                    error=callback_error,
+                    failure=callback_failure,
                 )
             else:
                 self.core.show_dialog()
@@ -302,15 +322,20 @@ class EditImageScreen(MDScreen):
 
                 self.ids.image_section.add_widget(swiper)
 
-        def callback_failure(request, response):
+        def output_error(error):
             self.ids.edit_spin.active = False
             self.ids.add_image_button.disabled = False
-            print('failure')
+
+            if type(error) is dict:
+                if {'error'} & set(error):
+                    self.core.show_dialog()
+                    self.core.dialog.text = error.get('error')
+
+        def callback_failure(request, response):
+            output_error(error=response)
 
         def callback_error(request, error):
-            self.ids.edit_spin.active = False
-            self.ids.add_image_button.disabled = False
-            print('error')
+            output_error(error=error)
 
         self.image_original.seek(0)
         if len(self.image_original.getvalue()) > 0:
@@ -443,15 +468,20 @@ class VariableImageScreen(MDScreen):
 
                 self.ids.image_section.add_widget(swiper)
 
-        def callback_failure(request, response):
-            print(response)
+        def output_error(error):
             self.ids.variable_spin.active = False
             self.ids.add_image_button.disabled = False
 
+            if type(error) is dict:
+                if {'error'} & set(error):
+                    self.core.show_dialog()
+                    self.core.dialog.text = error.get('error')
+
+        def callback_failure(request, response):
+            output_error(error=response)
+
         def callback_error(request, error):
-            print(error)
-            self.ids.variable_spin.active = False
-            self.ids.add_image_button.disabled = False
+            output_error(error=error)
 
         self.image.seek(0)
         if len(self.image.getvalue()) > 0:
