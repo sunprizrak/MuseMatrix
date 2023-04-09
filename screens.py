@@ -705,7 +705,7 @@ class SettingsScreen(MDScreen):
 
 
 class BuyCreditsScreen(MDScreen):
-    LICENSE_KEY = ''
+    LICENSE_KEY = 'MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAlmN4PJbzz2c7YjTZKU8vyKUPlzfrduSJ4/MmFJtoDdBmpHz0ajuxU1nop++VogHN5VYz51CwOVMCovaUvzOWchBAC9pHTinUkcW90vBvbXeR/B2LhyGx3iFuLSjYw2S0QEbjfkntvRcU5t2oybdYJTIZjccSwjTxIzNsQpyZXikcLWZAk3drgB/Q3oMg8v0Qo7USovzR6/KK1/JZb7mTxaQA7Yyg984rx/v1meev/Es52V7RMYq8f035DqHiKObFJQ7rSG2d/EFvS7JGJsOTAy372nacnjp6IzYg6+TszuJVHWctMK4zwvLnBcFfUuQQbVOys0dsiqj0j45hO5arTwIDAQAB'
 
     PROD_ONETIME = "onetime"
     PROD_CONSUME = "consumable"

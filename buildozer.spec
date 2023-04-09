@@ -22,7 +22,7 @@ source.include_exts = py,png,jpg,kv,atlas,ttf,java
 #source.exclude_exts = spec
 
 # (list) List of directory to exclude (let empty to not exclude anything)
-source.exclude_dirs = tests, bin, venv, .git, .idea
+source.exclude_dirs = tests, bin, venv, .git, .idea, modified_buildozer
 
 # (list) List of exclusions using pattern matching
 # Do not prefix with './'
@@ -205,7 +205,7 @@ android.accept_sdk_license = True
 #android.add_resources =
 
 # (list) Gradle dependencies to add
-android.gradle_dependencies = com.google.firebase:firebase-ads:19.5.0,com.anjlab.android.iab.v3:library:2.0.0
+android.gradle_dependencies = com.google.firebase:firebase-ads:19.5.0, com.anjlab.android.iab.v3:library:2.0.0
 
 
 # (bool) Enable AndroidX support. Enable when 'android.gradle_dependencies'
@@ -221,7 +221,7 @@ android.gradle_dependencies = com.google.firebase:firebase-ads:19.5.0,com.anjlab
 # (list) Gradle repositories to add {can be necessary for some android.gradle_dependencies}
 # please enclose in double quotes 
 # e.g. android.gradle_repositories = "maven { url 'https://kotlin.bintray.com/ktor' }"
-#android.add_gradle_repositories = "mavenCentral()"
+android.add_gradle_repositories = "mavenCentral()"
 
 # (list) packaging options to add 
 # see https://google.github.io/android-gradle-dsl/current/com.android.build.gradle.internal.dsl.PackagingOptions.html
@@ -265,7 +265,7 @@ android.gradle_dependencies = com.google.firebase:firebase-ads:19.5.0,com.anjlab
 #android.wakelock = False
 
 # (list) Android application meta-data to set (key=value format)
-android.meta_data = com.google.android.gms.ads.APPLICATION_ID=ca-app-pub-3940256099942544~3347511713
+android.meta_data = com.google.android.gms.ads.APPLICATION_ID=ca-app-pub-3940256099942544~3347511713, billing_pubkey=MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAlmN4PJbzz2c7YjTZKU8vyKUPlzfrduSJ4/MmFJtoDdBmpHz0ajuxU1nop++VogHN5VYz51CwOVMCovaUvzOWchBAC9pHTinUkcW90vBvbXeR/B2LhyGx3iFuLSjYw2S0QEbjfkntvRcU5t2oybdYJTIZjccSwjTxIzNsQpyZXikcLWZAk3drgB/Q3oMg8v0Qo7USovzR6/KK1/JZb7mTxaQA7Yyg984rx/v1meev/Es52V7RMYq8f035DqHiKObFJQ7rSG2d/EFvS7JGJsOTAy372nacnjp6IzYg6+TszuJVHWctMK4zwvLnBcFfUuQQbVOys0dsiqj0j45hO5arTwIDAQAB
 
 # (list) Android library project to add (will be added in the
 # project.properties automatically.)
