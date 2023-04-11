@@ -279,8 +279,9 @@ class EditImageScreen(MDScreen):
         )
 
         self.ids.image_section.add_widget(image)
-        self.ids.edit_top_bar.right_action_items.append(["autorenew", lambda x: self.reload_image()])
-        self.ids.edit_top_bar.right_action_items.append(["broom", lambda x: self.clear_selection()])
+        if len(self.ids.edit_top_bar.right_action_items) == 0:
+            self.ids.edit_top_bar.right_action_items.append(["autorenew", lambda x: self.reload_image()])
+            self.ids.edit_top_bar.right_action_items.append(["broom", lambda x: self.clear_selection()])
 
         with PilImage.open(path) as img:
             new = img.resize(size=(256, 256))
@@ -325,6 +326,8 @@ class EditImageScreen(MDScreen):
         def output_error(error):
             self.ids.edit_spin.active = False
             self.ids.add_image_button.disabled = False
+
+            self.ids.edit_top_bar.right_action_items = []
 
             if type(error) is dict:
                 if {'error'} & set(error):
@@ -394,6 +397,7 @@ class EditImageScreen(MDScreen):
 
 
 class VariableImageScreen(MDScreen):
+    core = ObjectProperty()
     image = io.BytesIO()
     image_count = BoundedNumericProperty(1, min=1, max=10, errorhandler=lambda x: 10 if x > 10 else 1)
     image_size = StringProperty('256x256')
@@ -416,7 +420,8 @@ class VariableImageScreen(MDScreen):
         )
 
         self.ids.image_section.add_widget(image)
-        self.ids.variable_top_bar.right_action_items.append(["autorenew", lambda x: self.reload_image()])
+        if len(self.ids.variable_top_bar.right_action_items) == 0:
+            self.ids.variable_top_bar.right_action_items.append(["autorenew", lambda x: self.reload_image()])
 
         with PilImage.open(path) as img:
             new = img.resize(size=(256, 256))
@@ -471,6 +476,8 @@ class VariableImageScreen(MDScreen):
         def output_error(error):
             self.ids.variable_spin.active = False
             self.ids.add_image_button.disabled = False
+
+            self.ids.variable_top_bar.right_action_items = []
 
             if type(error) is dict:
                 if {'error'} & set(error):
