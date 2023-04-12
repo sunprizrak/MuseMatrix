@@ -1,0 +1,81 @@
+#:import SpeechToTextScreen screens
+
+
+<SpeechToTextScreen>
+    name: 'speech_to_text_screen'
+    md_bg_color: app.theme_cls.bg_light
+
+    core: app
+
+    MDFloatLayout:
+
+        MDTopAppBar:
+            id: speech_top_bar
+            pos_hint: {'top': 1}
+            type_height: 'small'
+            title: 'speech to text'
+            anchor_title: 'left'
+            md_bg_color: root.md_bg_color
+            left_action_items: [['arrow-left-bold', lambda x: app.back(screen='main_screen')]]
+            elevation: 0
+
+        MDBoxLayout:
+            id: sound_layout
+            orientation: 'horizontal'
+            spacing: dp(50)
+            pos_hint: {"center_x": .5, "center_y": .5}
+            adaptive_size: True
+
+            MDBoxLayout:
+                id: sound
+                orientation: 'horizontal'
+                icon: ''
+                text: ''
+                spacing: dp(5)
+                adaptive_size: True
+
+                MDIcon:
+                    id: icon
+                    icon: self.parent.icon
+                    adaptive_size: True
+
+                MDLabel:
+                    id: name
+                    text: self.parent.text
+                    font_style: 'Sound_name'
+                    adaptive_size: True
+
+            MDIconButton:
+                id: delete_button
+                icon: ''
+                size_hint: None, None
+                size: icon.size
+                on_release:
+                    root.delete_sound()
+
+        MDBoxLayout:
+            id: sound_option
+            orientation: 'horizontal'
+            icon_play: ''
+            pos_hint: {'center_x': .5, 'center_y': .4}
+            adaptive_size: True
+
+            MDIconButton:
+                icon: self.parent.icon_play
+                size_hint: None, None
+                size: icon.size
+                on_release:
+                    root.sound_play()
+
+
+
+        MDIconButton:
+            id: add_sound_button
+            icon: 'music-note-plus'
+            icon_size: dp(70)
+            theme_icon_color: "Custom"
+            disabled_color: 1, 1, 1, 0
+            icon_color: 'gray'
+            pos_hint: {"center_x": .5, "center_y": .7}
+            on_release:
+                app.file_manager_open()

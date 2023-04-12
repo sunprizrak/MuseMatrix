@@ -1,3 +1,4 @@
+from kivy.core.audio import SoundLoader
 from kivy.core.text import LabelBase
 from kivy.metrics import dp
 from kivymd.app import MDApp
@@ -18,6 +19,7 @@ from settings import storage
 from controller.user import UserController
 from kivy.loader import Loader
 
+os.environ["KIVY_AUDIO"] = "ffpyplayer"
 
 if platform == 'android':
     from android import api_version
@@ -62,14 +64,15 @@ class CustomThemeManager(ThemeManager):
             "Caption": ["Hacked", 12, False, 0.4],
             "Overline": ["Hacked", 10, True, 1.5],
             'Message': ['Roboto', 16, False, 0.5],
+            "Sound_name": ["Roboto", 16, False, 0.5],
         })
         LabelBase.register(name='Hacked', fn_regular='assets/font/hacked.ttf')
 
 
-class ArtAIApp(MDApp):
+class MindPicsApp(MDApp):
 
     def __init__(self, **kwargs):
-        super(ArtAIApp, self).__init__(**kwargs)
+        super(MindPicsApp, self).__init__(**kwargs)
         self.theme_cls = CustomThemeManager()
         self.theme_cls.theme_style = 'Dark'
         self.theme_cls.primary_palette = 'Purple'
@@ -166,6 +169,7 @@ class ArtAIApp(MDApp):
         if platform == 'linux':
             self.file_manager.show(os.path.expanduser('~'))
             self.manager_open = True
+            self.file_manager.ext = self.file_manager.ext + ['.mp3', '.mp4', '.mpeg', '.mpga', '.m4a', '.wav', '.webm']
         elif platform == 'android':
             if self.check_android_permissions():
                 self.chooser.choose_content('image/*')
@@ -179,9 +183,22 @@ class ArtAIApp(MDApp):
 
         toast(path)
 
-        for screen in self.root.children:
-            if screen.name == self.root.current:
-                screen.add_image(path=path)
+        if f'.{path.split(".")[-1]}' in ['.mp3', '.mp4', '.mpeg', '.mpga', '.m4a', '.wav', '.webm']:
+
+            if len(path.split('/')[-1]) > 22:
+                sound_name = f'...{path.split("/")[-1][-19:]}'
+            else:
+                sound_name = path.split('/')[-1]
+            self.root.ids.speech_to_text_screen.ids.add_sound_button.disabled = True
+            self.root.ids.speech_to_text_screen.sound = SoundLoader.load(path)
+            self.root.ids.speech_to_text_screen.ids.sound.icon = 'music'
+            self.root.ids.speech_to_text_screen.ids.sound.text = sound_name
+            self.root.ids.speech_to_text_screen.ids.sound_option.icon_play = 'play'
+            self.root.ids.speech_to_text_screen.ids.delete_button.icon = 'close'
+        else:
+            for screen in self.root.children:
+                if screen.name == self.root.current:
+                    screen.add_image(path=path)
 
     def exit_manager(self, *args):
         if platform == 'linux':
@@ -233,4 +250,4 @@ class ArtAIApp(MDApp):
 
 
 if __name__ == '__main__':
-    ArtAIApp().run()
+    MindPicsApp().run()

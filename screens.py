@@ -825,3 +825,34 @@ class BuyCreditsScreen(MDScreen):
         else:
             toast("No purchase details received")
 
+
+class SpeechToTextScreen(MDScreen):
+    core = ObjectProperty()
+    sound = None
+    sound_pos = NumericProperty()
+
+    def sound_play(self):
+        if self.ids.sound_option.icon_play == 'play':
+            if self.sound:
+                if self.sound_pos:
+                    self.sound.seek(self.sound_pos)
+
+                self.sound.play()
+                self.ids.sound_option.icon_play = 'pause'
+        else:
+            self.sound_pos = self.sound.get_pos()
+            self.sound.stop()
+            self.ids.sound_option.icon_play = 'play'
+
+    def delete_sound(self):
+        if self.sound.state == 'play':
+            self.sound.stop()
+
+        self.sound = None
+        self.sound_pos = 0
+        self.ids.sound.icon = ''
+        self.ids.sound.text = ''
+        self.ids.sound_option.icon_play = ''
+        self.ids.delete_button.icon = ''
+        self.ids.add_sound_button.disabled = False
+

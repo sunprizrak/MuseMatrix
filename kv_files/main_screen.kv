@@ -2,13 +2,18 @@
 #:import ScrollEffect kivy.effects.scroll.ScrollEffect
 
 
+<MainButton@MDTextButton>
+    color: app.theme_cls.primary_color
+    font_size: sp(35)
+
+
 <MainScreen>
     name: 'main_screen'
     md_bg_color: app.theme_cls.bg_light
 
     core: app
 
-    MDRelativeLayout:
+    MDFloatLayout:
         md_bg_color: root.md_bg_color if nav_drawer.state == 'close' else app.theme_cls.bg_dark
 
         MDTopAppBar:
@@ -19,54 +24,44 @@
             left_action_items: [["menu", lambda x: nav_drawer.set_state("open")]]
             elevation: 0
 
-        MDCircularLayout:
-            size_hint_y: None
-            height: root.height - main_top_bar.height
-            row_spacing: min(self.size) * 0.1
-            start_from: 90
-            degree_spacing: 90
-            circular_radius: dp(90)
 
-            MDFloatingActionButton:
-                icon: 'image'
-                type: 'large'
-                theme_icon_color: "Custom"
-                md_bg_color: app.theme_cls.primary_color
-                shadow_color: 'white'
+        MDBoxLayout:
+            orientation: 'vertical'
+            spacing: dp(5)
+            pos_hint: {'center_x': .5, 'center_y': .5}
+            adaptive_size: True
+
+            MainButton:
+                text: "Create image"
                 on_release:
                     app.root.transition = MDSwapTransition()
                     app.root.current = 'create_image_screen'
 
-
-            MDFloatingActionButton:
-                icon: 'image-edit'
-                type: 'large'
-                theme_icon_color: "Custom"
-                md_bg_color: app.theme_cls.primary_color
-                shadow_color: 'white'
+            MainButton:
+                text: "Edit image"
                 on_release:
                     app.root.transition = MDSwapTransition()
                     app.root.current = 'edit_image_screen'
 
-            MDFloatingActionButton:
-                icon: 'chat'
-                type: 'large'
-                theme_icon_color: "Custom"
-                md_bg_color: app.theme_cls.primary_color
-                shadow_color: 'white'
+            MainButton:
+                text: "Variable image"
+                on_release:
+                    app.root.transition = MDSwapTransition()
+                    app.root.current = 'variable_image_screen'
+
+            MainButton:
+                text: "Speech to text"
+                on_release:
+                    app.root.transition = MDSwapTransition()
+                    app.root.current = 'speech_to_text_screen'
+
+            MainButton:
+                text: "Chat gpt"
                 on_release:
                     app.root.transition = MDSwapTransition()
                     app.root.current = 'chat_gpt_screen'
 
-            MDFloatingActionButton:
-                icon: 'image-sync'
-                type: 'large'
-                theme_icon_color: "Custom"
-                md_bg_color: app.theme_cls.primary_color
-                shadow_color: 'white'
-                on_release:
-                    app.root.transition = MDSwapTransition()
-                    app.root.current = 'variable_image_screen'
+
 
         MDNavigationDrawer:
             id: nav_drawer
