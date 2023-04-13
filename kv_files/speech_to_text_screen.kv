@@ -23,7 +23,7 @@
             id: sound_layout
             orientation: 'horizontal'
             spacing: dp(50)
-            pos_hint: {"center_x": .5, "center_y": .5}
+            pos_hint: {"center_x": .5, "center_y": .85}
             adaptive_size: True
 
             MDBoxLayout:
@@ -57,16 +57,19 @@
             id: sound_option
             orientation: 'horizontal'
             icon_play: ''
-            pos_hint: {'center_x': .5, 'center_y': .4}
+            icon_stop: ''
+            pos_hint: {"center_x": .5, "center_y": .78}
             adaptive_size: True
 
             MDIconButton:
                 icon: self.parent.icon_play
-                size_hint: None, None
-                size: icon.size
                 on_release:
                     root.sound_play()
 
+            MDIconButton:
+                icon: self.parent.icon_stop
+                on_release:
+                    root.sound_stop()
 
 
         MDIconButton:

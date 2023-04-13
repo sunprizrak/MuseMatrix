@@ -832,17 +832,23 @@ class SpeechToTextScreen(MDScreen):
     sound_pos = NumericProperty()
 
     def sound_play(self):
-        if self.ids.sound_option.icon_play == 'play':
-            if self.sound:
+        if self.sound:
+            if self.sound.state == 'play':
+                self.sound_pos = self.sound.get_pos()
+                self.sound.stop()
+                self.ids.sound_option.icon_play = 'play'
+            elif self.sound.state == 'stop':
                 if self.sound_pos:
                     self.sound.seek(self.sound_pos)
-
                 self.sound.play()
                 self.ids.sound_option.icon_play = 'pause'
-        else:
-            self.sound_pos = self.sound.get_pos()
-            self.sound.stop()
+
+    def sound_stop(self):
+        if self.sound.state == 'play':
             self.ids.sound_option.icon_play = 'play'
+
+        self.sound.stop()
+        self.sound_pos = 0
 
     def delete_sound(self):
         if self.sound.state == 'play':
@@ -853,6 +859,7 @@ class SpeechToTextScreen(MDScreen):
         self.ids.sound.icon = ''
         self.ids.sound.text = ''
         self.ids.sound_option.icon_play = ''
+        self.ids.sound_option.icon_stop = ''
         self.ids.delete_button.icon = ''
         self.ids.add_sound_button.disabled = False
 

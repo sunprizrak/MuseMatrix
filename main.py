@@ -194,6 +194,7 @@ class MindPicsApp(MDApp):
             self.root.ids.speech_to_text_screen.ids.sound.icon = 'music'
             self.root.ids.speech_to_text_screen.ids.sound.text = sound_name
             self.root.ids.speech_to_text_screen.ids.sound_option.icon_play = 'play'
+            self.root.ids.speech_to_text_screen.ids.sound_option.icon_stop = 'stop'
             self.root.ids.speech_to_text_screen.ids.delete_button.icon = 'close'
         else:
             for screen in self.root.children:
