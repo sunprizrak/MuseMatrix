@@ -8,6 +8,7 @@ class OpenAIController:
     path_image_edit = host_name + 'openai/image_edit/'
     path_image_variation = host_name + 'openai/image_variation/'
     path_text_completion = host_name + 'openai/text_completion/'
+    path_speech_to_text = host_name + 'openai/speech_to_text/'
 
     def image_generation(self, prompt, image_count, image_size, callback, error, failure):
         token = storage.get('auth_token').get('token')
@@ -69,4 +70,18 @@ class OpenAIController:
                 'Authorization': f"Token {token}",
             },
             req_body=json.dumps({'prompt': prompt}),
+        )
+
+    def speech_to_text(self, audio_file, audio_name, translate, callback):
+        token = storage.get('auth_token').get('token')
+
+        UrlRequest(
+            url=self.path_speech_to_text,
+            method='GET',
+            on_success=callback,
+            req_headers={
+                'Content-type': 'application/json',
+                'Authorization': f"Token {token}",
+            },
+            req_body=json.dumps({'audio_file': audio_file, 'audio_name': audio_name, 'translate': translate}),
         )

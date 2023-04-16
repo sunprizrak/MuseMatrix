@@ -8,69 +8,97 @@
     core: app
 
     MDFloatLayout:
-
-        MDTopAppBar:
-            id: speech_top_bar
-            pos_hint: {'top': 1}
-            type_height: 'small'
-            title: 'speech to text'
-            anchor_title: 'left'
-            md_bg_color: root.md_bg_color
-            left_action_items: [['arrow-left-bold', lambda x: app.back(screen='main_screen')]]
-            elevation: 0
+        id: speech_layout
 
         MDBoxLayout:
-            id: sound_layout
-            orientation: 'horizontal'
-            spacing: dp(50)
-            pos_hint: {"center_x": .5, "center_y": .85}
-            adaptive_size: True
+            orientation: 'vertical'
+
+            MDTopAppBar:
+                id: speech_top_bar
+                type_height: 'small'
+                title: 'speech to text'
+                anchor_title: 'left'
+                md_bg_color: root.md_bg_color
+                left_action_items: [['arrow-left-bold', lambda x: app.back(screen='main_screen')]]
+                elevation: 0
 
             MDBoxLayout:
-                id: sound
-                orientation: 'horizontal'
-                icon: ''
+                orientation: 'vertical'
+                adaptive_height: True
+
+                MDBoxLayout:
+                    id: sound_layout
+                    orientation: 'horizontal'
+                    spacing: dp(10)
+                    padding: dp(5)
+                    adaptive_height: True
+
+                    MDBoxLayout:
+                        id: sound
+                        orientation: 'horizontal'
+                        icon: ''
+                        text: ''
+                        spacing: dp(5)
+                        pos_hint: {'center_x': .5}
+
+                        MDIcon:
+                            id: icon
+                            icon: self.parent.icon
+                            adaptive_size: True
+
+                        MDLabel:
+                            id: name
+                            text: self.parent.text
+                            font_style: 'Sound_name'
+                            adaptive_size: True
+
+                    MDBoxLayout:
+                        id: sound_option
+                        orientation: 'horizontal'
+                        icon_play: ''
+                        icon_stop: ''
+                        pos_hint: {"center_x": .5}
+                        adaptive_size: True
+
+                        MDIconButton:
+                            icon: self.parent.icon_play
+                            size_hint: None, None
+                            size: icon.size
+                            on_release:
+                                root.sound_play()
+
+                        MDIconButton:
+                            icon: self.parent.icon_stop
+                            size_hint: None, None
+                            size: icon.size
+                            on_release:
+                                root.sound_stop()
+
+                    MDIconButton:
+                        id: delete_button
+                        icon: ''
+                        size_hint: None, None
+                        size: icon.size
+                        on_release:
+                            root.delete_sound()
+
+            MDBoxLayout:
+                id: audio_transcript
                 text: ''
-                spacing: dp(5)
-                adaptive_size: True
+                pos_hint: {'center_x': .5}
 
-                MDIcon:
-                    id: icon
-                    icon: self.parent.icon
-                    adaptive_size: True
+                MDScrollView:
+                    do_scroll_x: False
+                    scroll_y: 1
+                    effect_cls: ScrollEffect
+                    padding: dp(5)
 
-                MDLabel:
-                    id: name
-                    text: self.parent.text
-                    font_style: 'Sound_name'
-                    adaptive_size: True
-
-            MDIconButton:
-                id: delete_button
-                icon: ''
-                size_hint: None, None
-                size: icon.size
-                on_release:
-                    root.delete_sound()
-
-        MDBoxLayout:
-            id: sound_option
-            orientation: 'horizontal'
-            icon_play: ''
-            icon_stop: ''
-            pos_hint: {"center_x": .5, "center_y": .78}
-            adaptive_size: True
-
-            MDIconButton:
-                icon: self.parent.icon_play
-                on_release:
-                    root.sound_play()
-
-            MDIconButton:
-                icon: self.parent.icon_stop
-                on_release:
-                    root.sound_stop()
-
+                    MDLabel:
+                        id: audio_text
+                        text: self.parent.parent.text
+                        padding: dp(10), dp(10)
+                        font_style: 'Sound_name'
+                        adaptive_height: True
 
         MDIconButton:
             id: add_sound_button
@@ -82,3 +110,12 @@
             pos_hint: {"center_x": .5, "center_y": .7}
             on_release:
                 app.file_manager_open()
+
+        MDSpinner:
+            id: speech_spin
+            size_hint: None, None
+            size: dp(38), dp(38)
+            pos_hint: {'center_x': .5, 'center_y': .5}
+            active: False
+
+

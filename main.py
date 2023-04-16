@@ -5,7 +5,8 @@ from kivymd.app import MDApp
 from kivy.lang import Builder
 from kivy.core.window import Window
 from kivymd.theming import ThemeManager
-from kivymd.uix.button import MDFlatButton
+from kivymd.uix.button import MDFlatButton, MDRaisedButton
+from kivymd.uix.chip import MDChip
 from kivymd.uix.dialog import MDDialog
 from kivymd.uix.filemanager import MDFileManager
 from kivymd.toast import toast
@@ -191,11 +192,30 @@ class MindPicsApp(MDApp):
                 sound_name = path.split('/')[-1]
             self.root.ids.speech_to_text_screen.ids.add_sound_button.disabled = True
             self.root.ids.speech_to_text_screen.sound = SoundLoader.load(path)
+            self.root.ids.speech_to_text_screen.sound_path = path
             self.root.ids.speech_to_text_screen.ids.sound.icon = 'music'
             self.root.ids.speech_to_text_screen.ids.sound.text = sound_name
             self.root.ids.speech_to_text_screen.ids.sound_option.icon_play = 'play'
             self.root.ids.speech_to_text_screen.ids.sound_option.icon_stop = 'stop'
             self.root.ids.speech_to_text_screen.ids.delete_button.icon = 'close'
+
+            button = MDRaisedButton(
+                text='transcript',
+                md_bg_color='blue',
+                pos_hint={'center_x': .5, 'center_y': .5},
+                on_release=lambda
+                    x: self.root.ids.speech_to_text_screen.transcript() if self.root.ids.speech_to_text_screen.ids.speech_spin.active is False else False
+            )
+
+            chip = MDChip(
+                text='translate to english',
+                pos_hint={'center_x': .5, 'center_y': .6},
+                md_bg_color='grey',
+                line_color="black",
+            )
+
+            self.root.ids.speech_to_text_screen.ids.speech_layout.add_widget(button)
+            self.root.ids.speech_to_text_screen.ids.speech_layout.add_widget(chip)
         else:
             for screen in self.root.children:
                 if screen.name == self.root.current:

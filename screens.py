@@ -7,7 +7,8 @@ from kivy.uix.screenmanager import FallOutTransition
 from kivy.properties import StringProperty, ObjectProperty, BoundedNumericProperty, NumericProperty
 from kivymd.toast import toast
 from kivymd.uix.boxlayout import MDBoxLayout
-from kivymd.uix.button import MDFlatButton
+from kivymd.uix.button import MDFlatButton, MDRaisedButton
+from kivymd.uix.chip import MDChip
 from kivymd.uix.menu import MDDropdownMenu
 from kivymd.uix.screen import MDScreen
 from kivymd.uix.swiper import MDSwiperItem, MDSwiper
@@ -85,7 +86,6 @@ class LoginScreen(MDScreen):
         self.core.show_dialog(button=button, content=content)
 
         self.core.dialog.title = 'Enter your Email'
-        #self.core.dialog.content_cls.add_widget(email_field)
 
 
 class RegistrateScreen(MDScreen):
@@ -828,8 +828,13 @@ class BuyCreditsScreen(MDScreen):
 
 class SpeechToTextScreen(MDScreen):
     core = ObjectProperty()
-    sound = None
+    sound_path = StringProperty()
+    sound = ObjectProperty()
     sound_pos = NumericProperty()
+
+    def __init__(self, **kwargs):
+        super(SpeechToTextScreen, self).__init__(**kwargs)
+        self.openai_controller = OpenAIController()
 
     def sound_play(self):
         if self.sound:
@@ -854,7 +859,11 @@ class SpeechToTextScreen(MDScreen):
         if self.sound.state == 'play':
             self.sound.stop()
 
-        self.sound = None
+        if self.ids.audio_transcript.text:
+            self.ids.audio_transcript.text = ''
+
+        self.sound = False
+        self.sound_path = ''
         self.sound_pos = 0
         self.ids.sound.icon = ''
         self.ids.sound.text = ''
@@ -862,4 +871,39 @@ class SpeechToTextScreen(MDScreen):
         self.ids.sound_option.icon_stop = ''
         self.ids.delete_button.icon = ''
         self.ids.add_sound_button.disabled = False
+
+    def transcript(self):
+        def callback(request, response):
+            self.ids.speech_spin.active = False
+            self.ids.audio_transcript.text = response['data']
+
+        if self.sound_path:
+
+            remove_widgets = []
+            translate = False
+
+            for widget in self.ids.speech_layout.children:
+                if isinstance(widget, MDRaisedButton) or isinstance(widget, MDChip):
+                    if isinstance(widget, MDChip):
+                        translate = widget.active
+                    remove_widgets.append(widget)
+
+            self.ids.speech_layout.clear_widgets(remove_widgets)
+
+            self.ids.speech_spin.active = True
+
+            with open(self.sound_path, 'rb') as audio_file:
+                base64_audio = base64.b64encode(audio_file.read()).decode('utf-8')
+                name = audio_file.name.split('/')[-1]
+
+                self.openai_controller.speech_to_text(
+                    audio_file=base64_audio,
+                    audio_name=name,
+                    callback=callback,
+                    translate=translate,
+                )
+
+
+
+
 
