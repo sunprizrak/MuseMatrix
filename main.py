@@ -1,15 +1,14 @@
 from kivy.core.audio import SoundLoader
 from kivy.core.text import LabelBase
-from kivy.metrics import dp
+from kivy.metrics import dp, sp
 from kivymd.app import MDApp
 from kivy.lang import Builder
 from kivy.core.window import Window
 from kivymd.theming import ThemeManager
 from kivymd.uix.button import MDFlatButton, MDRaisedButton
-from kivymd.uix.chip import MDChip
+from kivymd.uix.chip import MDChip, MDChipText
 from kivymd.uix.dialog import MDDialog
 from kivymd.uix.filemanager import MDFileManager
-from kivymd.toast import toast
 from kivymd.uix.transition import MDSlideTransition
 from kivy.utils import platform
 from kivy.clock import mainthread
@@ -173,7 +172,10 @@ class MindPicsApp(MDApp):
             self.file_manager.ext = self.file_manager.ext + ['.mp3', '.mp4', '.mpeg', '.mpga', '.m4a', '.wav', '.webm']
         elif platform == 'android':
             if self.check_android_permissions():
-                self.chooser.choose_content('image/*')
+                if self.root.current == 'speech_to_text_screen':
+                    self.chooser.choose_content('audio/*')
+                else:
+                    self.chooser.choose_content('image/*')
             else:
                 self.req_android_permissions()
 
@@ -181,8 +183,6 @@ class MindPicsApp(MDApp):
     def select_path(self, path: str):
         if platform == 'linux':
             self.exit_manager()
-
-        toast(path)
 
         if f'.{path.split(".")[-1]}' in ['.mp3', '.mp4', '.mpeg', '.mpga', '.m4a', '.wav', '.webm']:
 
@@ -201,18 +201,24 @@ class MindPicsApp(MDApp):
 
             button = MDRaisedButton(
                 text='transcript',
-                md_bg_color='blue',
                 pos_hint={'center_x': .5, 'center_y': .5},
+                font_size=sp(25),
+                md_bg_color=self.theme_cls.primary_color,
                 on_release=lambda
                     x: self.root.ids.speech_to_text_screen.transcript() if self.root.ids.speech_to_text_screen.ids.speech_spin.active is False else False
             )
 
+            text_button = MDChipText(text='translate to english')
+
             chip = MDChip(
-                text='translate to english',
                 pos_hint={'center_x': .5, 'center_y': .6},
                 md_bg_color='grey',
                 line_color="black",
+                type='filter',
+                selected_color='green',
             )
+
+            chip.add_widget(text_button)
 
             self.root.ids.speech_to_text_screen.ids.speech_layout.add_widget(button)
             self.root.ids.speech_to_text_screen.ids.speech_layout.add_widget(chip)
