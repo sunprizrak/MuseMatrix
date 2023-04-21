@@ -4,6 +4,7 @@ from kivy.graphics import Color, Ellipse, Line
 from kivy.metrics import sp, dp
 from kivy.properties import ObjectProperty, ColorProperty, NumericProperty, ListProperty
 from kivymd.uix.label import MDLabel
+from kivymd.uix.navigationdrawer import MDNavigationDrawerHeader
 from kivymd.uix.segmentedcontrol import MDSegmentedControl, MDSegmentedControlItem
 from kivy.uix.image import AsyncImage
 from kivy.uix.screenmanager import RiseInTransition
@@ -189,3 +190,5 @@ class Message(OneLineListItem):
 
 class RightLabel(IRightBodyTouch, MDLabel):
     pass
+
+MDNavigationDrawerHeader
