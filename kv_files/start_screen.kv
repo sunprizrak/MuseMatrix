@@ -20,6 +20,15 @@
                 app.root.transition = MDSwapTransition()
                 app.root.current = 'login_screen'
 
+        MDBoxLayout:
+            padding: dp(10)
+            pos_hint: {'center_x': .5, 'center_y': .65}
+
+            Image:
+                source: 'assets/img/head_ii.png'
+                fit_mode: 'contain'
+                mipmap: True
+
         MDLabel:
             text: 'MindPics'
             theme_text_color: 'Custom'
@@ -27,7 +36,7 @@
             md_bg_color: self.parent.md_bg_color
             font_size: sp(80)
             halign: 'center'
-            pos_hint: {'center_y': .5}
+            pos_hint: {'center_y': .3}
 
         MDTextButton:
             id: b_registration
