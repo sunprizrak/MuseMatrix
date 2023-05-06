@@ -108,7 +108,7 @@ class MindPicsApp(MDApp):
         Window.softinput_mode = 'below_target'
         Window.bind(on_keyboard=self.key_input)
 
-        Loader.loading_image = 'assets/img/transparent.png'
+        # Loader.loading_image = 'assets/img/transparent.png'
 
         kv_file = Builder.load_file('kv_files/layout.kv')
         return kv_file
