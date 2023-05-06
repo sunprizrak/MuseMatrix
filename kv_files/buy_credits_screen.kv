@@ -16,6 +16,12 @@
         font_size: sp(12)
 
 
+<BuyButton@MDRaisedButton>:
+    font_size: sp(25)
+    size_hint_x: .5
+    md_bg_color: app.theme_cls.primary_color
+
+
 <BuyCreditsScreen>
     name: 'buy_credits_screen'
     md_bg_color: app.theme_cls.bg_light
@@ -26,87 +32,77 @@
             id: buy_top_bar
             pos_hint: {'top': 1}
             type_height: 'small'
-            title: 'buy credits'
+            title: 'buy credit'
             anchor_title: 'left'
             md_bg_color: root.md_bg_color
             left_action_items: [['arrow-left-bold', lambda x: app.back(screen='main_screen')]]
             elevation: 0
 
-        MDBoxLayout:
-            orientation: 'vertical'
-            spacing: dp(15)
+        MDGridLayout:
+            cols: 2
+            rows: 7
+            spacing: dp(10)
             size_hint_x: None
             width: dp(250)
             pos_hint: {'center_x': .5, 'center_y': .5}
             adaptive_height: True
 
-            MDBoxLayout:
-                orientation: 'horizontal'
-                spacing: dp(5)
-                size_hint_y: None
-                height: button1.height
+            MDLabel:
+                text: '$99.99'
 
-                MDLabel:
-                    text: '$99.99'
+            BuyButton:
+                text: '20000 credit'
+                on_release:
+                    root.open_payment_layout("onetime")
 
-                MDRaisedButton:
-                    id: button1
-                    text: '4000 credits'
-                    font_size: sp(25)
-                    md_bg_color: app.theme_cls.primary_color
-                    on_release:
-                        root.open_payment_layout("onetime")
+            MDLabel:
+                text: '$24.99'
 
-            MDBoxLayout:
-                orientation: 'horizontal'
-                spacing: dp(5)
-                size_hint_y: None
-                height: button2.height
+            BuyButton:
+                text: '5000 credit'
+                on_release:
+                    root.open_payment_layout("onetime")
 
-                MDLabel:
-                    text: '$79.99'
+            MDLabel:
+                text: '$17.99'
 
-                MDRaisedButton:
-                    id: button2
-                    text: '3000 credits'
-                    font_size: sp(25)
-                    md_bg_color: app.theme_cls.primary_color
-                    on_release:
-                        root.open_payment_layout("onetime")
+            BuyButton:
+                text: '3600 credit'
+                on_release:
+                    root.open_payment_layout("onetime")
 
-            MDBoxLayout:
-                orientation: 'horizontal'
-                spacing: dp(5)
-                size_hint_y: None
-                height: button3.height
+            MDLabel:
+                text: '$7.99'
 
-                MDLabel:
-                    text: '$59.99'
+            BuyButton:
+                text: '1600 credit'
+                on_release:
+                    root.open_payment_layout("onetime")
 
-                MDRaisedButton:
-                    id: button3
-                    text: '2000 credits'
-                    font_size: sp(25)
-                    md_bg_color: app.theme_cls.primary_color
-                    on_release:
-                        root.open_payment_layout("onetime")
 
-            MDBoxLayout:
-                orientation: 'horizontal'
-                spacing: dp(5)
-                size_hint_y: None
-                height: button4.height
+            MDLabel:
+                text: '$4.99'
 
-                MDLabel:
-                    text: '$39.99'
+            BuyButton:
+                text: '1000 credit'
+                on_release:
+                    root.open_payment_layout('onetime')
 
-                MDRaisedButton:
-                    id: button4
-                    text: '1000 credits'
-                    font_size: sp(25)
-                    md_bg_color: app.theme_cls.primary_color
-                    on_release:
-                        root.open_payment_layout('onetime')
+            MDLabel:
+                text: '$1.99'
+
+            BuyButton:
+                text: '400  credit'
+                on_release:
+                    root.open_payment_layout('onetime')
+
+            MDLabel:
+                text: '$0.99'
+
+            BuyButton:
+                text: '200  credit'
+                on_release:
+                    root.open_payment_layout('onetime')
 
     MDBottomSheet:
         id: bottom_sheet
