@@ -1,14 +1,8 @@
 #:import MainScreen screens
 #:import ScrollEffect kivy.effects.scroll.ScrollEffect
 
-
-<MainButton@MDTextButton>
-    color: app.theme_cls.primary_color
-    font_size: sp(35)
-
-
 <MainCard@MDCard>:
-    md_bg_color: 69/255, 55/255, 86/255, .2
+    md_bg_color: 69/255,55/255,86/255, .2
     orientation: 'vertical'
     padding: dp(10)
     spacing: dp(15)
@@ -59,6 +53,7 @@
                     on_release:
                         app.root.transition = MDSwapTransition()
                         app.root.current = 'create_image_screen'
+                        print(app.theme_cls.primary_color)
 
                 MainCard:
                     image: 'assets/img/pencil_icon.png'
