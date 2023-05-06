@@ -7,6 +7,29 @@
     font_size: sp(35)
 
 
+<MainCard@MDCard>:
+    md_bg_color: 69/255, 55/255, 86/255, .2
+    orientation: 'vertical'
+    padding: dp(15)
+    spacing: dp(15)
+    radius: dp(25)
+    ripple_behavior: True
+    image: ''
+    text: ''
+
+    Image:
+        source: root.image
+        mipmap: True
+
+    MDBoxLayout:
+        orientation: 'vertical'
+
+        MDLabel:
+            halign: 'center'
+            text: root.text
+            font_style: 'H6'
+
+
 <MainScreen>
     name: 'main_screen'
     md_bg_color: app.theme_cls.bg_light
@@ -14,53 +37,61 @@
     core: app
 
     MDFloatLayout:
-        md_bg_color: root.md_bg_color if nav_drawer.state == 'close' else app.theme_cls.bg_dark
-
-        MDTopAppBar:
-            id: main_top_bar
-            pos_hint: {'top': 1}
-            type_height: 'small'
-            md_bg_color: self.parent.md_bg_color
-            left_action_items: [["menu", lambda x: nav_drawer.set_state("open")]]
-            elevation: 0
-
 
         MDBoxLayout:
             orientation: 'vertical'
-            spacing: dp(5)
-            pos_hint: {'center_x': .5, 'center_y': .5}
-            adaptive_size: True
+            md_bg_color: root.md_bg_color if nav_drawer.state == 'close' else app.theme_cls.bg_dark
 
-            MainButton:
-                text: "Create image"
-                on_release:
-                    app.root.transition = MDSwapTransition()
-                    app.root.current = 'create_image_screen'
+            MDTopAppBar:
+                id: main_top_bar
+                type_height: 'small'
+                md_bg_color: self.parent.md_bg_color
+                left_action_items: [["menu", lambda x: nav_drawer.set_state("open")]]
+                elevation: 0
 
-            MainButton:
-                text: "Edit image"
-                on_release:
-                    app.root.transition = MDSwapTransition()
-                    app.root.current = 'edit_image_screen'
+            MDGridLayout:
+                cols: 2
+                padding: dp(15), dp(15), dp(15), dp(35)
+                spacing: dp(15)
 
-            MainButton:
-                text: "Variable image"
-                on_release:
-                    app.root.transition = MDSwapTransition()
-                    app.root.current = 'variable_image_screen'
+                MainCard:
+                    image: 'assets/img/picture_icon.png'
+                    text: 'Create image'
+                    on_release:
+                        app.root.transition = MDSwapTransition()
+                        app.root.current = 'create_image_screen'
 
-            MainButton:
-                text: "Speech to text"
-                on_release:
-                    app.root.transition = MDSwapTransition()
-                    app.root.current = 'speech_to_text_screen'
+                MainCard:
+                    image: 'assets/img/pencil_icon.png'
+                    text: 'Edit image'
+                    on_release:
+                        app.root.transition = MDSwapTransition()
+                        app.root.current = 'edit_image_screen'
 
-            MainButton:
-                text: "Chat gpt"
-                on_release:
-                    app.root.transition = MDSwapTransition()
-                    app.root.current = 'chat_gpt_screen'
+                MainCard:
+                    image: 'assets/img/magic_icon.png'
+                    text: 'Variable image'
+                    on_release:
+                        app.root.transition = MDSwapTransition()
+                        app.root.current = 'variable_image_screen'
 
+                MainCard:
+                    image: 'assets/img/music_icon.png'
+                    text: 'Speech to text'
+                    on_release:
+                        app.root.transition = MDSwapTransition()
+                        app.root.current = 'speech_to_text_screen'
+
+                MainCard:
+                    image: 'assets/img/chat_icon.png'
+                    text: 'Chat gpt'
+                    on_release:
+                        app.root.transition = MDSwapTransition()
+                        app.root.current = 'chat_gpt_screen'
+
+                MainCard:
+                    image: 'assets/img/bulb_icon.png'
+                    text: 'reference'
 
 
         MDNavigationDrawer:
@@ -82,7 +113,7 @@
                 MDNavigationDrawerDivider:
 
                 MDNavigationDrawerItem:
-                    icon: "cog"
+                    icon: "assets/img/settings_icon.png"
                     text: "Settings"
                     theme_text_color: 'Custom'
                     text_color: 'white'
@@ -95,7 +126,8 @@
 
                 MDNavigationDrawerItem:
                     id: collection
-                    icon: 'image-multiple'
+                    icon: 'assets/img/picture_icon.png'
+                    icon_size: sp(20)
                     text: 'My Collection'
                     theme_text_color: 'Custom'
                     text_color: 'white'
@@ -107,7 +139,7 @@
                 MDNavigationDrawerDivider:
 
                 MDNavigationDrawerItem:
-                    icon: 'cash-100'
+                    icon: 'assets/img/locker_icon.png'
                     text: 'Buy Credits'
                     theme_text_color: 'Custom'
                     text_color: 'white'
@@ -119,7 +151,7 @@
                 MDNavigationDrawerDivider:
 
                 MDNavigationDrawerItem:
-                    icon: 'hand-coin'
+                    icon: 'assets/img/money-bag_icon.png'
                     text: 'Earn Credits'
                     theme_text_color: 'Custom'
                     text_color: 'white'
@@ -131,7 +163,7 @@
                 MDNavigationDrawerDivider:
 
                 MDNavigationDrawerItem:
-                    icon: 'location-exit'
+                    icon: 'assets/img/key_icon.png'
                     text: 'Logout'
                     theme_text_color: 'Custom'
                     text_color: 'white'
