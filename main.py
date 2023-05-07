@@ -69,10 +69,10 @@ class CustomThemeManager(ThemeManager):
         LabelBase.register(name='Hacked', fn_regular='assets/font/hacked.ttf')
 
 
-class MindPicsApp(MDApp):
+class MuseMatrixApp(MDApp):
 
     def __init__(self, **kwargs):
-        super(MindPicsApp, self).__init__(**kwargs)
+        super(MuseMatrixApp, self).__init__(**kwargs)
         self.theme_cls = CustomThemeManager()
         self.theme_cls.theme_style = 'Dark'
         self.theme_cls.primary_palette = 'Purple'
@@ -277,4 +277,4 @@ class MindPicsApp(MDApp):
 
 
 if __name__ == '__main__':
-    MindPicsApp().run()
+    MuseMatrixApp().run()

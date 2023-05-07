@@ -1,13 +1,13 @@
 [app]
 
 # (str) Title of your application
-title = MindPics
+title = MuseMatrix
 
 # (str) Package name
-package.name = mindpics
+package.name = musematrix
 
 # (str) Package domain (needed for android/ios packaging)
-package.domain = org.mindpics
+package.domain = org.musematrix
 
 # (str) Source code where the main.py live
 source.dir = .
