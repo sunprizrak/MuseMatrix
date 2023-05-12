@@ -108,7 +108,7 @@ android.api = 33
 android.minapi = 21
 
 # (int) Android SDK version to use
-#android.sdk = 33
+android.sdk = 33
 
 # (str) Android NDK version to use
 android.ndk = 25b
@@ -265,7 +265,7 @@ android.add_gradle_repositories = "mavenCentral()"
 #android.wakelock = False
 
 # (list) Android application meta-data to set (key=value format)
-android.meta_data = com.google.android.gms.ads.APPLICATION_ID=ca-app-pub-3940256099942544~3347511713, billing_pubkey=MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAlmN4PJbzz2c7YjTZKU8vyKUPlzfrduSJ4/MmFJtoDdBmpHz0ajuxU1nop++VogHN5VYz51CwOVMCovaUvzOWchBAC9pHTinUkcW90vBvbXeR/B2LhyGx3iFuLSjYw2S0QEbjfkntvRcU5t2oybdYJTIZjccSwjTxIzNsQpyZXikcLWZAk3drgB/Q3oMg8v0Qo7USovzR6/KK1/JZb7mTxaQA7Yyg984rx/v1meev/Es52V7RMYq8f035DqHiKObFJQ7rSG2d/EFvS7JGJsOTAy372nacnjp6IzYg6+TszuJVHWctMK4zwvLnBcFfUuQQbVOys0dsiqj0j45hO5arTwIDAQAB
+android.meta_data = com.google.android.gms.ads.APPLICATION_ID=ca-app-pub-3940256099942544~3347511713, billing_pubkey=MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAgZRRyPl6ONDuO/g1mQhcI2JAxpJ8+vmOKqIk/zMUj8nvKkDFAoI9RoUR19hdyvI3bO0NK5j1snhRjdahXyE90BjwU9QT/Ol7yBhuvrbdfEQQ/0S9P3MSjZys0NDMaLpsX9Sa7WNPcn7Tdxg0oJ85F562nUyqcdUbjGqzEgGmKtqewYNUOve5hHxGJkmwblma40CriCi+tsjYgVigO669GBvy0ENN1Wml1+v+LYwFB6EjTRL5rViaokJUAl2haaS8zwaSBrc/ykQuGBVe/9dEci2quUUVK7PXxdo3ivKwXrIKCeaHvI66l22jei5wmoNCH6KHmIlWMOit1T5LzJmkPwIDAQAB
 
 # (list) Android library project to add (will be added in the
 # project.properties automatically.)
