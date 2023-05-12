@@ -15,6 +15,7 @@ from kivymd.uix.swiper import MDSwiperItem, MDSwiper
 from kivy.core.image import Image as CoreImage
 from kivymd.uix.textfield import MDTextField
 from kivymd.uix.transition import MDSwapTransition
+import settings
 from widgets import MyImage
 import io
 import base64
@@ -26,7 +27,6 @@ from controller.user import UserController
 from controller.openai import OpenAIController
 from controller.image import ImageController
 import logging
-from settings import credit_one_generate
 
 if platform == 'android':
     from iabwrapper import BillingProcessor
@@ -230,7 +230,7 @@ class CreateImageScreen(MDScreen):
             output_error(error=error)
 
         if all([self.prompt, self.image_count, self.image_size]):
-            self.price = self.image_count * credit_one_generate
+            self.price = self.image_count * settings.CREDIT_ONE_GENERATE
             if self.price <= self.user_controller.user.credit:
                 for widget in self.ids.image_section.children:
                     if isinstance(widget, MyImage) or isinstance(widget, MDSwiper) or isinstance(widget, Image):
@@ -712,14 +712,19 @@ class SettingsScreen(MDScreen):
 
 
 class BuyCreditsScreen(MDScreen):
-    LICENSE_KEY = 'MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAgZRRyPl6ONDuO/g1mQhcI2JAxpJ8+vmOKqIk/zMUj8nvKkDFAoI9RoUR19hdyvI3bO0NK5j1snhRjdahXyE90BjwU9QT/Ol7yBhuvrbdfEQQ/0S9P3MSjZys0NDMaLpsX9Sa7WNPcn7Tdxg0oJ85F562nUyqcdUbjGqzEgGmKtqewYNUOve5hHxGJkmwblma40CriCi+tsjYgVigO669GBvy0ENN1Wml1+v+LYwFB6EjTRL5rViaokJUAl2haaS8zwaSBrc/ykQuGBVe/9dEci2quUUVK7PXxdo3ivKwXrIKCeaHvI66l22jei5wmoNCH6KHmIlWMOit1T5LzJmkPwIDAQAB'
+    LICENSE_KEY = settings.PLAY_CONSOLE_KEY
 
-    PROD_ONETIME = "onetime"
-    PROD_CONSUME = "consumable"
-    PROD_MONTHLY_1 = "one_month"
-    PROD_ANNUAL_1 = "one_year"
+    PROD_200 = StringProperty('a134b')
+    PROD_400 = StringProperty('a135b')
+    PROD_1000 = StringProperty('a136b')
+    PROD_1600 = StringProperty('a137b')
+    PROD_3600 = StringProperty('a138b')
+    PROD_5000 = StringProperty('a139b')
+    PROD_20000 = StringProperty('a140b')
+    PROD_MONTHLY_1 = StringProperty("one_month")
+    PROD_ANNUAL_1 = StringProperty("one_year")
 
-    products = [PROD_ONETIME, PROD_CONSUME]
+    products = [PROD_200, PROD_400, PROD_1000, PROD_1600, PROD_3600, PROD_5000, PROD_20000]
     subscriptions = [PROD_MONTHLY_1, PROD_ANNUAL_1]
 
     def __init__(self, **kwargs):

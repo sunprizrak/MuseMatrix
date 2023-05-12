@@ -40,7 +40,6 @@
 
         MDGridLayout:
             cols: 2
-            rows: 7
             spacing: dp(10)
             size_hint_x: None
             width: dp(250)
@@ -53,7 +52,7 @@
             BuyButton:
                 text: '20000 credit'
                 on_release:
-                    root.open_payment_layout("onetime")
+                    root.open_payment_layout(root.PROD_20000)
 
             MDLabel:
                 text: '$24.99'
@@ -61,7 +60,7 @@
             BuyButton:
                 text: '5000 credit'
                 on_release:
-                    root.open_payment_layout("onetime")
+                    root.open_payment_layout(root.PROD_5000)
 
             MDLabel:
                 text: '$17.99'
@@ -69,7 +68,7 @@
             BuyButton:
                 text: '3600 credit'
                 on_release:
-                    root.open_payment_layout("onetime")
+                    root.open_payment_layout(root.PROD_3600)
 
             MDLabel:
                 text: '$7.99'
@@ -77,7 +76,7 @@
             BuyButton:
                 text: '1600 credit'
                 on_release:
-                    root.open_payment_layout("onetime")
+                    root.open_payment_layout(root.PROD_1600)
 
             MDLabel:
                 text: '$4.99'
@@ -85,7 +84,7 @@
             BuyButton:
                 text: '1000 credit'
                 on_release:
-                    root.open_payment_layout('onetime')
+                    root.open_payment_layout(root.PROD_1000)
 
             MDLabel:
                 text: '$1.99'
@@ -93,7 +92,7 @@
             BuyButton:
                 text: '400  credit'
                 on_release:
-                    root.open_payment_layout('onetime')
+                    root.open_payment_layout(root.PROD_400)
 
             MDLabel:
                 text: '$0.99'
@@ -101,7 +100,7 @@
             BuyButton:
                 text: '200  credit'
                 on_release:
-                    root.open_payment_layout('onetime')
+                    root.open_payment_layout(root.PROD_200)
 
     MDBottomSheet:
         id: bottom_sheet
