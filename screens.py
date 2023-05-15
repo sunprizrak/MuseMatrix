@@ -714,21 +714,22 @@ class SettingsScreen(MDScreen):
 class BuyCreditsScreen(MDScreen):
     LICENSE_KEY = settings.PLAY_CONSOLE_KEY
 
-    PROD_200 = StringProperty('a134b')
-    PROD_400 = StringProperty('a135b')
-    PROD_1000 = StringProperty('a136b')
-    PROD_1600 = StringProperty('a137b')
-    PROD_3600 = StringProperty('a138b')
-    PROD_5000 = StringProperty('a139b')
-    PROD_20000 = StringProperty('a140b')
-    PROD_MONTHLY_1 = StringProperty("one_month")
-    PROD_ANNUAL_1 = StringProperty("one_year")
+    PROD_200 = 'a134b'
+    PROD_400 = 'a135b'
+    PROD_1000 = 'a136b'
+    PROD_1600 = 'a137b'
+    PROD_3600 = 'a138b'
+    PROD_5000 = 'a139b'
+    PROD_20000 = 'a140b'
+    PROD_MONTHLY_1 = "one_month"
+    PROD_ANNUAL_1 = "one_year"
 
     products = [PROD_200, PROD_400, PROD_1000, PROD_1600, PROD_3600, PROD_5000, PROD_20000]
     subscriptions = [PROD_MONTHLY_1, PROD_ANNUAL_1]
 
     def __init__(self, **kwargs):
         super(BuyCreditsScreen, self).__init__(**kwargs)
+        print(self.products)
         if platform == 'android':
             self.bp = BillingProcessor(self.LICENSE_KEY, self.product_purchased, self.billing_error,
                                        onBillingInitializedMethod=self.billing_initialized)
