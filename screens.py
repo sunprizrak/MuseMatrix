@@ -729,7 +729,6 @@ class BuyCreditsScreen(MDScreen):
 
     def __init__(self, **kwargs):
         super(BuyCreditsScreen, self).__init__(**kwargs)
-        print(self.products)
         if platform == 'android':
             self.bp = BillingProcessor(self.LICENSE_KEY, self.product_purchased, self.billing_error,
                                        onBillingInitializedMethod=self.billing_initialized)
