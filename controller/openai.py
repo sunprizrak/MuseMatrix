@@ -58,7 +58,7 @@ class OpenAIController:
             req_body=json.dumps({'image': image, 'image_count': image_count, 'image_size': image_size}),
         )
 
-    def text_completion(self, prompt, callback):
+    def chat_completion(self, prompt, callback):
         token = storage.get('auth_token').get('token')
 
         UrlRequest(
