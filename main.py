@@ -97,7 +97,7 @@ class MuseMatrixApp(MDApp):
 
     def build(self):
         if platform == 'android':
-            if not self.check_android_permissions():
+            if not self.check_android_permissions:
                 self.req_android_permissions()
 
             cache = self.ss.get_cache_dir()
@@ -147,6 +147,7 @@ class MuseMatrixApp(MDApp):
             user_controller = UserController(screen=self.root.children[0])
             user_controller.authorized()
 
+    @property
     def check_android_permissions(self):
         if all(list(map(check_permission, self.permissions))):
             return True
@@ -171,7 +172,7 @@ class MuseMatrixApp(MDApp):
             self.manager_open = True
             self.file_manager.ext = self.file_manager.ext + ['.mp3', '.mp4', '.mpeg', '.mpga', '.m4a', '.wav', '.webm']
         elif platform == 'android':
-            if self.check_android_permissions():
+            if self.check_android_permissions:
                 if self.root.current == 'speech_to_text_screen':
                     self.chooser.choose_content('audio/*')
                 else:

@@ -167,6 +167,14 @@ class CreateImageScreen(MDScreen):
         self.openai_controller = OpenAIController()
         self.user_controller = UserController(screen=self)
 
+    @property
+    def check_enough_credit(self):
+        self.price = self.image_count * settings.CREDIT_ONE_GENERATE
+        if self.price <= self.user_controller.user.credit:
+            return True
+        else:
+            return False
+
     def create(self):
 
         def callback(request, response):
@@ -230,8 +238,8 @@ class CreateImageScreen(MDScreen):
             output_error(error=error)
 
         if all([self.prompt, self.image_count, self.image_size]):
-            self.price = self.image_count * settings.CREDIT_ONE_GENERATE
-            if self.price <= self.user_controller.user.credit:
+
+            if self.check_enough_credit:
                 for widget in self.ids.image_section.children:
                     if isinstance(widget, MyImage) or isinstance(widget, MDSwiper) or isinstance(widget, Image):
                         self.ids.image_section.remove_widget(widget)
@@ -259,10 +267,20 @@ class EditImageScreen(MDScreen):
     image_size = StringProperty('256x256')
     image_original = io.BytesIO()
     image_mask = io.BytesIO()
+    price = NumericProperty()
 
     def __init__(self, **kwargs):
         super(EditImageScreen, self).__init__(**kwargs)
         self.openai_controller = OpenAIController()
+        self.user_controller = UserController(screen=self)
+
+    @property
+    def check_enough_credit(self):
+        self.price = self.image_count * settings.CREDIT_ONE_GENERATE
+        if self.price <= self.user_controller.user.credit:
+            return True
+        else:
+            return False
 
     def add_image(self, path):
         self.ids.add_image_button.disabled = True
@@ -290,6 +308,8 @@ class EditImageScreen(MDScreen):
     def edit_image(self):
 
         def callback(request, response):
+            self.user_controller.update_user(field_name='credit', field_value=self.price, credit='minus')
+
             self.ids.edit_spin.active = False
 
             if len(response['data']) == 1:
@@ -343,40 +363,45 @@ class EditImageScreen(MDScreen):
         self.image_original.seek(0)
         if len(self.image_original.getvalue()) > 0:
             if all([self.prompt, self.image_count, self.image_size]):
-                for widget in self.ids.image_section.children:
-                    if isinstance(widget, MyImage) or isinstance(widget, MDSwiper):
-                        if isinstance(widget, MyImage) and widget.disabled:
-                            mask_img = self.ids.image_section.children[0].get_mask_image()
-                            mask_data = io.BytesIO()
-                            mask_img.save(mask_data, flipped=True, fmt='png')
+                if self.check_enough_credit:
+                    for widget in self.ids.image_section.children:
+                        if isinstance(widget, MyImage) or isinstance(widget, MDSwiper):
+                            if isinstance(widget, MyImage) and widget.disabled:
+                                mask_img = self.ids.image_section.children[0].get_mask_image()
+                                mask_data = io.BytesIO()
+                                mask_img.save(mask_data, flipped=True, fmt='png')
 
-                            with PilImage.open(mask_data) as img:
-                                new = img.resize(size=(256, 256))
-                                new.save(self.image_mask, format='png')
+                                with PilImage.open(mask_data) as img:
+                                    new = img.resize(size=(256, 256))
+                                    new.save(self.image_mask, format='png')
 
-                        self.ids.image_section.remove_widget(widget)
+                            self.ids.image_section.remove_widget(widget)
 
-                self.ids.add_image_button.disabled = True
-                self.ids.edit_spin.active = True
+                    self.ids.add_image_button.disabled = True
+                    self.ids.edit_spin.active = True
 
-                self.image_original.seek(0)
-                png_image_original = self.image_original.getvalue()
-                im_b64_image_original = base64.b64encode(png_image_original).decode('utf-8')
+                    self.image_original.seek(0)
+                    png_image_original = self.image_original.getvalue()
+                    im_b64_image_original = base64.b64encode(png_image_original).decode('utf-8')
 
-                self.image_mask.seek(0)
-                png_image_mask = self.image_mask.getvalue()
-                im_b64_image_mask = base64.b64encode(png_image_mask).decode('utf-8')
+                    self.image_mask.seek(0)
+                    png_image_mask = self.image_mask.getvalue()
+                    im_b64_image_mask = base64.b64encode(png_image_mask).decode('utf-8')
 
-                self.openai_controller.image_edit(
-                    image=im_b64_image_original,
-                    mask=im_b64_image_mask,
-                    prompt=self.prompt,
-                    image_count=self.image_count,
-                    image_size=self.image_size,
-                    callback=callback,
-                    on_error=callback_error,
-                    on_failure=callback_failure,
-                )
+                    self.openai_controller.image_edit(
+                        image=im_b64_image_original,
+                        mask=im_b64_image_mask,
+                        prompt=self.prompt,
+                        image_count=self.image_count,
+                        image_size=self.image_size,
+                        callback=callback,
+                        on_error=callback_error,
+                        on_failure=callback_failure,
+                    )
+                else:
+                    self.core.show_dialog()
+                    self.core.dialog.title = 'success!'
+                    self.core.dialog.text = 'You dont have enough credits'
 
     def clear_selection(self):
         for widget in self.ids.image_section.children:
@@ -401,10 +426,20 @@ class VariableImageScreen(MDScreen):
     image = io.BytesIO()
     image_count = BoundedNumericProperty(1, min=1, max=10, errorhandler=lambda x: 10 if x > 10 else 1)
     image_size = StringProperty('256x256')
+    price = NumericProperty()
 
     def __init__(self, **kwargs):
         super(VariableImageScreen, self).__init__(**kwargs)
         self.openai_controller = OpenAIController()
+        self.user_controller = UserController(screen=self)
+
+    @property
+    def check_enough_credit(self):
+        self.price = self.image_count * settings.CREDIT_ONE_GENERATE
+        if self.price <= self.user_controller.user.credit:
+            return True
+        else:
+            return False
 
     def add_image(self, path):
         self.ids.add_image_button.disabled = True
@@ -440,6 +475,8 @@ class VariableImageScreen(MDScreen):
     def generate(self):
 
         def callback(request, response):
+            self.user_controller.update_user(field_name='credit', field_value=self.price, credit='minus')
+
             self.ids.variable_spin.active = False
 
             if len(response['data']) == 1:
@@ -492,28 +529,31 @@ class VariableImageScreen(MDScreen):
 
         self.image.seek(0)
         if len(self.image.getvalue()) > 0:
-
             if all([self.image_count, self.image_size]):
+                if self.check_enough_credit:
+                    for widget in self.ids.image_section.children:
+                        if isinstance(widget, MyImage) or isinstance(widget, MDSwiper):
+                            self.ids.image_section.remove_widget(widget)
 
-                for widget in self.ids.image_section.children:
-                    if isinstance(widget, MyImage) or isinstance(widget, MDSwiper):
-                        self.ids.image_section.remove_widget(widget)
+                    self.ids.add_image_button.disabled = True
+                    self.ids.variable_spin.active = True
 
-                self.ids.add_image_button.disabled = True
-                self.ids.variable_spin.active = True
+                    self.image.seek(0)
+                    image_png = self.image.getvalue()
+                    im_b64_image = base64.b64encode(image_png).decode('utf-8')
 
-                self.image.seek(0)
-                image_png = self.image.getvalue()
-                im_b64_image = base64.b64encode(image_png).decode('utf-8')
-
-                self.openai_controller.image_variation(
-                    image=im_b64_image,
-                    image_count=self.image_count,
-                    image_size=self.image_size,
-                    callback=callback,
-                    on_error=callback_error,
-                    on_failure=callback_failure,
-                )
+                    self.openai_controller.image_variation(
+                        image=im_b64_image,
+                        image_count=self.image_count,
+                        image_size=self.image_size,
+                        callback=callback,
+                        on_error=callback_error,
+                        on_failure=callback_failure,
+                    )
+                else:
+                    self.core.show_dialog()
+                    self.core.dialog.title = 'success!'
+                    self.core.dialog.text = 'You dont have enough credits'
 
 
 class ChatGptScreen(MDScreen):
@@ -535,12 +575,12 @@ class ChatGptScreen(MDScreen):
         def callback(request, response):
             text = response['choices'][0].get('text').lstrip()
 
-            lab = Label(text=text, font_size=sp(16), padding_x=dp(20), padding_y=dp(5))
+            lab = Label(text=text, font_size=sp(16), padding=[dp(20), dp(5)])
             lab.texture_update()
             w, h = lab.texture_size
 
             if w > dp(300):
-                lab = Label(text=text, font_size=sp(16), padding_x=dp(20), padding_y=dp(5), text_size=(dp(300), None))
+                lab = Label(text=text, font_size=sp(16), padding=[dp(20), dp(5)], text_size=(dp(300), None))
                 lab.texture_update()
                 w, h = lab.texture_size
 
@@ -560,12 +600,12 @@ class ChatGptScreen(MDScreen):
 
         if self.prompt:
 
-            label = Label(text=self.prompt, font_size=sp(16), padding_x=dp(20), padding_y=dp(5))
+            label = Label(text=self.prompt, font_size=sp(16), padding=[dp(20), dp(5)])
             label.texture_update()
             width, height = label.texture_size
 
             if width > dp(300):
-                label = Label(text=self.prompt, font_size=sp(16), padding_x=dp(20), padding_y=dp(5), text_size=(dp(300), None))
+                label = Label(text=self.prompt, font_size=sp(16), padding=[dp(20), dp(5)], text_size=(dp(300), None))
                 label.texture_update()
                 width, height = label.texture_size
 
@@ -826,7 +866,6 @@ class BuyCreditsScreen(MDScreen):
                 "priceText": product_info.priceText,
             }
             Logger.info(details)
-            toast(f"Purchase details received {details}")
         else:
             toast("No purchase details received")
 
