@@ -162,12 +162,9 @@ class UserController:
                          },
         )
 
-    def update_user(self, field_name, field_value):
+    def update_user(self, fields: dict, callback):
 
-        def callback(request, response):
-            self.user.update(data_user=response)
-
-        req_body = json.dumps({field_name: field_value})
+        req_body = json.dumps(fields)
 
         UrlRequest(
             url=self.path_data_user,

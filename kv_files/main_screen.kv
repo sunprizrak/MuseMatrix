@@ -128,7 +128,6 @@
                                 orientation: 'horizontal'
                                 adaptive_height: True
                                 spacing: dp(10)
-                                pos_hint: {'center_x': .55}
 
                                 Image:
                                     source: 'assets/img/coin_icon.png'
@@ -145,20 +144,32 @@
                             MDBoxLayout:
                                 orientation: 'horizontal'
                                 adaptive_height: True
-                                spacing: dp(10)
-                                pos_hint: {'center_x': .55}
 
-                                Image:
-                                    source: 'assets/img/chat_icon.png'
-                                    size_hint: None, None
-                                    fit_mode: 'contain'
-                                    mipmap: True
-                                    size: dp(25), dp(25)
+                                MDBoxLayout:
+                                    orientation: 'horizontal'
+                                    adaptive_height: True
+                                    spacing: dp(10)
 
-                                MDLabel:
-                                    text: str(root.chat_token)
-                                    color: '#157ded'
-                                    adaptive_width: True
+                                    Image:
+                                        source: 'assets/img/chat_icon.png'
+                                        size_hint: None, None
+                                        fit_mode: 'contain'
+                                        mipmap: True
+                                        size: dp(25), dp(25)
+
+                                    MDLabel:
+                                        text: str(root.chat_token)
+                                        color: '#157ded'
+                                        adaptive_width: True
+
+                                MDRaisedButton:
+                                    text: "add"
+                                    md_bg_color: "green"
+                                    size_hint_y: .5
+                                    pos_hint: {'center_y': .35}
+                                    on_release:
+                                        root.add_chat_token()
+
 
                     MDNavigationDrawerDivider:
 

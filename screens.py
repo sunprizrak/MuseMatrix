@@ -130,6 +130,20 @@ class MainScreen(MDScreen):
         super(MainScreen, self).__init__(**kwargs)
         self.user_controller = UserController(screen=self)
 
+    def add_chat_token(self):
+        def callback(request, response):
+            self.user_controller.user.update(data_user=response)
+            self.coin = self.user_controller.user.coin
+            self.chat_token = self.user_controller.user.chat_token
+
+        if self.coin > 0:
+            data = {'coin': self.coin - 1, 'chat_token': self.chat_token + 1000}
+            self.user_controller.update_user(fields=data, callback=callback)
+        else:
+            self.core.show_dialog()
+            self.core.dialog.title = 'Notice!'
+            self.core.dialog.text = 'Not enough coins. Replenishment requires 1 coin(1 coin = 1000 chat tokens)'
+
     def show_ads(self):
         if platform == 'android':
             self.core.ads.show_rewarded_ad()
