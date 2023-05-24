@@ -127,7 +127,7 @@ class UserController:
     def google_oauth2(self, callback):
 
         UrlRequest(
-            url=f'{self.path_google_oauth2}?redirect_uri={google_redirect_url}',
+            url=f'{self.path_google_oauth2}?redirect_uri={GOOGLE_REDIRECT_URL}',
             method='GET',
             on_success=callback,
             #on_error=callback_error,
@@ -149,8 +149,9 @@ class UserController:
         def callback(request, response):
             self.user.update(data_user=response)
             self.screen.core.root.ids.main_screen.email = self.user.email
-            self.screen.core.root.ids.main_screen.credit = self.user.credit
+            self.screen.core.root.ids.main_screen.coin = self.user.coin
             self.screen.core.root.ids.main_screen.avatar = self.user.avatar
+            self.screen.core.root.ids.main_screen.chat_token = self.user.chat_token
 
         UrlRequest(
             url=self.path_data_user,
@@ -161,20 +162,12 @@ class UserController:
                          },
         )
 
-    def update_user(self, field_name, field_value, credit=None):
+    def update_user(self, field_name, field_value):
 
         def callback(request, response):
             self.user.update(data_user=response)
-            if credit:
-                self.screen.core.root.ids.main_screen.ids.nav_drawer_header.text = f'{str(self.user.credit)} credit'
 
         req_body = json.dumps({field_name: field_value})
-
-        if credit:
-            if credit == 'plus':
-                req_body = json.dumps({field_name: self.user.credit + field_value})
-            elif credit == 'minus':
-                req_body = json.dumps({field_name: self.user.credit - field_value})
 
         UrlRequest(
             url=self.path_data_user,

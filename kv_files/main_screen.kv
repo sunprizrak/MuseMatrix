@@ -1,6 +1,10 @@
 #:import MainScreen screens
 #:import ScrollEffect kivy.effects.scroll.ScrollEffect
 
+<ContentNavigationDrawer@MDBoxLayout>:
+    orientation: 'horizontal'
+
+
 <MainCard@MDCard>:
     md_bg_color: 69/255,55/255,86/255, .2
     orientation: 'vertical'
@@ -86,84 +90,137 @@
                     image: 'assets/img/bulb_icon.png'
                     text: 'reference'
 
+        MDNavigationLayout:
 
-        MDNavigationDrawer:
-            id: nav_drawer
-            radius: (0, 16, 16, 0)
+            MDNavigationDrawer:
+                id: nav_drawer
+                radius: (0, 16, 16, 0)
 
-            MDNavigationDrawerMenu:
-                do_scroll_y: False
+                MDNavigationDrawerMenu:
+                    do_scroll_y: False
 
-                MDNavigationDrawerHeader:
-                    id: nav_drawer_header
-                    title: root.email
-                    title_font_size: '17sp'
-                    text: str(root.credit) + ' credit'
-                    source: root.avatar
-                    spacing: dp(15)
-                    padding: dp(10), 0, 0, dp(10)
+                    ContentNavigationDrawer:
+                        adaptive_height: True
 
-                MDNavigationDrawerDivider:
+                        MDBoxLayout:
+                            orientation: 'vertical'
+                            size_hint_x: .4
+                            size_hint_y: None
+                            height: profile_info.height
 
-                MDNavigationDrawerItem:
-                    icon: "assets/img/settings_icon.png"
-                    text: "Settings"
-                    theme_text_color: 'Custom'
-                    text_color: 'white'
-                    focus_color: app.theme_cls.primary_color
-                    selected_color: "white"
-                    on_release:
-                        root.open_settings()
+                            AsyncImage:
+                                source: root.avatar
+                                mipmap: True
+                                fit_mode: 'contain'
 
-                MDNavigationDrawerDivider:
+                        MDBoxLayout:
+                            id: profile_info
+                            orientation: 'vertical'
+                            size_hint_x: .6
+                            spacing: dp(5)
+                            adaptive_height: True
 
-                MDNavigationDrawerItem:
-                    id: collection
-                    icon: 'assets/img/picture_icon.png'
-                    icon_size: sp(20)
-                    text: 'My Collection'
-                    theme_text_color: 'Custom'
-                    text_color: 'white'
-                    focus_color: app.theme_cls.primary_color
-                    selected_color: "white"
-                    on_release:
-                        root.open_collection()
+                            MDLabel:
+                                text: root.email
+                                adaptive_size: True
 
-                MDNavigationDrawerDivider:
+                            MDBoxLayout:
+                                orientation: 'horizontal'
+                                adaptive_height: True
+                                spacing: dp(10)
+                                pos_hint: {'center_x': .55}
 
-                MDNavigationDrawerItem:
-                    icon: 'assets/img/locker_icon.png'
-                    text: 'Buy Credits'
-                    theme_text_color: 'Custom'
-                    text_color: 'white'
-                    focus_color: app.theme_cls.primary_color
-                    selected_color: "white"
-                    on_release:
-                        root.open_buy_credits()
+                                Image:
+                                    source: 'assets/img/coin_icon.png'
+                                    size_hint: None, None
+                                    fit_mode: 'contain'
+                                    mipmap: True
+                                    size: dp(25), dp(25)
 
-                MDNavigationDrawerDivider:
+                                MDLabel:
+                                    text: str(root.coin)
+                                    color: '#FFD700'
+                                    adaptive_width: True
 
-                MDNavigationDrawerItem:
-                    icon: 'assets/img/money-bag_icon.png'
-                    text: 'Earn Credits'
-                    theme_text_color: 'Custom'
-                    text_color: 'white'
-                    focus_color: app.theme_cls.primary_color
-                    selected_color: "white"
-                    on_release:
-                        root.show_ads()
+                            MDBoxLayout:
+                                orientation: 'horizontal'
+                                adaptive_height: True
+                                spacing: dp(10)
+                                pos_hint: {'center_x': .55}
 
-                MDNavigationDrawerDivider:
+                                Image:
+                                    source: 'assets/img/chat_icon.png'
+                                    size_hint: None, None
+                                    fit_mode: 'contain'
+                                    mipmap: True
+                                    size: dp(25), dp(25)
 
-                MDNavigationDrawerItem:
-                    icon: 'assets/img/key_icon.png'
-                    text: 'Logout'
-                    theme_text_color: 'Custom'
-                    text_color: 'white'
-                    focus_color: app.theme_cls.primary_color
-                    selected_color: 'white'
-                    on_release:
-                        root.exit()
+                                MDLabel:
+                                    text: str(root.chat_token)
+                                    color: '#157ded'
+                                    adaptive_width: True
+
+                    MDNavigationDrawerDivider:
+
+                    MDNavigationDrawerItem:
+                        icon: "assets/img/settings_icon.png"
+                        text: "Settings"
+                        theme_text_color: 'Custom'
+                        text_color: 'white'
+                        focus_color: app.theme_cls.primary_color
+                        selected_color: "white"
+                        on_release:
+                            root.open_settings()
+
+                    MDNavigationDrawerDivider:
+
+                    MDNavigationDrawerItem:
+                        id: collection
+                        icon: 'assets/img/picture_icon.png'
+                        icon_size: sp(20)
+                        text: 'My Collection'
+                        theme_text_color: 'Custom'
+                        text_color: 'white'
+                        focus_color: app.theme_cls.primary_color
+                        selected_color: "white"
+                        on_release:
+                            root.open_collection()
+
+                    MDNavigationDrawerDivider:
+
+                    MDNavigationDrawerItem:
+                        icon: 'assets/img/locker_icon.png'
+                        text: 'Buy Coins'
+                        theme_text_color: 'Custom'
+                        text_color: 'white'
+                        focus_color: app.theme_cls.primary_color
+                        selected_color: "white"
+                        on_release:
+                            root.open_buy_credits()
+
+                    MDNavigationDrawerDivider:
+
+                    MDNavigationDrawerItem:
+                        icon: 'assets/img/money-bag_icon.png'
+                        text: 'Earn Coins'
+                        theme_text_color: 'Custom'
+                        text_color: 'white'
+                        focus_color: app.theme_cls.primary_color
+                        selected_color: "white"
+                        on_release:
+                            root.show_ads()
+
+                    MDNavigationDrawerDivider:
+
+                    MDNavigationDrawerItem:
+                        icon: 'assets/img/key_icon.png'
+                        text: 'Logout'
+                        theme_text_color: 'Custom'
+                        text_color: 'white'
+                        focus_color: app.theme_cls.primary_color
+                        selected_color: 'white'
+                        on_release:
+                            root.exit()
 
 
 

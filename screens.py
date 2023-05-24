@@ -27,7 +27,6 @@ from controller.user import UserController
 from controller.openai import OpenAIController
 from controller.image import ImageController
 import logging
-import tiktoken
 
 if platform == 'android':
     from iabwrapper import BillingProcessor
@@ -123,7 +122,8 @@ class ChangePasswordScreen(MDScreen):
 class MainScreen(MDScreen):
     core = ObjectProperty()
     email = StringProperty('email')
-    credit = NumericProperty()
+    coin = NumericProperty()
+    chat_token = NumericProperty()
     avatar = StringProperty('avatar')
 
     def __init__(self, **kwargs):
@@ -149,7 +149,7 @@ class MainScreen(MDScreen):
     def open_buy_credits(self):
         self.ids.nav_drawer.set_state('close')
         self.core.root.transition = MDSwapTransition()
-        self.core.root.current = 'buy_credits_screen'
+        self.core.root.current = 'buy_coins_screen'
 
     def exit(self):
         self.ids.nav_drawer.set_state("close")
@@ -168,55 +168,60 @@ class CreateImageScreen(MDScreen):
         self.openai_controller = OpenAIController()
         self.user_controller = UserController(screen=self)
 
-    @property
-    def check_enough_credit(self):
-        self.price = self.image_count * settings.CREDIT_ONE_GENERATE
-        if self.price <= self.user_controller.user.credit:
-            return True
-        else:
-            return False
-
     def create(self):
 
         def callback(request, response):
-            self.user_controller.update_user(field_name='credit', field_value=self.price, credit='minus')
-
             self.ids.create_spin.active = False
 
-            if len(response['data']) == 1:
-                url = response['data'][0].get('url')
+            if 'data' in response:
+                self.user_controller.user.coin = response['coin']
+                self.core.root.ids.main_screen.coin = self.user_controller.user.coin
 
-                image = MyImage(
-                    sm=self.parent,
-                    source=url,
-                    fit_mode='contain',
-                    mipmap=True,
-                )
-
-                self.ids.image_section.add_widget(image)
-            elif len(response['data']) > 1:
-                swiper = MDSwiper(
-                    size_hint_y=None,
-                    pos_hint={'center_x': .5, 'center_y': .5},
-                    height=self.ids.image_section.height,
-                )
-
-                for el in response['data']:
-                    url = el.get('url')
-
-                    item = MDSwiperItem()
+                if len(response['data']) == 1:
+                    url = response['data'][0].get('url')
 
                     image = MyImage(
                         sm=self.parent,
                         source=url,
-                        mipmap=True,
                         fit_mode='contain',
+                        mipmap=True,
                     )
 
-                    item.add_widget(image)
-                    swiper.add_widget(item)
+                    self.ids.image_section.add_widget(image)
+                elif len(response['data']) > 1:
+                    swiper = MDSwiper(
+                        size_hint_y=None,
+                        pos_hint={'center_x': .5, 'center_y': .5},
+                        height=self.ids.image_section.height,
+                    )
 
-                self.ids.image_section.add_widget(swiper)
+                    for el in response['data']:
+                        url = el.get('url')
+
+                        item = MDSwiperItem()
+
+                        image = MyImage(
+                            sm=self.parent,
+                            source=url,
+                            mipmap=True,
+                            fit_mode='contain',
+                        )
+
+                        item.add_widget(image)
+                        swiper.add_widget(item)
+
+                    self.ids.image_section.add_widget(swiper)
+            elif 'notice' in response:
+                image = Image(
+                    source='assets/img/default.png',
+                    mipmap=True,
+                )
+
+                self.ids.image_section.add_widget(image)
+
+                self.core.show_dialog()
+                self.core.dialog.title = 'Notice!'
+                self.core.dialog.text = response['notice']
 
         def output_error(error):
             self.ids.create_spin.active = False
@@ -239,26 +244,20 @@ class CreateImageScreen(MDScreen):
             output_error(error=error)
 
         if all([self.prompt, self.image_count, self.image_size]):
+            for widget in self.ids.image_section.children:
+                if isinstance(widget, MyImage) or isinstance(widget, MDSwiper) or isinstance(widget, Image):
+                    self.ids.image_section.remove_widget(widget)
 
-            if self.check_enough_credit:
-                for widget in self.ids.image_section.children:
-                    if isinstance(widget, MyImage) or isinstance(widget, MDSwiper) or isinstance(widget, Image):
-                        self.ids.image_section.remove_widget(widget)
+            self.ids.create_spin.active = True
 
-                self.ids.create_spin.active = True
-
-                self.openai_controller.image_generation(
-                    prompt=self.prompt,
-                    image_count=self.image_count,
-                    image_size=self.image_size,
-                    callback=callback,
-                    error=callback_error,
-                    failure=callback_failure,
-                )
-            else:
-                self.core.show_dialog()
-                self.core.dialog.title = 'success!'
-                self.core.dialog.text = 'You dont have enough credits'
+            self.openai_controller.image_generation(
+                prompt=self.prompt,
+                image_count=self.image_count,
+                image_size=self.image_size,
+                callback=callback,
+                error=callback_error,
+                failure=callback_failure,
+            )
 
 
 class EditImageScreen(MDScreen):
@@ -274,14 +273,6 @@ class EditImageScreen(MDScreen):
         super(EditImageScreen, self).__init__(**kwargs)
         self.openai_controller = OpenAIController()
         self.user_controller = UserController(screen=self)
-
-    @property
-    def check_enough_credit(self):
-        self.price = self.image_count * settings.CREDIT_ONE_GENERATE
-        if self.price <= self.user_controller.user.credit:
-            return True
-        else:
-            return False
 
     def add_image(self, path):
         self.ids.add_image_button.disabled = True
@@ -309,40 +300,49 @@ class EditImageScreen(MDScreen):
     def edit_image(self):
 
         def callback(request, response):
-            self.user_controller.update_user(field_name='credit', field_value=self.price, credit='minus')
-
             self.ids.edit_spin.active = False
 
-            if len(response['data']) == 1:
-                url = response['data'][0].get('url')
+            if 'data' in response:
+                self.user_controller.user.coin = response['coin']
+                self.core.root.ids.main_screen.coin = self.user_controller.user.coin
 
-                image = MyImage(
-                    sm=self.parent,
-                    source=url,
-                    fit_mode='contain',
-                    mipmap=True,
-                )
-
-                self.ids.image_section.add_widget(image)
-            elif len(response['data']) > 1:
-                swiper = MDSwiper()
-
-                for el in response['data']:
-                    url = el.get('url')
-
-                    item = MDSwiperItem()
+                if len(response['data']) == 1:
+                    url = response['data'][0].get('url')
 
                     image = MyImage(
                         sm=self.parent,
                         source=url,
-                        mipmap=True,
                         fit_mode='contain',
+                        mipmap=True,
                     )
 
-                    item.add_widget(image)
-                    swiper.add_widget(item)
+                    self.ids.image_section.add_widget(image)
+                elif len(response['data']) > 1:
+                    swiper = MDSwiper()
 
-                self.ids.image_section.add_widget(swiper)
+                    for el in response['data']:
+                        url = el.get('url')
+
+                        item = MDSwiperItem()
+
+                        image = MyImage(
+                            sm=self.parent,
+                            source=url,
+                            mipmap=True,
+                            fit_mode='contain',
+                        )
+
+                        item.add_widget(image)
+                        swiper.add_widget(item)
+
+                    self.ids.image_section.add_widget(swiper)
+            elif 'notice' in response:
+                self.ids.add_image_button.disabled = False
+                self.ids.edit_top_bar.right_action_items = []
+
+                self.core.show_dialog()
+                self.core.dialog.title = 'Notice!'
+                self.core.dialog.text = response['notice']
 
         def output_error(error):
             self.ids.edit_spin.active = False
@@ -364,45 +364,40 @@ class EditImageScreen(MDScreen):
         self.image_original.seek(0)
         if len(self.image_original.getvalue()) > 0:
             if all([self.prompt, self.image_count, self.image_size]):
-                if self.check_enough_credit:
-                    for widget in self.ids.image_section.children:
-                        if isinstance(widget, MyImage) or isinstance(widget, MDSwiper):
-                            if isinstance(widget, MyImage) and widget.disabled:
-                                mask_img = self.ids.image_section.children[0].get_mask_image()
-                                mask_data = io.BytesIO()
-                                mask_img.save(mask_data, flipped=True, fmt='png')
+                for widget in self.ids.image_section.children:
+                    if isinstance(widget, MyImage) or isinstance(widget, MDSwiper):
+                        if isinstance(widget, MyImage) and widget.disabled:
+                            mask_img = self.ids.image_section.children[0].get_mask_image()
+                            mask_data = io.BytesIO()
+                            mask_img.save(mask_data, flipped=True, fmt='png')
 
-                                with PilImage.open(mask_data) as img:
-                                    new = img.resize(size=(256, 256))
-                                    new.save(self.image_mask, format='png')
+                            with PilImage.open(mask_data) as img:
+                                new = img.resize(size=(256, 256))
+                                new.save(self.image_mask, format='png')
 
-                            self.ids.image_section.remove_widget(widget)
+                        self.ids.image_section.remove_widget(widget)
 
-                    self.ids.add_image_button.disabled = True
-                    self.ids.edit_spin.active = True
+                self.ids.add_image_button.disabled = True
+                self.ids.edit_spin.active = True
 
-                    self.image_original.seek(0)
-                    png_image_original = self.image_original.getvalue()
-                    im_b64_image_original = base64.b64encode(png_image_original).decode('utf-8')
+                self.image_original.seek(0)
+                png_image_original = self.image_original.getvalue()
+                im_b64_image_original = base64.b64encode(png_image_original).decode('utf-8')
 
-                    self.image_mask.seek(0)
-                    png_image_mask = self.image_mask.getvalue()
-                    im_b64_image_mask = base64.b64encode(png_image_mask).decode('utf-8')
+                self.image_mask.seek(0)
+                png_image_mask = self.image_mask.getvalue()
+                im_b64_image_mask = base64.b64encode(png_image_mask).decode('utf-8')
 
-                    self.openai_controller.image_edit(
-                        image=im_b64_image_original,
-                        mask=im_b64_image_mask,
-                        prompt=self.prompt,
-                        image_count=self.image_count,
-                        image_size=self.image_size,
-                        callback=callback,
-                        on_error=callback_error,
-                        on_failure=callback_failure,
-                    )
-                else:
-                    self.core.show_dialog()
-                    self.core.dialog.title = 'success!'
-                    self.core.dialog.text = 'You dont have enough credits'
+                self.openai_controller.image_edit(
+                    image=im_b64_image_original,
+                    mask=im_b64_image_mask,
+                    prompt=self.prompt,
+                    image_count=self.image_count,
+                    image_size=self.image_size,
+                    callback=callback,
+                    on_error=callback_error,
+                    on_failure=callback_failure,
+                )
 
     def clear_selection(self):
         for widget in self.ids.image_section.children:
@@ -433,14 +428,6 @@ class VariableImageScreen(MDScreen):
         super(VariableImageScreen, self).__init__(**kwargs)
         self.openai_controller = OpenAIController()
         self.user_controller = UserController(screen=self)
-
-    @property
-    def check_enough_credit(self):
-        self.price = self.image_count * settings.CREDIT_ONE_GENERATE
-        if self.price <= self.user_controller.user.credit:
-            return True
-        else:
-            return False
 
     def add_image(self, path):
         self.ids.add_image_button.disabled = True
@@ -476,40 +463,50 @@ class VariableImageScreen(MDScreen):
     def generate(self):
 
         def callback(request, response):
-            self.user_controller.update_user(field_name='credit', field_value=self.price, credit='minus')
-
             self.ids.variable_spin.active = False
 
-            if len(response['data']) == 1:
-                url = response['data'][0].get('url')
+            if 'data' in response:
+                self.user_controller.user.coin = response['coin']
+                self.core.root.ids.main_screen.coin = self.user_controller.user.coin
 
-                image = MyImage(
-                    sm=self.parent,
-                    source=url,
-                    fit_mode='contain',
-                    mipmap=True,
-                )
-
-                self.ids.image_section.add_widget(image)
-            elif len(response['data']) > 1:
-                swiper = MDSwiper()
-
-                for el in response['data']:
-                    url = el.get('url')
-
-                    item = MDSwiperItem()
+                if len(response['data']) == 1:
+                    url = response['data'][0].get('url')
 
                     image = MyImage(
                         sm=self.parent,
                         source=url,
+                        fit_mode='contain',
                         mipmap=True,
-                        allow_stretch=True,
                     )
 
-                    item.add_widget(image)
-                    swiper.add_widget(item)
+                    self.ids.image_section.add_widget(image)
+                elif len(response['data']) > 1:
+                    swiper = MDSwiper()
 
-                self.ids.image_section.add_widget(swiper)
+                    for el in response['data']:
+                        url = el.get('url')
+
+                        item = MDSwiperItem()
+
+                        image = MyImage(
+                            sm=self.parent,
+                            source=url,
+                            mipmap=True,
+                            allow_stretch=True,
+                        )
+
+                        item.add_widget(image)
+                        swiper.add_widget(item)
+
+                    self.ids.image_section.add_widget(swiper)
+            elif 'notice' in response:
+                self.ids.add_image_button.disabled = False
+
+                self.ids.variable_top_bar.right_action_items = []
+
+                self.core.show_dialog()
+                self.core.dialog.title = 'Notice!'
+                self.core.dialog.text = response['notice']
 
         def output_error(error):
             self.ids.variable_spin.active = False
@@ -531,30 +528,25 @@ class VariableImageScreen(MDScreen):
         self.image.seek(0)
         if len(self.image.getvalue()) > 0:
             if all([self.image_count, self.image_size]):
-                if self.check_enough_credit:
-                    for widget in self.ids.image_section.children:
-                        if isinstance(widget, MyImage) or isinstance(widget, MDSwiper):
-                            self.ids.image_section.remove_widget(widget)
+                for widget in self.ids.image_section.children:
+                    if isinstance(widget, MyImage) or isinstance(widget, MDSwiper):
+                        self.ids.image_section.remove_widget(widget)
 
-                    self.ids.add_image_button.disabled = True
-                    self.ids.variable_spin.active = True
+                self.ids.add_image_button.disabled = True
+                self.ids.variable_spin.active = True
 
-                    self.image.seek(0)
-                    image_png = self.image.getvalue()
-                    im_b64_image = base64.b64encode(image_png).decode('utf-8')
+                self.image.seek(0)
+                image_png = self.image.getvalue()
+                im_b64_image = base64.b64encode(image_png).decode('utf-8')
 
-                    self.openai_controller.image_variation(
-                        image=im_b64_image,
-                        image_count=self.image_count,
-                        image_size=self.image_size,
-                        callback=callback,
-                        on_error=callback_error,
-                        on_failure=callback_failure,
-                    )
-                else:
-                    self.core.show_dialog()
-                    self.core.dialog.title = 'success!'
-                    self.core.dialog.text = 'You dont have enough credits'
+                self.openai_controller.image_variation(
+                    image=im_b64_image,
+                    image_count=self.image_count,
+                    image_size=self.image_size,
+                    callback=callback,
+                    on_error=callback_error,
+                    on_failure=callback_failure,
+                )
 
 
 class ChatGptScreen(MDScreen):
@@ -564,6 +556,7 @@ class ChatGptScreen(MDScreen):
     def __init__(self, **kwargs):
         super(ChatGptScreen, self).__init__(*kwargs)
         self.openai_controller = OpenAIController()
+        self.user_controller = UserController(screen=self)
 
     def on_pre_enter(self, *args):
         Window.softinput_mode = 'pan'
@@ -574,30 +567,40 @@ class ChatGptScreen(MDScreen):
     def send(self):
 
         def callback(request, response):
-            text = response['choices'][0].get('message').get('content').lstrip()
+            if 'choices' in response:
+                self.ids.chat_gpt.data.append(message)
 
-            lab = Label(text=text, font_size=sp(16), padding=[dp(20), dp(5)])
-            lab.texture_update()
-            w, h = lab.texture_size
+                text = response['choices'][0].get('message').get('content').lstrip()
+                self.user_controller.user.chat_token = response['chat_token']
+                self.core.root.ids.main_screen.chat_token = self.user_controller.user.chat_token
 
-            if w > dp(300):
-                lab = Label(text=text, font_size=sp(16), padding=[dp(20), dp(5)], text_size=(dp(300), None))
+                lab = Label(text=text, font_size=sp(16), padding=[dp(20), dp(5)])
                 lab.texture_update()
                 w, h = lab.texture_size
 
-            msg = {
-                'width': w,
-                'height': h,
-                'text': text,
-                'theme_text_color': 'Custom',
-                'text_color': (1, 1, 1, 1),
-                'font_style': 'Message',
-                'bg_color': (.2, .2, .2, 1),
-                'radius': [10, 10, 10, 10],
-                'pos_hint': {'left': 1},
-            }
+                if w > dp(300):
+                    lab = Label(text=text, font_size=sp(16), padding=[dp(20), dp(5)], text_size=(dp(300), None))
+                    lab.texture_update()
+                    w, h = lab.texture_size
 
-            self.ids.chat_gpt.data.append(msg)
+                msg = {
+                    'width': w,
+                    'height': h,
+                    'text': text,
+                    'theme_text_color': 'Custom',
+                    'text_color': (1, 1, 1, 1),
+                    'font_style': 'Message',
+                    'bg_color': (.2, .2, .2, 1),
+                    'radius': [10, 10, 10, 10],
+                    'pos_hint': {'left': 1},
+                }
+
+                self.ids.chat_gpt.data.append(msg)
+            elif 'notice' in response:
+                text = response['notice']
+                self.core.show_dialog()
+                self.core.dialog.title = 'success!'
+                self.core.dialog.text = text
 
         if self.prompt:
 
@@ -622,36 +625,12 @@ class ChatGptScreen(MDScreen):
                 'pos_hint': {'right': 1},
             }
 
-            self.ids.chat_gpt.data.append(message)
+            #self.ids.chat_gpt.data.append(message)
 
-            msg = [{'role': 'user', 'content': self.prompt}]
-
-            print(f"{self.num_tokens_from_messages(messages=msg)} prompt tokens counted.")
-
-            # self.openai_controller.chat_completion(
-            #     prompt=self.prompt,
-            #     callback=callback,
-            # )
-
-    def num_tokens_from_messages(self, messages, model="gpt-3.5-turbo"):
-        """Returns the number of tokens used by a list of messages."""
-        try:
-            encoding = tiktoken.encoding_for_model(model)
-        except KeyError:
-            encoding = tiktoken.get_encoding("cl100k_base")
-        if model == "gpt-3.5-turbo":  # note: future models may deviate from this
-            num_tokens = 0
-            for message in messages:
-                num_tokens += 4  # every message follows <im_start>{role/name}\n{content}<im_end>\n
-                for key, value in message.items():
-                    num_tokens += len(encoding.encode(value))
-                    if key == "name":  # if there's a name, the role is omitted
-                        num_tokens += -1  # role is always required and always 1 token
-            num_tokens += 2  # every reply is primed with <im_start>assistant
-            return num_tokens
-        else:
-            print(f"""num_tokens_from_messages() is not presently implemented for model {model}.
-      See https://github.com/openai/openai-python/blob/main/chatml.md for information on how messages are converted to tokens.""")
+            self.openai_controller.chat_completion(
+                prompt=self.prompt,
+                callback=callback,
+            )
 
 
 class CollectionScreen(MDScreen):

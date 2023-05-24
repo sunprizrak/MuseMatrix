@@ -7,7 +7,7 @@ class OpenAIController:
     path_image_generation = host_name + 'openai/image_generation/'
     path_image_edit = host_name + 'openai/image_edit/'
     path_image_variation = host_name + 'openai/image_variation/'
-    path_text_completion = host_name + 'openai/text_completion/'
+    path_chat_completion = host_name + 'openai/chat_completion/'
     path_speech_to_text = host_name + 'openai/speech_to_text/'
 
     def image_generation(self, prompt, image_count, image_size, callback, error, failure):
@@ -62,7 +62,7 @@ class OpenAIController:
         token = storage.get('auth_token').get('token')
 
         UrlRequest(
-            url=self.path_text_completion,
+            url=self.path_chat_completion,
             method='GET',
             on_success=callback,
             req_headers={

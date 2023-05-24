@@ -1,4 +1,4 @@
-#:import BuyCreditsScreen screens
+#:import BuyCoinsScreen screens
 
 <ListItemWithLabel@OneLineAvatarIconListItem>:
     recent: False
@@ -23,7 +23,7 @@
 
 
 <BuyCreditsScreen>
-    name: 'buy_credits_screen'
+    name: 'buy_coins_screen'
     md_bg_color: app.theme_cls.bg_light
 
     MDFloatLayout:
@@ -32,7 +32,7 @@
             id: buy_top_bar
             pos_hint: {'top': 1}
             type_height: 'small'
-            title: 'buy credit'
+            title: 'Buy coins'
             anchor_title: 'left'
             md_bg_color: root.md_bg_color
             left_action_items: [['arrow-left-bold', lambda x: app.back(screen='main_screen')]]
@@ -50,7 +50,7 @@
                 text: '$99.99'
 
             BuyButton:
-                text: '20000 credit'
+                text: '20000 coins'
                 on_release:
                     root.open_payment_layout(root.PROD_20000)
 
@@ -58,7 +58,7 @@
                 text: '$24.99'
 
             BuyButton:
-                text: '5000 credit'
+                text: '5000 coins'
                 on_release:
                     root.open_payment_layout(root.PROD_5000)
 
@@ -66,7 +66,7 @@
                 text: '$17.99'
 
             BuyButton:
-                text: '3600 credit'
+                text: '3600 coins'
                 on_release:
                     root.open_payment_layout(root.PROD_3600)
 
@@ -74,7 +74,7 @@
                 text: '$7.99'
 
             BuyButton:
-                text: '1600 credit'
+                text: '1600 coins'
                 on_release:
                     root.open_payment_layout(root.PROD_1600)
 
@@ -82,7 +82,7 @@
                 text: '$4.99'
 
             BuyButton:
-                text: '1000 credit'
+                text: '1000 coins'
                 on_release:
                     root.open_payment_layout(root.PROD_1000)
 
@@ -90,7 +90,7 @@
                 text: '$1.99'
 
             BuyButton:
-                text: '400  credit'
+                text: '400  coins'
                 on_release:
                     root.open_payment_layout(root.PROD_400)
 
@@ -98,7 +98,7 @@
                 text: '$0.99'
 
             BuyButton:
-                text: '200  credit'
+                text: '200  coins'
                 on_release:
                     root.open_payment_layout(root.PROD_200)
 
