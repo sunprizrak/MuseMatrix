@@ -568,8 +568,6 @@ class ChatGptScreen(MDScreen):
 
         def callback(request, response):
             if 'choices' in response:
-                self.ids.chat_gpt.data.append(message)
-
                 text = response['choices'][0].get('message').get('content').lstrip()
                 self.user_controller.user.chat_token = response['chat_token']
                 self.core.root.ids.main_screen.chat_token = self.user_controller.user.chat_token
@@ -597,10 +595,9 @@ class ChatGptScreen(MDScreen):
 
                 self.ids.chat_gpt.data.append(msg)
             elif 'notice' in response:
-                text = response['notice']
                 self.core.show_dialog()
-                self.core.dialog.title = 'success!'
-                self.core.dialog.text = text
+                self.core.dialog.title = 'Notice!'
+                self.core.dialog.text = response['notice']
 
         if self.prompt:
 
@@ -625,7 +622,7 @@ class ChatGptScreen(MDScreen):
                 'pos_hint': {'right': 1},
             }
 
-            #self.ids.chat_gpt.data.append(message)
+            self.ids.chat_gpt.data.append(message)
 
             self.openai_controller.chat_completion(
                 prompt=self.prompt,
