@@ -108,10 +108,16 @@
                             size_hint_y: None
                             height: profile_info.height
 
-                            AsyncImage:
-                                source: root.avatar
-                                mipmap: True
-                                fit_mode: 'contain'
+                            MDBoxLayout:
+                                orientation: 'vertical'
+                                size_hint: None, None
+                                size: dp(85), dp(85)
+                                pos_hint: {'center_x': .5, 'center_y': .5}
+
+                                FitImage:
+                                    source: root.avatar
+                                    mipmap: True
+                                    radius: 50, 50, 50, 50
 
                         MDBoxLayout:
                             id: profile_info
