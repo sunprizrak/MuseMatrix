@@ -123,11 +123,13 @@
                             MDLabel:
                                 text: root.email
                                 adaptive_size: True
+                                pos_hint: {'center_x': .5}
 
                             MDBoxLayout:
                                 orientation: 'horizontal'
-                                adaptive_height: True
-                                spacing: dp(10)
+                                adaptive_size: True
+                                spacing: dp(5)
+                                pos_hint: {'center_x': .5}
 
                                 Image:
                                     source: 'assets/img/coin_icon.png'
@@ -148,7 +150,7 @@
                                 MDBoxLayout:
                                     orientation: 'horizontal'
                                     adaptive_height: True
-                                    spacing: dp(10)
+                                    spacing: dp(5)
 
                                     Image:
                                         source: 'assets/img/chat_icon.png'

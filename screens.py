@@ -894,6 +894,7 @@ class SpeechToTextScreen(MDScreen):
     def __init__(self, **kwargs):
         super(SpeechToTextScreen, self).__init__(**kwargs)
         self.openai_controller = OpenAIController()
+        self.user_controller = UserController(screen=self)
 
     def sound_play(self):
         if self.sound:
@@ -934,7 +935,9 @@ class SpeechToTextScreen(MDScreen):
     def transcript(self):
         def callback(request, response):
             self.ids.speech_spin.active = False
-            self.ids.audio_transcript.text = response['data']
+            self.ids.audio_transcript.text = response['text']
+            self.user_controller.user.coin = response['coin']
+            self.core.root.ids.main_screen.coin = self.user_controller.user.coin
 
         if self.sound_path:
 
@@ -951,6 +954,8 @@ class SpeechToTextScreen(MDScreen):
 
             self.ids.speech_spin.active = True
 
+            length = int(self.sound.length / 60)
+
             with open(self.sound_path, 'rb') as audio_file:
                 base64_audio = base64.b64encode(audio_file.read()).decode('utf-8')
                 name = audio_file.name.split('/')[-1]
@@ -958,6 +963,7 @@ class SpeechToTextScreen(MDScreen):
                 self.openai_controller.speech_to_text(
                     audio_file=base64_audio,
                     audio_name=name,
+                    audio_length=length,
                     callback=callback,
                     translate=translate,
                 )
