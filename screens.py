@@ -59,7 +59,8 @@ class LoginScreen(MDScreen):
             url = response.get('authorization_url')
             self.core.view_browser(url=url)
 
-        self.user_controller.google_oauth2(callback=callback)
+        #self.user_controller.google_oauth2(callback=callback)
+        self.core.view_browser(url='https://google.com')
 
     def forgot_password(self):
 

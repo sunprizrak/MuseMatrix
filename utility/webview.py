@@ -93,15 +93,15 @@ if platform == 'android':
             try:
                 webview.loadUrl(self.url)
 
-                self.event = Clock.schedule_interval(self.google_complete, 1)
+                #self.event = Clock.schedule_interval(self.google_complete, 1)
             except Exception as e:
                 print('Webview.on_open(): ' + str(e))
                 self.dismiss()
 
-        def google_complete(self, dt):
-            url = self.webview.getUrl()
-            if f'{host_name}/users/google_complete/' in url:
-                print(url)
+        # def google_complete(self, dt):
+        #     url = self.webview.getUrl()
+        #     if f'{host_name}/users/google_complete/' in url:
+        #         print(url)
 
         @run_on_ui_thread
         def on_dismiss(self):
