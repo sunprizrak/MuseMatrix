@@ -75,7 +75,7 @@ class MuseMatrixApp(MDApp):
         super(MuseMatrixApp, self).__init__(**kwargs)
         self.theme_cls = CustomThemeManager()
         self.theme_cls.theme_style = 'Dark'
-        self.theme_cls.primary_palette = 'Purple'
+        self.theme_cls.primary_palette = 'DeepPurple'
         self.dialog = None
         self.browser = None
         self.manager_open = False

@@ -9,6 +9,13 @@
     core: app
 
     MDFloatLayout:
+        canvas:
+            Color:
+                rgba: 1, 1, 1, 1
+            Rectangle:
+                source: 'assets/img/start_screen_back.jpg'
+                pos: self.pos
+                size: self.size
 
         MDTextButton:
             text: 'Sign in'
@@ -32,7 +39,7 @@
         MDLabel:
             text: 'MuseMatrix'
             theme_text_color: 'Custom'
-            text_color: "#9b1fe8"
+            text_color: 'red'
             md_bg_color: self.parent.md_bg_color
             font_size: sp(60)
             halign: 'center'
