@@ -33,16 +33,18 @@ if platform == 'android':
         def __init__(self, app, user_controller):
             self.AppObj = app
             self.user_controller = user_controller
-            print(app.root.current)
 
         def on_rewarded(self, reward_name, reward_amount):
             reward_name = 'coin'
             reward_amount = 1
+            total_amount = self.user_controller.user.coin + reward_amount
 
             def callback(request, response):
-                pass
+                self.user_controller.user.update(data_user=response)
+                screen = self.AppObj.root.get_screen(self.AppObj.root.current)
+                screen.coin = self.user_controller.user.coin
 
-            self.user_controller.update_user(fields={'coin': reward_amount}, callback=callback)
+            self.user_controller.update_user(fields={'coin': total_amount}, callback=callback)
 
         def on_rewarded_video_ad_started(self):
             self.AppObj.load_ads_video()

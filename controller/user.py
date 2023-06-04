@@ -126,10 +126,14 @@ class UserController:
 
     def google_oauth2(self, callback):
 
+        def redirect(request, result):
+            print(result)
+
         UrlRequest(
             url=f'{self.path_google_oauth2}?redirect_uri={GOOGLE_REDIRECT_URL}',
             method='GET',
-            on_success=callback,
+            on_redirect=redirect,
+            #on_success=callback,
             #on_error=callback_error,
             #on_failure=callback_failure,
             req_headers={'Content-type': 'application/json'},
