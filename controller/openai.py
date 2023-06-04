@@ -72,13 +72,16 @@ class OpenAIController:
             req_body=json.dumps({'prompt': prompt}),
         )
 
-    def speech_to_text(self, audio_file, audio_name, audio_length, translate, callback):
+    def speech_to_text(self, audio_file, audio_name, audio_length, translate, callback, error, failure, finish):
         token = storage.get('auth_token').get('token')
 
         UrlRequest(
             url=self.path_speech_to_text,
             method='GET',
             on_success=callback,
+            on_failure=failure,
+            on_error=error,
+            on_finish=finish,
             req_headers={
                 'Content-type': 'application/json',
                 'Authorization': f"Token {token}",

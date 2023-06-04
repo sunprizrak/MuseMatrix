@@ -33,11 +33,16 @@ if platform == 'android':
         def __init__(self, app, user_controller):
             self.AppObj = app
             self.user_controller = user_controller
+            print(app.root.current)
 
         def on_rewarded(self, reward_name, reward_amount):
-            reward_name = 'credit'
-            reward_amount = '1'
-            self.user_controller.update_user(field_name=reward_name, field_value=int(reward_amount), credit='plus')
+            reward_name = 'coin'
+            reward_amount = 1
+
+            def callback(request, response):
+                pass
+
+            self.user_controller.update_user(fields={'coin': reward_amount}, callback=callback)
 
         def on_rewarded_video_ad_started(self):
             self.AppObj.load_ads_video()
@@ -191,14 +196,9 @@ class MuseMatrixApp(MDApp):
                 sound_name = f'...{path.split("/")[-1][-19:]}'
             else:
                 sound_name = path.split('/')[-1]
-            self.root.ids.speech_to_text_screen.ids.add_sound_button.disabled = True
+
             self.root.ids.speech_to_text_screen.sound = SoundLoader.load(path)
-            self.root.ids.speech_to_text_screen.sound_path = path
-            self.root.ids.speech_to_text_screen.ids.sound.icon = 'music'
             self.root.ids.speech_to_text_screen.ids.sound.text = sound_name
-            self.root.ids.speech_to_text_screen.ids.sound_option.icon_play = 'play'
-            self.root.ids.speech_to_text_screen.ids.sound_option.icon_stop = 'stop'
-            self.root.ids.speech_to_text_screen.ids.delete_button.icon = 'close'
 
             button = MDRaisedButton(
                 text='transcript',
@@ -206,7 +206,7 @@ class MuseMatrixApp(MDApp):
                 font_size=sp(25),
                 md_bg_color=self.theme_cls.primary_color,
                 on_release=lambda
-                    x: self.root.ids.speech_to_text_screen.transcript() if self.root.ids.speech_to_text_screen.ids.speech_spin.active is False else False
+                    x: self.root.ids.speech_to_text_screen.transcript()
             )
 
             text_button = MDChipText(text='translate to english')

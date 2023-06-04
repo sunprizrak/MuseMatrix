@@ -8,7 +8,7 @@ from kivy.properties import StringProperty, ObjectProperty, BoundedNumericProper
 from kivymd.toast import toast
 from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.button import MDFlatButton, MDRaisedButton
-from kivymd.uix.chip import MDChip
+from kivymd.uix.chip import MDChip, MDChipText
 from kivymd.uix.menu import MDDropdownMenu
 from kivymd.uix.screen import MDScreen
 from kivymd.uix.swiper import MDSwiperItem, MDSwiper
@@ -888,8 +888,7 @@ class BuyCreditsScreen(MDScreen):
 
 class SpeechToTextScreen(MDScreen):
     core = ObjectProperty()
-    sound_path = StringProperty()
-    sound = ObjectProperty()
+    sound = ObjectProperty(None, allownone=True)
     sound_pos = NumericProperty()
 
     def __init__(self, **kwargs):
@@ -923,24 +922,65 @@ class SpeechToTextScreen(MDScreen):
         if self.ids.audio_transcript.text:
             self.ids.audio_transcript.text = ''
 
-        self.sound = False
-        self.sound_path = ''
+        if self.ids.speech_spin.active is True:
+            self.ids.speech_spin.active = False
+
+        self.sound = None
         self.sound_pos = 0
-        self.ids.sound.icon = ''
         self.ids.sound.text = ''
-        self.ids.sound_option.icon_play = ''
-        self.ids.sound_option.icon_stop = ''
-        self.ids.delete_button.icon = ''
-        self.ids.add_sound_button.disabled = False
+
+        remove_widgets = []
+
+        for widget in self.ids.speech_layout.children:
+            if isinstance(widget, MDRaisedButton) or isinstance(widget, MDChip):
+                remove_widgets.append(widget)
+
+        self.ids.speech_layout.clear_widgets(remove_widgets)
 
     def transcript(self):
         def callback(request, response):
-            self.ids.speech_spin.active = False
             self.ids.audio_transcript.text = response['text']
             self.user_controller.user.coin = response['coin']
             self.core.root.ids.main_screen.coin = self.user_controller.user.coin
 
-        if self.sound_path:
+        def callback_failure(request, response):
+            print('failure')
+            output_error(error=response)
+
+        def callback_error(request, error):
+            print('error')
+            output_error(error=error)
+
+        def output_error(error):
+            print(error)
+            button = MDRaisedButton(
+                text='transcript',
+                pos_hint={'center_x': .5, 'center_y': .5},
+                font_size=sp(25),
+                md_bg_color=self.theme_cls.primary_color,
+                on_release=lambda
+                    x: self.root.ids.speech_to_text_screen.transcript()
+            )
+
+            text_button = MDChipText(text='translate to english')
+
+            chip = MDChip(
+                pos_hint={'center_x': .5, 'center_y': .6},
+                md_bg_color='grey',
+                line_color="black",
+                type='filter',
+                selected_color='green',
+            )
+
+            chip.add_widget(text_button)
+
+            self.ids.speech_layout.add_widget(button)
+            self.ids.speech_layout.add_widget(chip)
+
+        def callback_finish(request):
+            self.ids.speech_spin.active = False
+
+        if self.sound:
 
             remove_widgets = []
             translate = False
@@ -957,7 +997,7 @@ class SpeechToTextScreen(MDScreen):
 
             length = int(self.sound.length / 60)
 
-            with open(self.sound_path, 'rb') as audio_file:
+            with open(self.sound.source, 'rb') as audio_file:
                 base64_audio = base64.b64encode(audio_file.read()).decode('utf-8')
                 name = audio_file.name.split('/')[-1]
 
@@ -965,6 +1005,9 @@ class SpeechToTextScreen(MDScreen):
                     audio_file=base64_audio,
                     audio_name=name,
                     audio_length=length,
+                    failure=callback_failure,
+                    error=callback_error,
+                    finish=callback_finish,
                     callback=callback,
                     translate=translate,
                 )

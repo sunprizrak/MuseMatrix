@@ -36,7 +36,7 @@
                     MDBoxLayout:
                         id: sound
                         orientation: 'horizontal'
-                        icon: ''
+                        icon: 'music' if root.sound else ''
                         text: ''
                         spacing: dp(5)
                         pos_hint: {'center_x': .5}
@@ -55,8 +55,8 @@
                     MDBoxLayout:
                         id: sound_option
                         orientation: 'horizontal'
-                        icon_play: ''
-                        icon_stop: ''
+                        icon_play: 'play' if root.sound else ''
+                        icon_stop: 'stop' if root.sound else ''
                         pos_hint: {"center_x": .5}
                         adaptive_size: True
 
@@ -76,7 +76,7 @@
 
                     MDIconButton:
                         id: delete_button
-                        icon: ''
+                        icon: 'close' if root.sound else ''
                         size_hint: None, None
                         size: icon.size
                         on_release:
@@ -105,6 +105,7 @@
             icon: 'music-note-plus'
             icon_size: dp(70)
             theme_icon_color: "Custom"
+            disabled: True if root.sound else False
             disabled_color: 1, 1, 1, 0
             icon_color: 'gray'
             pos_hint: {"center_x": .5, "center_y": .7}
