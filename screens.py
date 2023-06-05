@@ -810,40 +810,8 @@ class BuyCreditsScreen(MDScreen):
                 Logger.info(f"Subscription: {subscription}")
 
     def open_payment_layout(self, sku):
-        if self.bp.is_purchased(sku):
-            toast("Already Purchased")
-            pi = self.bp.get_purchase_info(sku)
-            details = {
-                "responseData": pi.responseData,
-                "signature": pi.signature,
-                "purchaseData": {
-                    "orderId": pi.purchaseData.orderId,
-                    "productId": pi.purchaseData.productId,
-                    "purchaseTime": pi.purchaseData.purchaseTime,
-                    "purchaseToken": pi.purchaseData.purchaseToken,
-                    "purchaseState": pi.purchaseData.purchaseState,
-                    "autoRenewing": pi.purchaseData.autoRenewing,
-                }
-            }
-            Logger.info(f"get_purchase_info: {details}")
-            self.bp.consume_purchase_async(sku)
-            return
-        elif self.bp.is_subscribed(sku):
+        if self.bp.is_subscribed(sku):
             toast("Already Subscribed")
-            pi = self.bp.get_subscription_purchase_info(sku)
-            details = {
-                "responseData": pi.responseData,
-                "signature": pi.signature,
-                "purchaseData": {
-                    "orderId": pi.purchaseData.orderId,
-                    "productId": pi.purchaseData.productId,
-                    "purchaseTime": pi.purchaseData.purchaseTime,
-                    "purchaseToken": pi.purchaseData.purchaseToken,
-                    "purchaseState": pi.purchaseData.purchaseState,
-                    "autoRenewing": pi.purchaseData.autoRenewing,
-                }
-            }
-            Logger.info(f"get_subscription_purchase_info: {details}")
             return
         setattr(self, 'product_id', sku)
         self.ids.bottom_sheet.open()
