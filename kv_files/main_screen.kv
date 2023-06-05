@@ -102,7 +102,7 @@
                     ContentNavigationDrawer:
                         adaptive_height: True
 
-                        MDBoxLayout:
+                        MDRelativeLayout:
                             orientation: 'vertical'
                             size_hint_x: .4
                             size_hint_y: None
@@ -119,23 +119,21 @@
                                     mipmap: True
                                     radius: 50, 50, 50, 50
 
-                        MDBoxLayout:
+                        MDRelativeLayout:
                             id: profile_info
-                            orientation: 'vertical'
                             size_hint_x: .6
-                            spacing: dp(5)
                             adaptive_height: True
 
                             MDLabel:
                                 text: root.email
+                                pos_hint: {'center_x': .5, 'center_y': .9}
                                 adaptive_size: True
-                                pos_hint: {'center_x': .5}
 
                             MDBoxLayout:
                                 orientation: 'horizontal'
                                 adaptive_size: True
                                 spacing: dp(5)
-                                pos_hint: {'center_x': .5}
+                                pos_hint: {'center_x': .5, 'center_y': .55}
 
                                 Image:
                                     source: 'assets/img/coin_icon.png'
@@ -157,6 +155,7 @@
                                     orientation: 'horizontal'
                                     adaptive_height: True
                                     spacing: dp(5)
+                                    pos_hint: {'center_y': .5}
 
                                     Image:
                                         source: 'assets/img/chat_icon.png'
@@ -174,10 +173,9 @@
                                     text: "add"
                                     md_bg_color: "green"
                                     size_hint_y: .5
-                                    pos_hint: {'center_y': .35}
+                                    pos_hint: {'center_y': .5}
                                     on_release:
                                         root.add_chat_token()
-
 
                     MDNavigationDrawerDivider:
 
@@ -208,7 +206,7 @@
                     MDNavigationDrawerDivider:
 
                     MDNavigationDrawerItem:
-                        icon: 'assets/img/locker_icon.png'
+                        icon: 'assets/img/shopping_cart.png'
                         text: 'Buy Coins'
                         theme_text_color: 'Custom'
                         text_color: 'white'
@@ -220,7 +218,7 @@
                     MDNavigationDrawerDivider:
 
                     MDNavigationDrawerItem:
-                        icon: 'assets/img/money-bag_icon.png'
+                        icon: 'assets/img/video_icon.png'
                         text: 'Earn Coins'
                         theme_text_color: 'Custom'
                         text_color: 'white'

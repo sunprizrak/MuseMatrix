@@ -27,12 +27,29 @@ from controller.user import UserController
 from controller.openai import OpenAIController
 from controller.image import ImageController
 import logging
-from kivy.clock import Clock, ClockEvent
+from kivy.clock import Clock
+
+logging.getLogger('PIL').setLevel(logging.WARNING)
 
 if platform == 'android':
     from iabwrapper import BillingProcessor
+    from jnius import autoclass, cast
+    from android.runnable import run_on_ui_thread
+    from android import python_act as PythonActivity
 
-logging.getLogger('PIL').setLevel(logging.WARNING)
+    Activity = autoclass('android.app.Activity')
+
+    LayoutParams = autoclass('android.view.WindowManager$LayoutParams')
+    AndroidColor = autoclass('android.graphics.Color')
+    Configuration = autoclass('android.content.res.Configuration')
+
+    context = PythonActivity.mActivity
+
+    @run_on_ui_thread
+    def set_statusbar_color(color):
+        window = context.getWindow()
+        window.addFlags(LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
+        window.setStatusBarColor(AndroidColor.parseColor(color))
 
 
 class StartScreen(MDScreen):
@@ -795,9 +812,12 @@ class BuyCreditsScreen(MDScreen):
 
     def on_pre_enter(self, *args):
         if platform == 'android':
+            primary_clr = self.theme_cls.primary_color
+            hex_color = '#%02x%02x%02x' % (int(primary_clr[0] * 200), int(primary_clr[1] * 200), int(primary_clr[2] * 200))
+            set_statusbar_color(hex_color)
 
             Logger.info(f"is_initialized: {self.bp.is_initialized()}")
-            Logger.info(f"is_iab_service_available: {self.bp.is_iab_service_available()}")
+            Logger.info(f'is_iab_service_available: {self.bp.is_iab_service_available()}')
             Logger.info(f"is_subscription_update_supported: {self.bp.is_subscription_update_supported()}")
 
             owned_products = self.bp.list_owned_products()
@@ -827,7 +847,6 @@ class BuyCreditsScreen(MDScreen):
                 # Get Details about a subscription
                 self.bp.get_subscription_listing_async(self.product_id, self.purchase_details_received)
                 self.bp.subscribe_product(self.product_id)
-
         else:
             toast("Payment method not implemented")
 
@@ -1010,8 +1029,3 @@ class SpeechToTextScreen(MDScreen):
                     callback=callback,
                     translate=translate,
                 )
-
-
-
-
-

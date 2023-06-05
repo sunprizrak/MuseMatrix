@@ -102,11 +102,12 @@
             BuyButton:
                 text: '200  coins'
                 on_release:
-                    root.open_payment_layout(root.PROD_200)
+                    #root.open_payment_layout(root.PROD_200)
+                    bottom_sheet.open()
 
     MDBottomSheet:
         id: bottom_sheet
-        bg_color: "grey"
+        bg_color: app.theme_cls.bg_light
         max_opening_height: self.height
         default_opening_height: self.max_opening_height
         adaptive_height: True
@@ -142,7 +143,7 @@
                         adaptive_height: True
 
                         ListItemWithLabel:
-                            icon: "google-play"
+                            icon: "assets/img/google_play.png"
                             text: "Google Play"
                             method_name: "gplay"
                             recent: True
