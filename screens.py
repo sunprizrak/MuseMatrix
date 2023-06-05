@@ -768,6 +768,7 @@ class SettingsScreen(MDScreen):
 
 
 class BuyCreditsScreen(MDScreen):
+    core = ObjectProperty()
     LICENSE_KEY = settings.PLAY_CONSOLE_KEY
 
     PROD_200 = 'a134b'
@@ -783,8 +784,11 @@ class BuyCreditsScreen(MDScreen):
     products = [PROD_200, PROD_400, PROD_1000, PROD_1600, PROD_3600, PROD_5000, PROD_20000]
     subscriptions = [PROD_MONTHLY_1, PROD_ANNUAL_1]
 
+    amounts = {PROD_200: 200, PROD_400: 400, PROD_1000: 1000, PROD_1600: 1600, PROD_3600: 3600, PROD_5000: 5000, PROD_20000: 20000}
+
     def __init__(self, **kwargs):
         super(BuyCreditsScreen, self).__init__(**kwargs)
+        self.user_controller = UserController(screen=self)
         if platform == 'android':
             self.bp = BillingProcessor(self.LICENSE_KEY, self.product_purchased, self.billing_error,
                                        onBillingInitializedMethod=self.billing_initialized)
@@ -861,8 +865,16 @@ class BuyCreditsScreen(MDScreen):
 
     def product_purchased(self, product_id, purchase_info):
         toast("Product purchased")
-        print(product_id)
-        print(purchase_info)
+
+        total_amount = self.user_controller.user.coin + self.amounts.get(product_id)
+
+        def callback(request, response):
+            self.user_controller.user.update(data_user=response)
+            screen = self.core.root.get_screen('main_screen')
+            screen.coin = self.user_controller.user.coin
+
+        self.user_controller.update_user(fields={'coin': total_amount}, callback=callback)
+
         self.ids.bottom_sheet.dismiss()
 
     def billing_error(self, error_code, error_message):
