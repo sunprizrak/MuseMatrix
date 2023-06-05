@@ -64,6 +64,7 @@
                             icon: self.parent.icon_play
                             size_hint: None, None
                             size: icon.size
+                            disable: False if root.sound else True
                             on_release:
                                 root.sound_play()
 
@@ -71,14 +72,17 @@
                             icon: self.parent.icon_stop
                             size_hint: None, None
                             size: icon.size
+                            disable: False if root.sound else True
                             on_release:
                                 root.sound_stop()
+
 
                     MDIconButton:
                         id: delete_button
                         icon: 'close' if root.sound else ''
                         size_hint: None, None
                         size: icon.size
+                        disable: False if root.sound else True
                         on_release:
                             root.delete_sound()
 
@@ -108,7 +112,7 @@
             disabled: True if root.sound else False
             disabled_color: 1, 1, 1, 0
             icon_color: 'gray'
-            pos_hint: {"center_x": .5, "center_y": .7}
+            pos_hint: {"center_x": .5, "center_y": .5}
             on_release:
                 app.file_manager_open()
 

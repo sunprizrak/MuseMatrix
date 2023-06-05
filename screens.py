@@ -27,6 +27,7 @@ from controller.user import UserController
 from controller.openai import OpenAIController
 from controller.image import ImageController
 import logging
+from kivy.clock import Clock, ClockEvent
 
 if platform == 'android':
     from iabwrapper import BillingProcessor
@@ -860,6 +861,8 @@ class BuyCreditsScreen(MDScreen):
 
     def product_purchased(self, product_id, purchase_info):
         toast("Product purchased")
+        print(product_id)
+        print(purchase_info)
         self.ids.bottom_sheet.dismiss()
 
     def billing_error(self, error_code, error_message):
@@ -894,6 +897,7 @@ class SpeechToTextScreen(MDScreen):
         super(SpeechToTextScreen, self).__init__(**kwargs)
         self.openai_controller = OpenAIController()
         self.user_controller = UserController(screen=self)
+        self.event = None
 
     def sound_play(self):
         if self.sound:
@@ -901,11 +905,21 @@ class SpeechToTextScreen(MDScreen):
                 self.sound_pos = self.sound.get_pos()
                 self.sound.stop()
                 self.ids.sound_option.icon_play = 'play'
+                self.event.cancel()
             elif self.sound.state == 'stop':
+                self.sound_pos = self.sound.length - 5
                 if self.sound_pos:
                     self.sound.seek(self.sound_pos)
                 self.sound.play()
                 self.ids.sound_option.icon_play = 'pause'
+
+                end_sound = self.sound.length - self.sound.get_pos() + 1
+
+                def callback(args, **kwargs):
+                    self.ids.sound_option.icon_play = 'play'
+
+                self.event = Clock.schedule_once(callback=callback, timeout=end_sound)
+                self.event()
 
     def sound_stop(self):
         if self.sound.state == 'play':
@@ -913,6 +927,9 @@ class SpeechToTextScreen(MDScreen):
 
         self.sound.stop()
         self.sound_pos = 0
+
+        if self.event:
+            self.event.cancel()
 
     def delete_sound(self):
         if self.sound.state == 'play':
@@ -927,6 +944,9 @@ class SpeechToTextScreen(MDScreen):
         self.sound = None
         self.sound_pos = 0
         self.ids.sound.text = ''
+
+        if self.event:
+            self.event.cancel()
 
         remove_widgets = []
 
