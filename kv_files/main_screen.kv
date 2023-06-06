@@ -33,211 +33,210 @@
 
     core: app
 
-    MDFloatLayout:
+    MDBoxLayout:
+        orientation: 'vertical'
+        md_bg_color: root.md_bg_color if nav_drawer.state == 'close' else app.theme_cls.bg_dark
 
-        MDBoxLayout:
-            orientation: 'vertical'
-            md_bg_color: root.md_bg_color if nav_drawer.state == 'close' else app.theme_cls.bg_dark
+        MDTopAppBar:
+            id: main_top_bar
+            type_height: 'small'
+            md_bg_color: self.parent.md_bg_color
+            left_action_items: [["menu", lambda x: nav_drawer.set_state("open")]]
+            elevation: 0
 
-            MDTopAppBar:
-                id: main_top_bar
-                type_height: 'small'
-                md_bg_color: self.parent.md_bg_color
-                left_action_items: [["menu", lambda x: nav_drawer.set_state("open")]]
-                elevation: 0
+        MDGridLayout:
+            cols: 2
+            padding: dp(15), dp(15), dp(15), dp(35)
+            spacing: dp(15)
 
-            MDGridLayout:
-                cols: 2
-                padding: dp(15), dp(15), dp(15), dp(35)
-                spacing: dp(15)
+            MainCard:
+                image: 'assets/img/picture_icon.png'
+                text: 'Create image'
+                on_release:
+                    app.root.transition = MDSwapTransition()
+                    app.root.current = 'create_image_screen'
 
-                MainCard:
-                    image: 'assets/img/picture_icon.png'
-                    text: 'Create image'
-                    on_release:
-                        app.root.transition = MDSwapTransition()
-                        app.root.current = 'create_image_screen'
+            MainCard:
+                image: 'assets/img/pencil_icon.png'
+                text: 'Edit image'
+                on_release:
+                    app.root.transition = MDSwapTransition()
+                    app.root.current = 'edit_image_screen'
 
-                MainCard:
-                    image: 'assets/img/pencil_icon.png'
-                    text: 'Edit image'
-                    on_release:
-                        app.root.transition = MDSwapTransition()
-                        app.root.current = 'edit_image_screen'
+            MainCard:
+                image: 'assets/img/magic_icon.png'
+                text: 'Variable image'
+                on_release:
+                    app.root.transition = MDSwapTransition()
+                    app.root.current = 'variable_image_screen'
 
-                MainCard:
-                    image: 'assets/img/magic_icon.png'
-                    text: 'Variable image'
-                    on_release:
-                        app.root.transition = MDSwapTransition()
-                        app.root.current = 'variable_image_screen'
+            MainCard:
+                image: 'assets/img/music_icon.png'
+                text: 'Speech to text'
+                on_release:
+                    app.root.transition = MDSwapTransition()
+                    app.root.current = 'speech_to_text_screen'
 
-                MainCard:
-                    image: 'assets/img/music_icon.png'
-                    text: 'Speech to text'
-                    on_release:
-                        app.root.transition = MDSwapTransition()
-                        app.root.current = 'speech_to_text_screen'
+            MainCard:
+                image: 'assets/img/chat_icon.png'
+                text: 'Chat gpt'
+                on_release:
+                    app.root.transition = MDSwapTransition()
+                    app.root.current = 'chat_gpt_screen'
 
-                MainCard:
-                    image: 'assets/img/chat_icon.png'
-                    text: 'Chat gpt'
-                    on_release:
-                        app.root.transition = MDSwapTransition()
-                        app.root.current = 'chat_gpt_screen'
+            MainCard:
+                image: 'assets/img/bulb_icon.png'
+                text: 'instruction'
 
-                MainCard:
-                    image: 'assets/img/bulb_icon.png'
-                    text: 'instruction'
+    MDNavigationLayout:
 
-        MDNavigationLayout:
+        MDNavigationDrawer:
+            id: nav_drawer
+            radius: (0, 16, 16, 0)
 
-            MDNavigationDrawer:
-                id: nav_drawer
-                radius: (0, 16, 16, 0)
+            MDNavigationDrawerMenu:
+                do_scroll_y: False
 
-                MDNavigationDrawerMenu:
-                    do_scroll_y: False
+                ContentNavigationDrawer:
+                    adaptive_height: True
+                    padding: dp(5)
 
-                    ContentNavigationDrawer:
-                        adaptive_height: True
+                    MDFloatLayout:
+                        size_hint_x: .4
+                        size_hint_y: None
+                        height: profile_info.height
 
-                        MDRelativeLayout:
-                            orientation: 'vertical'
-                            size_hint_x: .4
-                            size_hint_y: None
-                            height: profile_info.height
+                        MDBoxLayout:
+                            size_hint: None, None
+                            size: dp(85), dp(85)
+                            pos_hint: {'center_x': .5, 'center_y': .5}
 
-                            MDBoxLayout:
-                                orientation: 'vertical'
+                            FitImage:
+                                source: root.avatar
+                                mipmap: True
+                                radius: 50, 50, 50, 50
+
+                    MDFloatLayout:
+                        id: profile_info
+                        size_hint_x: .6
+                        size_hint_y: None
+                        height: dp(100)
+
+                        MDLabel:
+                            text: root.email
+                            pos_hint: {'center_x': .5, 'center_y': .9}
+                            adaptive_size: True
+
+                        MDBoxLayout:
+                            orientation: 'horizontal'
+                            adaptive_size: True
+                            spacing: dp(5)
+                            pos_hint: {'center_x': .5, 'center_y': .55}
+
+                            Image:
+                                source: 'assets/img/coin_icon.png'
                                 size_hint: None, None
-                                size: dp(85), dp(85)
-                                pos_hint: {'center_x': .5, 'center_y': .5}
-
-                                FitImage:
-                                    source: root.avatar
-                                    mipmap: True
-                                    radius: 50, 50, 50, 50
-
-                        MDRelativeLayout:
-                            id: profile_info
-                            size_hint_x: .6
-                            adaptive_height: True
+                                fit_mode: 'contain'
+                                mipmap: True
+                                size: dp(25), dp(25)
 
                             MDLabel:
-                                text: root.email
-                                pos_hint: {'center_x': .5, 'center_y': .9}
-                                adaptive_size: True
+                                text: str(root.coin)
+                                color: '#FFD700'
+                                adaptive_width: True
+
+                        MDBoxLayout:
+                            orientation: 'horizontal'
+                            adaptive_height: True
+                            pos_hint: {'x': 0, 'y': 0}
 
                             MDBoxLayout:
                                 orientation: 'horizontal'
-                                adaptive_size: True
+                                adaptive_height: True
                                 spacing: dp(5)
-                                pos_hint: {'center_x': .5, 'center_y': .55}
+                                pos_hint: {'center_y': .5}
 
                                 Image:
-                                    source: 'assets/img/coin_icon.png'
+                                    source: 'assets/img/chat_icon.png'
                                     size_hint: None, None
                                     fit_mode: 'contain'
                                     mipmap: True
                                     size: dp(25), dp(25)
 
                                 MDLabel:
-                                    text: str(root.coin)
-                                    color: '#FFD700'
+                                    text: str(root.chat_token)
+                                    color: '#157ded'
                                     adaptive_width: True
 
-                            MDBoxLayout:
-                                orientation: 'horizontal'
-                                adaptive_height: True
+                            MDRaisedButton:
+                                text: "add"
+                                md_bg_color: "green"
+                                size_hint_y: .5
+                                pos_hint: {'center_y': .5}
+                                on_release:
+                                    root.add_chat_token()
 
-                                MDBoxLayout:
-                                    orientation: 'horizontal'
-                                    adaptive_height: True
-                                    spacing: dp(5)
-                                    pos_hint: {'center_y': .5}
+                MDNavigationDrawerDivider:
 
-                                    Image:
-                                        source: 'assets/img/chat_icon.png'
-                                        size_hint: None, None
-                                        fit_mode: 'contain'
-                                        mipmap: True
-                                        size: dp(25), dp(25)
+                MDNavigationDrawerItem:
+                    icon: "assets/img/settings_icon.png"
+                    text: "Settings"
+                    theme_text_color: 'Custom'
+                    text_color: 'white'
+                    focus_color: app.theme_cls.primary_color
+                    selected_color: "white"
+                    on_release:
+                        root.open_settings()
 
-                                    MDLabel:
-                                        text: str(root.chat_token)
-                                        color: '#157ded'
-                                        adaptive_width: True
+                MDNavigationDrawerDivider:
 
-                                MDRaisedButton:
-                                    text: "add"
-                                    md_bg_color: "green"
-                                    size_hint_y: .5
-                                    pos_hint: {'center_y': .5}
-                                    on_release:
-                                        root.add_chat_token()
+                MDNavigationDrawerItem:
+                    id: collection
+                    icon: 'assets/img/picture_icon.png'
+                    icon_size: sp(20)
+                    text: 'My Collection'
+                    theme_text_color: 'Custom'
+                    text_color: 'white'
+                    focus_color: app.theme_cls.primary_color
+                    selected_color: "white"
+                    on_release:
+                        root.open_collection()
 
-                    MDNavigationDrawerDivider:
+                MDNavigationDrawerDivider:
 
-                    MDNavigationDrawerItem:
-                        icon: "assets/img/settings_icon.png"
-                        text: "Settings"
-                        theme_text_color: 'Custom'
-                        text_color: 'white'
-                        focus_color: app.theme_cls.primary_color
-                        selected_color: "white"
-                        on_release:
-                            root.open_settings()
+                MDNavigationDrawerItem:
+                    icon: 'assets/img/shopping_cart.png'
+                    text: 'Buy Coins'
+                    theme_text_color: 'Custom'
+                    text_color: 'white'
+                    focus_color: app.theme_cls.primary_color
+                    selected_color: "white"
+                    on_release:
+                        root.open_buy_credits()
 
-                    MDNavigationDrawerDivider:
+                MDNavigationDrawerDivider:
 
-                    MDNavigationDrawerItem:
-                        id: collection
-                        icon: 'assets/img/picture_icon.png'
-                        icon_size: sp(20)
-                        text: 'My Collection'
-                        theme_text_color: 'Custom'
-                        text_color: 'white'
-                        focus_color: app.theme_cls.primary_color
-                        selected_color: "white"
-                        on_release:
-                            root.open_collection()
+                MDNavigationDrawerItem:
+                    icon: 'assets/img/video_icon.png'
+                    text: 'Earn Coins'
+                    theme_text_color: 'Custom'
+                    text_color: 'white'
+                    focus_color: app.theme_cls.primary_color
+                    selected_color: "white"
+                    on_release:
+                        root.show_ads()
 
-                    MDNavigationDrawerDivider:
+                MDNavigationDrawerDivider:
 
-                    MDNavigationDrawerItem:
-                        icon: 'assets/img/shopping_cart.png'
-                        text: 'Buy Coins'
-                        theme_text_color: 'Custom'
-                        text_color: 'white'
-                        focus_color: app.theme_cls.primary_color
-                        selected_color: "white"
-                        on_release:
-                            root.open_buy_credits()
-
-                    MDNavigationDrawerDivider:
-
-                    MDNavigationDrawerItem:
-                        icon: 'assets/img/video_icon.png'
-                        text: 'Earn Coins'
-                        theme_text_color: 'Custom'
-                        text_color: 'white'
-                        focus_color: app.theme_cls.primary_color
-                        selected_color: "white"
-                        on_release:
-                            root.show_ads()
-
-                    MDNavigationDrawerDivider:
-
-                    MDNavigationDrawerItem:
-                        icon: 'assets/img/key_icon.png'
-                        text: 'Logout'
-                        theme_text_color: 'Custom'
-                        text_color: 'white'
-                        focus_color: app.theme_cls.primary_color
-                        selected_color: 'white'
-                        on_release:
-                            root.exit()
+                MDNavigationDrawerItem:
+                    icon: 'assets/img/key_icon.png'
+                    text: 'Logout'
+                    theme_text_color: 'Custom'
+                    text_color: 'white'
+                    focus_color: app.theme_cls.primary_color
+                    selected_color: 'white'
+                    on_release:
+                        root.exit()
 
 
 

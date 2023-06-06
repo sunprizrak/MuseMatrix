@@ -29,6 +29,7 @@
     core: app
 
     MDFloatLayout:
+        md_bg_color: root.md_bg_color if bottom_sheet.state == 'close' else app.theme_cls.bg_dark
 
         MDTopAppBar:
             id: buy_top_bar
@@ -36,7 +37,7 @@
             type_height: 'small'
             title: 'Buy coins'
             anchor_title: 'left'
-            md_bg_color: root.md_bg_color
+            md_bg_color: self.parent.md_bg_color
             left_action_items: [['arrow-left-bold', lambda x: app.back(screen='main_screen')]]
             elevation: 0
 
@@ -102,8 +103,7 @@
             BuyButton:
                 text: '200  coins'
                 on_release:
-                    #root.open_payment_layout(root.PROD_200)
-                    bottom_sheet.open()
+                    root.open_payment_layout(root.PROD_200)
 
     MDBottomSheet:
         id: bottom_sheet
