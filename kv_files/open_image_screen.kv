@@ -12,18 +12,17 @@
 
         MDTopAppBar:
             id: app_bar
-            title: 'x'.join(str(full_image.texture_size).split(', ')) if full_image else ''
             type_height: 'small'
             md_bg_color: root.md_bg_color
-            left_action_items: [['arrow-left-bold', lambda x: root.back(full_image.back_screen)]]
-            right_action_items: [['download', lambda x: root.download(full_image)]]
+            left_action_items: [['arrow-left-bold', lambda x: root.back(root.back_screen)]]
+            right_action_items: [['trash-can', lambda x: root.delete(img_id=carousel.current_slide.img_id, widget_selection=carousel.current_slide.pre_parent)], ['download', lambda x: root.download(carousel.current_slide)]] if root.back_screen == 'collection_screen' else [['download', lambda x: root.download(carousel.current_slide)]]
             elevation: 0
 
-        Image:
-            id: full_image
-            mipmap: True
-            fit_mode: 'contain'
-            pos_hint: {'center_y': .5}
+        MDCarousel:
+            id: carousel
+
+            on_slide_complete:
+                app_bar.title = 'x'.join(str(carousel.current_slide.texture_size).split(', '))
 
 
 

@@ -33,7 +33,7 @@ logging.getLogger('PIL').setLevel(logging.WARNING)
 
 if platform == 'android':
     from iabwrapper import BillingProcessor
-    from jnius import autoclass, cast
+    from jnius import autoclass
     from android.runnable import run_on_ui_thread
     from android import python_act as PythonActivity
 
@@ -173,7 +173,7 @@ class MainScreen(MDScreen):
 
     def open_collection(self):
         screen = self.core.root.current
-        self.core.root.ids.collection_screen.ids.selection_list.back_item = ['arrow-left', lambda x: self.core.back(screen=screen)]
+        self.core.root.ids.collection_screen.ids.selection_list.back_item = ['arrow-left-bold', lambda x: self.core.back(screen=screen)]
         self.ids.nav_drawer.set_state("close")
         self.core.root.transition = MDSwapTransition()
         self.core.root.current = 'collection_screen'
@@ -227,7 +227,7 @@ class CreateImageScreen(MDScreen):
                         height=self.ids.image_section.height,
                     )
 
-                    for el in response['data']:
+                    for index, el in enumerate(response['data']):
                         url = el.get('url')
 
                         item = MDSwiperItem()
@@ -237,6 +237,7 @@ class CreateImageScreen(MDScreen):
                             source=url,
                             mipmap=True,
                             fit_mode='contain',
+                            index=index,
                         )
 
                         item.add_widget(image)
@@ -707,11 +708,44 @@ class CollectionScreen(MDScreen):
 
 class OpenImageScreen(MDScreen):
     core = ObjectProperty()
+    back_screen = StringProperty()
 
     def __init__(self, **kwargs):
         super(OpenImageScreen, self).__init__(**kwargs)
         self.user_controller = UserController(screen=self)
         self.image_controller = ImageController(screen=self)
+
+    def on_pre_enter(self, *args):
+        screen = self.core.root.get_screen(self.back_screen)
+
+        if self.back_screen == 'collection_screen':
+            images = [el.instance_item for el in screen.ids.selection_list.children]
+        else:
+            for widget in screen.ids.image_section.children:
+                if isinstance(widget, MyImage):
+                    images = [widget]
+                elif isinstance(widget, MDSwiper):
+                    images = [el.children[0].children[0] for el in widget.children[0].children]
+
+        images.reverse()
+
+        for obj in images:
+
+            image = Image(
+                mipmap=True,
+                texture=obj.texture,
+                fit_mode='contain',
+                pos_hint={'center_y': .5}
+            )
+
+            if self.back_screen == 'collection_screen':
+                image.img_id = obj.img_id
+                image.pre_parent = obj.parent
+
+            self.ids.carousel.add_widget(image)
+
+    def on_leave(self, *args):
+        self.ids.carousel.clear_widgets()
 
     def back(self, screen):
         if len(self.ids.app_bar.right_action_items) > 1:
@@ -732,7 +766,7 @@ class OpenImageScreen(MDScreen):
                 if exists(private_path):
                     self.core.ss.copy_to_shared(private_path)
 
-            if img.back_screen in ('create_image_screen', 'edit_image_screen', 'variable_image_screen'):
+            if self.back_screen in ('create_image_screen', 'edit_image_screen', 'variable_image_screen'):
                 data = io.BytesIO()
                 image.save(data, fmt='png')
                 png_bytes = data.read()
@@ -744,7 +778,7 @@ class OpenImageScreen(MDScreen):
                 }
 
                 for screen in self.core.root.screens:
-                    if screen.name == img.back_screen and screen.name != 'variable_image_screen':
+                    if screen.name == self.back_screen and screen.name != 'variable_image_screen':
                         data_image['description'] = screen.prompt
 
                 self.image_controller.save_image(data_image=data_image)
@@ -762,10 +796,10 @@ class OpenImageScreen(MDScreen):
         self.core.dialog.title = 'Save image'
         self.core.dialog.text = 'Do you want to save the picture?'
 
-    def delete(self, img_id, widget):
+    def delete(self, img_id, widget_selection):
 
         def del_image():
-            self.image_controller.del_image(image_id=img_id, widget=widget)
+            self.image_controller.del_image(image_id=img_id, widget_selection=widget_selection, widget_carousel=self.ids.carousel.current_slide)
             self.core.dialog.dismiss()
 
         button = MDFlatButton(

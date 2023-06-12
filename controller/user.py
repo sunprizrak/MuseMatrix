@@ -102,7 +102,6 @@ class UserController:
 
         def callback_failure(request, response):
             output_error(error=response)
-            print(response)
 
         def callback_error(request, error):
             output_error(error=error)

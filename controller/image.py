@@ -28,6 +28,9 @@ class ImageController:
 
             self.screen.core.root.ids.collection_screen.ids.selection_list.add_widget(img, index=len(self.object.images) - 1 if len(self.object.images) > 0 else 0)
 
+            for index, widget in enumerate(reversed(self.screen.core.root.ids.collection_screen.ids.selection_list.children)):
+                widget.instance_item.index = index
+
         def callback_failure(request, response):
             print(response)
 
@@ -49,7 +52,7 @@ class ImageController:
             for obj in response:
                 self.object(data_image=obj)
 
-            for image in self.object.images:
+            for index, image in enumerate(self.object.images):
 
                 img = MyImage(
                     sm=self.screen.core.root,
@@ -57,6 +60,7 @@ class ImageController:
                     fit_mode='contain',
                     mipmap=True,
                     img_id=image.id,
+                    index=index,
                 )
 
                 self.screen.core.root.ids.collection_screen.ids.selection_list.add_widget(img)
@@ -71,12 +75,15 @@ class ImageController:
             },
         )
 
-    def del_image(self, image_id, widget):
+    def del_image(self, image_id, widget_selection, widget_carousel):
 
         def callback(request, response):
             self.object.delete_image(image_id=image_id)
-            self.screen.core.root.ids.collection_screen.ids.selection_list.remove_widget(widget)
-            self.screen.back(screen=self.screen.ids.full_image.back_screen)
+            self.screen.core.root.ids.collection_screen.ids.selection_list.remove_widget(widget_selection)
+            self.screen.core.root.ids.open_img_screen.ids.carousel.remove_widget(widget_carousel)
+
+            for index, widget in enumerate(reversed(self.screen.core.root.ids.collection_screen.ids.selection_list.children)):
+                widget.instance_item.index = index
 
         def callback_failure(request, response):
             print(response)
@@ -101,6 +108,9 @@ class ImageController:
             for widget in widget_list:
                 self.screen.ids.selection_list.remove_widget(widget)
                 self.screen.ids.selection_list.unselected_all()
+
+            for index, widget in enumerate(reversed(self.screen.core.root.ids.collection_screen.ids.selection_list.children)):
+                widget.instance_item.index = index
 
         def callback_failure(request, response):
             print(response)

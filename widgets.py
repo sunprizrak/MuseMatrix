@@ -15,6 +15,7 @@ from kivymd.uix.selection.selection import SelectionItem, SelectionIconCheck
 class MyImage(AsyncImage):
     sm = ObjectProperty()
     img_id = NumericProperty()
+    index = NumericProperty()
 
     def on_touch_down(self, touch):
         if self.disabled and self.collide_point(*touch.pos):
@@ -42,7 +43,7 @@ class MyImage(AsyncImage):
             if isinstance(self.parent.parent, MySelectionList) and self.parent.parent.get_selected():
                 pass
             else:
-                return self.full_screen()
+                return self.open_img_screen()
         for child in self.children[:]:
             if child.dispatch('on_touch_up', touch):
                 return True
@@ -55,14 +56,14 @@ class MyImage(AsyncImage):
             return left <= x <= right and self.y <= y <= self.top
         return super(MyImage, self).collide_point(x, y)
 
-    def full_screen(self):
+    def open_img_screen(self):
         if self.sm:
-            self.sm.ids.open_img_screen.ids.full_image.texture = self.texture
+            self.sm.ids.open_img_screen.back_screen = self.sm.current
             self.sm.transition = RiseInTransition()
-            self.sm.ids.open_img_screen.ids.full_image.back_screen = self.sm.current
-            if self.sm.current == 'collection_screen':
-                self.sm.ids.open_img_screen.ids.app_bar.right_action_items.insert(0, ['trash-can', lambda x: self.sm.ids.open_img_screen.delete(img_id=self.img_id, widget=self.parent)])
             self.sm.current = 'open_img_screen'
+            self.sm.ids.open_img_screen.ids.carousel.index = self.index
+            self.sm.ids.open_img_screen.ids.app_bar.title = 'x'.join(str(self.texture_size).split(', '))
+
 
     def get_mask_image(self):
         change_texture = self.texture.create(size=self.norm_image_size, colorfmt='rgba')
@@ -129,7 +130,7 @@ class MySegmentedControl(MDSegmentedControl):
 
 
 class MySelectionList(MDSelectionList):
-    screen: ObjectProperty()
+    screen = ObjectProperty()
     toolbar = ObjectProperty()
     progress_round_color = ColorProperty('#ed1c1c')
     back_item = ListProperty(['arrow-left-bold'])
