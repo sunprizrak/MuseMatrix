@@ -33,23 +33,6 @@ logging.getLogger('PIL').setLevel(logging.WARNING)
 
 if platform == 'android':
     from iabwrapper import BillingProcessor
-    from jnius import autoclass
-    from android.runnable import run_on_ui_thread
-    from android import python_act as PythonActivity
-
-    Activity = autoclass('android.app.Activity')
-
-    LayoutParams = autoclass('android.view.WindowManager$LayoutParams')
-    AndroidColor = autoclass('android.graphics.Color')
-    Configuration = autoclass('android.content.res.Configuration')
-
-    context = PythonActivity.mActivity
-
-    @run_on_ui_thread
-    def set_statusbar_color(color):
-        window = context.getWindow()
-        window.addFlags(LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
-        window.setStatusBarColor(AndroidColor.parseColor(color))
 
 
 class StartScreen(MDScreen):
@@ -846,10 +829,6 @@ class BuyCreditsScreen(MDScreen):
 
     def on_pre_enter(self, *args):
         if platform == 'android':
-            primary_clr = self.theme_cls.primary_color
-            hex_color = '#%02x%02x%02x' % (int(primary_clr[0] * 200), int(primary_clr[1] * 200), int(primary_clr[2] * 200))
-            set_statusbar_color(hex_color)
-
             Logger.info(f"is_initialized: {self.bp.is_initialized()}")
             Logger.info(f'is_iab_service_available: {self.bp.is_iab_service_available()}')
             Logger.info(f"is_subscription_update_supported: {self.bp.is_subscription_update_supported()}")
@@ -923,7 +902,7 @@ class BuyCreditsScreen(MDScreen):
 
 class SpeechToTextScreen(MDScreen):
     core = ObjectProperty()
-    sound = ObjectProperty(None, allownone=True)
+    sound = ObjectProperty(allownone=True)
     sound_pos = NumericProperty()
 
     def __init__(self, **kwargs):
@@ -940,7 +919,6 @@ class SpeechToTextScreen(MDScreen):
                 self.ids.sound_option.icon_play = 'play'
                 self.event.cancel()
             elif self.sound.state == 'stop':
-                self.sound_pos = self.sound.length - 5
                 if self.sound_pos:
                     self.sound.seek(self.sound_pos)
                 self.sound.play()

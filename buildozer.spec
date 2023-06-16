@@ -22,14 +22,14 @@ source.include_exts = py,png,jpg,kv,atlas,ttf,java
 #source.exclude_exts = spec
 
 # (list) List of directory to exclude (let empty to not exclude anything)
-source.exclude_dirs = tests, bin, venv, .git, .idea, modified_buildozer
+source.exclude_dirs = tests, bin, venv, .git, .idea
 
 # (list) List of exclusions using pattern matching
 # Do not prefix with './'
 #source.exclude_patterns = license,images/*/*.jpg
 
 # (str) Application versioning (method 1)
-version = 0.63
+version = 0.64
 
 # (str) Application versioning (method 2)
 # version.regex = __version__ = ['"](.*)['"]
@@ -37,7 +37,7 @@ version = 0.63
 
 # (list) Application requirements
 # comma separated e.g. requirements = sqlite3,kivy
-requirements = python3, kivy==master, https://github.com/kivymd/KivyMD/archive/master.zip, pillow, pygments, sdl2_ttf, requests, urllib3, chardet, idna, certifi, androidstorage4kivy, kivmob, iabwrapper, ffpyplayer
+requirements = python3, kivy==master, https://github.com/kivymd/KivyMD/archive/master.zip, pillow, pygments, sdl2_ttf, requests, urllib3, chardet, idna, certifi, androidstorage4kivy, kivmob, iabwrapper, ffpyplayer, ffpyplayer_codecs
 
 # (str) Custom source folders for requirements
 # Sets custom source for any requirements with recipes

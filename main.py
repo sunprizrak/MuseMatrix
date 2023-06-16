@@ -1,3 +1,4 @@
+import os
 from kivy.core.audio import SoundLoader
 from kivy.core.text import LabelBase
 from kivy.metrics import dp, sp
@@ -13,20 +14,37 @@ from kivymd.uix.transition import MDSlideTransition
 from kivy.utils import platform
 from kivy.clock import mainthread
 from kivy.logger import Logger
-import os
 from shutil import rmtree
 from settings import storage
 from controller.user import UserController
+from kivy.utils import get_hex_from_color
 from kivy.loader import Loader
+
 
 os.environ["KIVY_AUDIO"] = "ffpyplayer"
 
+
 if platform == 'android':
-    from android import api_version
+    from android import api_version, python_act as PythonActivity
+    from android.runnable import run_on_ui_thread
     from android.permissions import request_permissions, check_permission, Permission
+    from jnius import autoclass
     from androidstorage4kivy import SharedStorage, Chooser
     from kivmob import KivMob, TestIds, RewardedListenerInterface
     from utility.webview import WebView
+
+    LayoutParams = autoclass('android.view.WindowManager$LayoutParams')
+    AndroidColor = autoclass('android.graphics.Color')
+    Configuration = autoclass('android.content.res.Configuration')
+
+    context = PythonActivity.mActivity
+
+    @run_on_ui_thread
+    def set_android_color(color):
+        window = context.getWindow()
+        window.addFlags(LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
+        window.setStatusBarColor(AndroidColor.parseColor(color))
+        window.setNavigationBarColor(AndroidColor.parseColor(color))
 
     class RewardsHandler(RewardedListenerInterface):
 
@@ -56,6 +74,8 @@ elif platform == 'linux':
 class CustomThemeManager(ThemeManager):
     def __init__(self, **kwargs):
         super(CustomThemeManager, self).__init__(**kwargs)
+        self.theme_style = 'Dark'
+        self.primary_palette = 'DeepPurple'
         self.font_styles.update({
             "H1": ["Hacked", 96, False, -1.5],
             "H2": ["Hacked", 60, False, -0.5],
@@ -75,14 +95,15 @@ class CustomThemeManager(ThemeManager):
         })
         LabelBase.register(name='Hacked', fn_regular='assets/font/hacked.ttf')
 
+        if platform == 'android':
+            set_android_color(color=get_hex_from_color(self.bg_dark))
+
 
 class MuseMatrixApp(MDApp):
 
     def __init__(self, **kwargs):
         super(MuseMatrixApp, self).__init__(**kwargs)
         self.theme_cls = CustomThemeManager()
-        self.theme_cls.theme_style = 'Dark'
-        self.theme_cls.primary_palette = 'DeepPurple'
         self.dialog = None
         self.browser = None
         self.manager_open = False
@@ -93,9 +114,9 @@ class MuseMatrixApp(MDApp):
         )
 
         if platform == 'android':
+            self.ads = KivMob(TestIds.APP)
             self.ss = SharedStorage()
             self.chooser = Chooser(self.chooser_callback)
-            self.ads = KivMob(TestIds.APP)
 
             if api_version >= 29:
                 self.permissions = [Permission.READ_EXTERNAL_STORAGE]
@@ -124,7 +145,8 @@ class MuseMatrixApp(MDApp):
         self.check_user_authentication()
         if platform == 'android':
             self.ads.load_rewarded_ad(TestIds.REWARDED_VIDEO)
-            setattr(self, 'rewards', RewardsHandler(app=self, user_controller=UserController(screen=self.root.get_screen(name='main_screen'))))
+            setattr(self, 'rewards', RewardsHandler(app=self, user_controller=UserController(
+                screen=self.root.get_screen(name='main_screen'))))
             self.ads.set_rewarded_ad_listener(getattr(self, 'rewards'))
 
     def on_pause(self):
