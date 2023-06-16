@@ -58,33 +58,40 @@
                         on_release:
                             root.image_count += 1
 
-                MySegmentedControl:
+                MDBoxLayout:
+                    orientation: 'vertical'
                     pos_hint: {'center_x': .5}
-                    md_bg_color: app.theme_cls.primary_color
-                    segment_color: root.md_bg_color
-                    separator_color: "white"
-                    radius: [dp(5), dp(5), 0, 0]
-                    on_active:
-                        root.image_size = self.current_active_segment.text
+                    adaptive_height: True
 
-                    MDSegmentedControlItem:
-                        text: '256x256'
+                    MySegmentedControl:
+                        md_bg_color: app.theme_cls.primary_color
+                        segment_color: root.md_bg_color
+                        separator_color: "white"
+                        radius: [dp(15), dp(15), 0, 0]
+                        on_active:
+                            root.image_size = self.current_active_segment.text
 
-                    MDSegmentedControlItem:
-                        text: '512x512'
+                        MDSegmentedControlItem:
+                            text: '256x256'
 
-                    MDSegmentedControlItem:
-                        text: '1024x1024'
+                        MDSegmentedControlItem:
+                            text: '512x512'
 
-                MDRaisedButton:
-                    text: 'Generate'
-                    md_bg_color: app.theme_cls.primary_color
-                    pos_hint: {'center_x': .5}
-                    font_size: sp(25)
-                    size_hint_x: 1
-                    _radius: 0
-                    on_release:
-                        root.generate()
+                        MDSegmentedControlItem:
+                            text: '1024x1024'
+
+                    MDBoxLayout:
+                        md_bg_color: app.theme_cls.primary_color
+                        padding: [dp(20), dp(10), dp(20), dp(10)]
+                        adaptive_height: True
+
+                        MDRaisedButton:
+                            text: 'Generate'
+                            font_size: sp(25)
+                            md_bg_color: app.theme_cls.primary_color
+                            size_hint_x: 1
+                            on_release:
+                                root.generate()
 
         MDSpinner:
             id: variable_spin

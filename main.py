@@ -75,6 +75,7 @@ class CustomThemeManager(ThemeManager):
     def __init__(self, **kwargs):
         super(CustomThemeManager, self).__init__(**kwargs)
         self.theme_style = 'Dark'
+        a = ['Red', 'Pink', 'Purple', 'DeepPurple', 'Indigo', 'Blue', 'LightBlue', 'Cyan', 'Teal', 'Green', 'LightGreen', 'Lime', 'Yellow', 'Amber', 'Orange', 'DeepOrange', 'Brown', 'Gray', 'BlueGray']
         self.primary_palette = 'DeepPurple'
         self.font_styles.update({
             "H1": ["Hacked", 96, False, -1.5],
@@ -199,7 +200,7 @@ class MuseMatrixApp(MDApp):
         if platform == 'linux':
             self.file_manager.show(os.path.expanduser('~'))
             self.manager_open = True
-            self.file_manager.ext = self.file_manager.ext + ['.mp3', '.mp4', '.mpeg', '.mpga', '.m4a', '.wav', '.webm']
+            self.file_manager.ext = self.file_manager.ext + ['.mp3', '.mp4', '.mpeg', '.mpga', '.m4a', '.wav', '.webm', '.ogg']
         elif platform == 'android':
             if self.check_android_permissions:
                 if self.root.current == 'speech_to_text_screen':
@@ -214,7 +215,7 @@ class MuseMatrixApp(MDApp):
         if platform == 'linux':
             self.exit_manager()
 
-        if f'.{path.split(".")[-1]}' in ['.mp3', '.mp4', '.mpeg', '.mpga', '.m4a', '.wav', '.webm']:
+        if f'.{path.split(".")[-1]}' in ['.mp3', '.mp4', '.mpeg', '.mpga', '.m4a', '.wav', '.webm', '.ogg']:
 
             if len(path.split('/')[-1]) > 22:
                 sound_name = f'...{path.split("/")[-1][-19:]}'
