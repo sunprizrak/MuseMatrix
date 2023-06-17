@@ -28,6 +28,7 @@ from controller.openai import OpenAIController
 from controller.image import ImageController
 import logging
 from kivy.clock import Clock
+from kivy.utils import get_hex_from_color
 
 logging.getLogger('PIL').setLevel(logging.WARNING)
 
@@ -183,6 +184,15 @@ class CreateImageScreen(MDScreen):
         self.openai_controller = OpenAIController()
         self.user_controller = UserController(screen=self)
 
+    def on_pre_enter(self, *args):
+        if platform == 'android':
+            color_nav = get_hex_from_color(self.theme_cls.primary_color[:-1])
+            self.core.change_android_color(color_nav=color_nav)
+
+    def on_pre_leave(self, *args):
+        if platform == 'android':
+            self.core.change_android_color()
+
     def create(self):
 
         def callback(request, response):
@@ -289,6 +299,15 @@ class EditImageScreen(MDScreen):
         super(EditImageScreen, self).__init__(**kwargs)
         self.openai_controller = OpenAIController()
         self.user_controller = UserController(screen=self)
+
+    def on_pre_enter(self, *args):
+        if platform == 'android':
+            color_nav = get_hex_from_color(self.theme_cls.primary_color[:-1])
+            self.core.change_android_color(color_nav=color_nav)
+
+    def on_pre_leave(self, *args):
+        if platform == 'android':
+            self.core.change_android_color()
 
     def add_image(self, path):
         self.ids.add_image_button.disabled = True
@@ -444,6 +463,15 @@ class VariableImageScreen(MDScreen):
         super(VariableImageScreen, self).__init__(**kwargs)
         self.openai_controller = OpenAIController()
         self.user_controller = UserController(screen=self)
+
+    def on_pre_enter(self, *args):
+        if platform == 'android':
+            color_nav = get_hex_from_color(self.theme_cls.primary_color[:-1])
+            self.core.change_android_color(color_nav=color_nav)
+
+    def on_pre_leave(self, *args):
+        if platform == 'android':
+            self.core.change_android_color()
 
     def add_image(self, path):
         self.ids.add_image_button.disabled = True

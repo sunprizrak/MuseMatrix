@@ -40,11 +40,13 @@ if platform == 'android':
     context = PythonActivity.mActivity
 
     @run_on_ui_thread
-    def set_android_color(color):
+    def set_android_color(*args, **kwargs):
+        color_stat = kwargs['color_stat']
+        color_nav = kwargs['color_nav']
         window = context.getWindow()
         window.addFlags(LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
-        window.setStatusBarColor(AndroidColor.parseColor(color))
-        window.setNavigationBarColor(AndroidColor.parseColor(color))
+        window.setStatusBarColor(AndroidColor.parseColor(color_stat))
+        window.setNavigationBarColor(AndroidColor.parseColor(color_nav))
 
     class RewardsHandler(RewardedListenerInterface):
 
@@ -96,9 +98,6 @@ class CustomThemeManager(ThemeManager):
         })
         LabelBase.register(name='Hacked', fn_regular='assets/font/hacked.ttf')
 
-        if platform == 'android':
-            set_android_color(color=get_hex_from_color(self.bg_dark))
-
 
 class MuseMatrixApp(MDApp):
 
@@ -145,6 +144,8 @@ class MuseMatrixApp(MDApp):
     def on_start(self):
         self.check_user_authentication()
         if platform == 'android':
+            self.change_android_color()
+
             self.ads.load_rewarded_ad(TestIds.REWARDED_VIDEO)
             setattr(self, 'rewards', RewardsHandler(app=self, user_controller=UserController(
                 screen=self.root.get_screen(name='main_screen'))))
@@ -162,6 +163,18 @@ class MuseMatrixApp(MDApp):
 
             if self.browser:
                 self.browser.resume()
+
+    def change_android_color(self, **kwargs):
+        if platform == 'android':
+            color_stat = get_hex_from_color(self.theme_cls.bg_light[:-1])
+            color_nav = get_hex_from_color(self.theme_cls.bg_light[:-1])
+            if 'color_stat' in kwargs:
+                color_stat = kwargs.get('color_stat')
+            if 'color_nav' in kwargs:
+                color_nav = kwargs.get('color_nav')
+
+            set_android_color(color_stat=color_stat, color_nav=color_nav)
+
 
     def view_browser(self, url=None):
         self.browser = WebView(
