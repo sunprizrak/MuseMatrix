@@ -708,7 +708,7 @@ class CollectionScreen(MDScreen):
         button = MDFlatButton(
             text="Delete",
             theme_text_color="Custom",
-            text_color=self.core.theme_cls.primary_color,
+            text_color='white',
             on_release=lambda x: del_images(),
         )
 
@@ -799,7 +799,7 @@ class OpenImageScreen(MDScreen):
         button = MDFlatButton(
             text="Save",
             theme_text_color="Custom",
-            text_color=self.core.theme_cls.primary_color,
+            text_color='white',
             on_release=lambda x: save_image(),
         )
 
@@ -816,7 +816,7 @@ class OpenImageScreen(MDScreen):
         button = MDFlatButton(
             text="Delete",
             theme_text_color="Custom",
-            text_color=self.core.theme_cls.primary_color,
+            text_color='white',
             on_release=lambda x: del_image(),
         )
 

@@ -35,7 +35,6 @@ if platform == 'android':
 
     LayoutParams = autoclass('android.view.WindowManager$LayoutParams')
     AndroidColor = autoclass('android.graphics.Color')
-    Configuration = autoclass('android.content.res.Configuration')
 
     context = PythonActivity.mActivity
 
@@ -274,7 +273,7 @@ class MuseMatrixApp(MDApp):
     def show_dialog(self, button=None, content=None):
         self.dialog = MDDialog(
             title='Notice!',
-            md_bg_color=self.theme_cls.bg_light,
+            md_bg_color=self.theme_cls.primary_color,
             type='custom',
             radius=[dp(20), dp(7), dp(20), dp(7)],
             content_cls=content,
@@ -283,7 +282,7 @@ class MuseMatrixApp(MDApp):
                 MDFlatButton(
                     text="Close",
                     theme_text_color="Custom",
-                    text_color=self.theme_cls.primary_color,
+                    text_color='white',
                     on_release=self.close_dialog,
                 ),
             ],
