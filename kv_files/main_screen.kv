@@ -87,6 +87,9 @@
             MainCard:
                 image: 'assets/img/books.png'
                 text: 'instruction'
+                on_release:
+                    app.root.transition = MDSwapTransition()
+                    app.root.current = 'instruction_screen'
 
     MDNavigationLayout:
 

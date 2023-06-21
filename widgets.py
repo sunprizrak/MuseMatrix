@@ -3,6 +3,7 @@ from kivy.core.window import Window
 from kivy.graphics import Color, Ellipse, Line
 from kivy.metrics import sp, dp
 from kivy.properties import ObjectProperty, ColorProperty, NumericProperty, ListProperty
+from kivymd.uix.floatlayout import MDFloatLayout
 from kivymd.uix.label import MDLabel
 from kivymd.uix.segmentedcontrol import MDSegmentedControl, MDSegmentedControlItem
 from kivy.uix.image import AsyncImage
@@ -10,6 +11,7 @@ from kivy.uix.screenmanager import RiseInTransition
 from kivymd.uix.list import MDList, OneLineListItem, IRightBodyTouch
 from kivymd.uix.selection import MDSelectionList
 from kivymd.uix.selection.selection import SelectionItem, SelectionIconCheck
+from kivymd.uix.tab import MDTabsBase
 
 
 class MyImage(AsyncImage):
@@ -190,3 +192,7 @@ class Message(OneLineListItem):
 
 class RightLabel(IRightBodyTouch, MDLabel):
     pass
+
+
+class Tab(MDFloatLayout, MDTabsBase):
+    '''Class implementing content for a tab.'''

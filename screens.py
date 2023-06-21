@@ -1069,3 +1069,16 @@ class SpeechToTextScreen(MDScreen):
                     callback=callback,
                     translate=translate,
                 )
+
+
+class InstructionScreen(MDScreen):
+    core = ObjectProperty()
+
+    def on_pre_enter(self, *args):
+        if platform == 'android':
+            color_nav = get_hex_from_color(self.theme_cls.primary_color[:-1])
+            self.core.change_android_color(color_nav=color_nav)
+
+    def on_pre_leave(self, *args):
+        if platform == 'android':
+            self.core.change_android_color()

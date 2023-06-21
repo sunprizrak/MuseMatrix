@@ -93,6 +93,7 @@ class CustomThemeManager(ThemeManager):
             "Caption": ["Hacked", 12, False, 0.4],
             "Overline": ["Hacked", 10, True, 1.5],
             'Message': ['Roboto', 16, False, 0.5],
+            'Instruction': ['Roboto', 16, False, 0.5],
             "Sound_name": ["Roboto", 16, False, 0.5],
         })
         LabelBase.register(name='Hacked', fn_regular='assets/font/hacked.ttf')
@@ -173,7 +174,6 @@ class MuseMatrixApp(MDApp):
                 color_nav = kwargs.get('color_nav')
 
             set_android_color(color_stat=color_stat, color_nav=color_nav)
-
 
     def view_browser(self, url=None):
         self.browser = WebView(
