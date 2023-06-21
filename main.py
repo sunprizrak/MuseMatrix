@@ -212,7 +212,7 @@ class MuseMatrixApp(MDApp):
         if platform == 'linux':
             self.file_manager.show(os.path.expanduser('~'))
             self.manager_open = True
-            self.file_manager.ext = self.file_manager.ext + ['.mp3', '.mp4', '.mpeg', '.mpga', '.m4a', '.wav', '.webm', '.ogg']
+            self.file_manager.ext = self.file_manager.ext + ['.mp3', '.mp4', '.mpeg', '.mpga', '.m4a', '.wav', '.webm']
         elif platform == 'android':
             if self.check_android_permissions:
                 if self.root.current == 'speech_to_text_screen':
@@ -227,7 +227,7 @@ class MuseMatrixApp(MDApp):
         if platform == 'linux':
             self.exit_manager()
 
-        if f'.{path.split(".")[-1]}' in ['.mp3', '.mp4', '.mpeg', '.mpga', '.m4a', '.wav', '.webm', '.ogg']:
+        if f'.{path.split(".")[-1]}' in ['.mp3', '.mp4', '.mpeg', '.mpga', '.m4a', '.wav', '.webm']:
 
             if len(path.split('/')[-1]) > 22:
                 sound_name = f'...{path.split("/")[-1][-19:]}'
@@ -260,7 +260,7 @@ class MuseMatrixApp(MDApp):
 
             self.root.ids.speech_to_text_screen.ids.speech_layout.add_widget(button)
             self.root.ids.speech_to_text_screen.ids.speech_layout.add_widget(chip)
-        else:
+        elif f'.{path.split(".")[-1]}' in ['.jpg', '.jpeg', '.jpe', '.jfif', '.png', '.ico']:
             for screen in self.root.children:
                 if screen.name == self.root.current:
                     screen.add_image(path=path)
