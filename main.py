@@ -60,7 +60,7 @@ if platform == 'android':
 
             def callback(request, response):
                 self.user_controller.user.update(data_user=response)
-                screen = self.AppObj.root.get_screen(self.AppObj.root.current)
+                screen = self.AppObj.root.get_screen('main_screen')
                 screen.coin = self.user_controller.user.coin
 
             self.user_controller.update_user(fields={'coin': total_amount}, callback=callback)
