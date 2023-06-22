@@ -24,6 +24,26 @@
             Tab:
                 title: 'Coins'
 
+                MDScrollView:
+                    effect_cls: ScrollEffect
+                    do_scroll_x: False
+                    bar_color: app.theme_cls.primary_color
+
+                    MDBoxLayout:
+                        orientation: 'vertical'
+                        padding: dp(5)
+                        size_hint_y: None
+                        height: self.minimum_height
+
+                        MDLabel:
+                            text: "Coins are needed to use the features of the application.\nThere are two ways to get coins :\n  1. [ref=Purchase via google play store][color=0000ff]Purchase via google play store[/color][/ref]\n  2. [ref=View ads][color=0000ff]View ads[/color][/ref]\nFor one video watched, you will receive 1 coin."
+                            font_style: 'Instruction'
+                            halign: 'left'
+                            line_height: 1.5
+                            markup: True
+                            adaptive_height: True
+                            on_ref_press:
+                                root.move_to_screen(*args)
             Tab:
                 title: 'Create Image'
 

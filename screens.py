@@ -1082,3 +1082,10 @@ class InstructionScreen(MDScreen):
     def on_pre_leave(self, *args):
         if platform == 'android':
             self.core.change_android_color()
+
+    def move_to_screen(self, instance, value):
+        if value == 'Purchase via google play store':
+            self.core.root.transition = MDSwapTransition()
+            self.core.root.current = 'buy_coins_screen'
+        elif value == 'View ads':
+            self.core.root.ids.main_screen.show_ads()
