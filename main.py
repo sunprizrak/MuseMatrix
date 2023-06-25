@@ -1,4 +1,7 @@
+import base64
+import io
 import os
+from kivy.core.image import Image as CoreImage
 from kivy.core.audio import SoundLoader
 from kivy.core.text import LabelBase
 from kivy.metrics import dp, sp
@@ -212,7 +215,7 @@ class MuseMatrixApp(MDApp):
         if platform == 'linux':
             self.file_manager.show(os.path.expanduser('~'))
             self.manager_open = True
-            self.file_manager.ext = self.file_manager.ext + ['.mp3', '.mp4', '.mpeg', '.mpga', '.m4a', '.wav', '.webm']
+            self.file_manager.ext.extend(['.mp3', '.mp4', '.mpeg', '.mpga', '.m4a', '.wav', '.webm'])
         elif platform == 'android':
             if self.check_android_permissions:
                 if self.root.current == 'speech_to_text_screen':
@@ -227,43 +230,64 @@ class MuseMatrixApp(MDApp):
         if platform == 'linux':
             self.exit_manager()
 
-        if f'.{path.split(".")[-1]}' in ['.mp3', '.mp4', '.mpeg', '.mpga', '.m4a', '.wav', '.webm']:
+        screen = self.root.get_screen(self.root.current)
 
-            if len(path.split('/')[-1]) > 22:
-                sound_name = f'...{path.split("/")[-1][-19:]}'
-            else:
-                sound_name = path.split('/')[-1]
+        if screen.name == 'speech_to_text_screen':
 
-            self.root.ids.speech_to_text_screen.sound = SoundLoader.load(path)
-            self.root.ids.speech_to_text_screen.ids.sound.text = sound_name
+            if f'.{path.split(".")[-1]}' in ['.mp3', '.mp4', '.mpeg', '.mpga', '.m4a', '.wav', '.webm']:
 
-            button = MDRaisedButton(
-                text='transcript',
-                pos_hint={'center_x': .5, 'center_y': .5},
-                font_size=sp(25),
-                md_bg_color=self.theme_cls.primary_color,
-                on_release=lambda
-                    x: self.root.ids.speech_to_text_screen.transcript()
-            )
+                if len(path.split('/')[-1]) > 22:
+                    sound_name = f'...{path.split("/")[-1][-19:]}'
+                else:
+                    sound_name = path.split('/')[-1]
 
-            text_button = MDChipText(text='translate to english')
+                screen.sound = SoundLoader.load(path)
+                screen.ids.sound.text = sound_name
 
-            chip = MDChip(
-                pos_hint={'center_x': .5, 'center_y': .6},
-                md_bg_color='grey',
-                line_color="black",
-                type='filter',
-                selected_color='green',
-            )
+                button = MDRaisedButton(
+                    text='transcript',
+                    pos_hint={'center_x': .5, 'center_y': .5},
+                    font_size=sp(25),
+                    md_bg_color=self.theme_cls.primary_color,
+                    on_release=lambda
+                        x: screen.transcript()
+                )
 
-            chip.add_widget(text_button)
+                text_button = MDChipText(text='translate to english')
 
-            self.root.ids.speech_to_text_screen.ids.speech_layout.add_widget(button)
-            self.root.ids.speech_to_text_screen.ids.speech_layout.add_widget(chip)
-        elif f'.{path.split(".")[-1]}' in ['.jpg', '.jpeg', '.jpe', '.jfif', '.png', '.ico']:
-            for screen in self.root.children:
-                if screen.name == self.root.current:
-                    screen.add_image(path=path)
+                chip = MDChip(
+                    pos_hint={'center_x': .5, 'center_y': .6},
+                    md_bg_color='grey',
+                    line_color="black",
+                    type='filter',
+                    selected_color='green',
+                )
+
+                chip.add_widget(text_button)
+
+                screen.ids.speech_layout.add_widget(button)
+                screen.ids.speech_layout.add_widget(chip)
+        elif screen.name == 'main_screen':
+            user_controller = UserController(screen=screen)
+
+            def callback(request, response):
+                user_controller.user.update(data_user=response)
+                screen.avatar = user_controller.user.avatar
+
+            image = CoreImage(path)
+
+            fmt = path.split('.')[-1]
+
+            data = io.BytesIO()
+            image.save(data, fmt=fmt)
+            png_bytes = data.read()
+
+            im_b64 = base64.b64encode(png_bytes).decode('utf-8')
+
+            user_controller.update_user(fields={'avatar': im_b64}, callback=callback)
+        else:
+            if f'.{path.split(".")[-1]}' in ['.jpg', '.jpeg', '.jpe', '.jfif', '.png', '.ico']:
+                screen.add_image(path=path)
 
     def exit_manager(self, *args):
         if platform == 'linux':

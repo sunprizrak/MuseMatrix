@@ -4,6 +4,8 @@
 <ContentNavigationDrawer@MDBoxLayout>:
     orientation: 'horizontal'
 
+<AvatarBox@ButtonBehavior+MDBoxLayout>
+
 
 <MainCard@MDCard>:
     md_bg_color: 69/255,55/255,86/255, .2
@@ -109,15 +111,19 @@
                         size_hint_y: None
                         height: profile_info.height
 
-                        MDBoxLayout:
+                        AvatarBox:
+                            source: root.avatar
                             size_hint: None, None
                             size: dp(85), dp(85)
                             pos_hint: {'center_x': .5, 'center_y': .5}
+                            on_release:
+                                app.file_manager_open()
 
                             FitImage:
-                                source: root.avatar
+                                source: self.parent.source
                                 mipmap: True
                                 radius: 50, 50, 50, 50
+
 
                     MDFloatLayout:
                         id: profile_info
