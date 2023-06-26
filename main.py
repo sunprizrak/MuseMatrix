@@ -33,7 +33,7 @@ if platform == 'android':
     from android.permissions import request_permissions, check_permission, Permission
     from jnius import autoclass
     from androidstorage4kivy import SharedStorage, Chooser
-    from kivmob import KivMob, TestIds, RewardedListenerInterface
+    from kivads import KivAds, RewardedAd, RewardedInterstitial, TestID
     from utility.webview import WebView
 
     LayoutParams = autoclass('android.view.WindowManager$LayoutParams')
@@ -49,28 +49,6 @@ if platform == 'android':
         window.addFlags(LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
         window.setStatusBarColor(AndroidColor.parseColor(color_stat))
         window.setNavigationBarColor(AndroidColor.parseColor(color_nav))
-
-    class RewardsHandler(RewardedListenerInterface):
-
-        def __init__(self, app, user_controller):
-            self.AppObj = app
-            self.user_controller = user_controller
-
-        def on_rewarded(self, reward_name, reward_amount):
-            reward_name = 'coin'
-            reward_amount = 1
-            total_amount = self.user_controller.user.coin + reward_amount
-
-            def callback(request, response):
-                self.user_controller.user.update(data_user=response)
-                screen = self.AppObj.root.get_screen('main_screen')
-                screen.coin = self.user_controller.user.coin
-
-            self.user_controller.update_user(fields={'coin': total_amount}, callback=callback)
-
-        def on_rewarded_video_ad_started(self):
-            self.AppObj.load_ads_video()
-
 elif platform == 'linux':
     Window.size = (360, 600)
 
@@ -102,10 +80,11 @@ class CustomThemeManager(ThemeManager):
         LabelBase.register(name='Hacked', fn_regular='assets/font/hacked.ttf')
 
 
-class MuseMatrixApp(MDApp):
+class MainApp(MDApp):
 
     def __init__(self, **kwargs):
-        super(MuseMatrixApp, self).__init__(**kwargs)
+        super(MainApp, self).__init__(**kwargs)
+        self.title = "MuseMatrix"
         self.theme_cls = CustomThemeManager()
         self.dialog = None
         self.browser = None
@@ -117,7 +96,11 @@ class MuseMatrixApp(MDApp):
         )
 
         if platform == 'android':
-            self.ads = KivMob(TestIds.APP)
+            self.change_android_color()
+            self.ads = KivAds()
+            self.reward_interstitial = RewardedInterstitial(
+                TestID.REWARD_INTERSTITIAL, self.reward_callback
+            )
             self.ss = SharedStorage()
             self.chooser = Chooser(self.chooser_callback)
 
@@ -128,6 +111,9 @@ class MuseMatrixApp(MDApp):
 
     def build(self):
         if platform == 'android':
+            # self.ads.set_rewarded_ad_listener(self.rewards)
+            # self.load_ads_video()
+
             if not self.check_android_permissions:
                 self.req_android_permissions()
 
@@ -146,13 +132,6 @@ class MuseMatrixApp(MDApp):
 
     def on_start(self):
         self.check_user_authentication()
-        if platform == 'android':
-            self.change_android_color()
-
-            self.ads.load_rewarded_ad(TestIds.REWARDED_VIDEO)
-            setattr(self, 'rewards', RewardsHandler(app=self, user_controller=UserController(
-                screen=self.root.get_screen(name='main_screen'))))
-            self.ads.set_rewarded_ad_listener(getattr(self, 'rewards'))
 
     def on_pause(self):
         if platform == 'android':
@@ -162,7 +141,7 @@ class MuseMatrixApp(MDApp):
 
     def on_resume(self):
         if platform == 'android':
-            self.ads.load_rewarded_ad(TestIds.REWARDED_VIDEO)
+            self.load_ads_video()
 
             if self.browser:
                 self.browser.resume()
@@ -178,14 +157,29 @@ class MuseMatrixApp(MDApp):
 
             set_android_color(color_stat=color_stat, color_nav=color_nav)
 
+    def load_ads_video(self):
+        if platform == 'android':
+            self.reward_interstitial.load(TestID.REWARD_INTERSTITIAL)
+
+    def reward_callback(self, *args):
+        user_controller = UserController(screen=self.root.get_screen('main_screen'))
+        reward_name = 'coin'
+        reward_amount = 1
+        total_amount = user_controller.user.coin + reward_amount
+
+        def callback(request, response):
+            self.load_ads_video()
+            user_controller.user.update(data_user=response)
+            screen = self.root.get_screen('main_screen')
+            screen.coin = user_controller.user.coin
+
+        user_controller.update_user(fields={reward_name: total_amount}, callback=callback)
+
     def view_browser(self, url=None):
         self.browser = WebView(
             url,
             enable_javascript=True,
         )
-
-    def load_ads_video(self):
-        self.ads.load_rewarded_ad(TestIds.REWARDED_VIDEO)
 
     def check_user_authentication(self):
         if storage.exists('auth_token'):
@@ -339,4 +333,4 @@ class MuseMatrixApp(MDApp):
 
 
 if __name__ == '__main__':
-    MuseMatrixApp().run()
+    MainApp().run()
