@@ -33,7 +33,7 @@ if platform == 'android':
     from android.permissions import request_permissions, check_permission, Permission
     from jnius import autoclass
     from androidstorage4kivy import SharedStorage, Chooser
-    from kivads import KivAds, RewardedAd, RewardedInterstitial, TestID
+    from kivads import KivAds, RewardedInterstitial, TestID
     from utility.webview import WebView
 
     LayoutParams = autoclass('android.view.WindowManager$LayoutParams')
@@ -111,9 +111,6 @@ class MainApp(MDApp):
 
     def build(self):
         if platform == 'android':
-            # self.ads.set_rewarded_ad_listener(self.rewards)
-            # self.load_ads_video()
-
             if not self.check_android_permissions:
                 self.req_android_permissions()
 
@@ -181,9 +178,10 @@ class MainApp(MDApp):
             enable_javascript=True,
         )
 
-    def check_user_authentication(self):
+    @staticmethod
+    def check_user_authentication():
         if storage.exists('auth_token'):
-            user_controller = UserController(screen=self.root.children[0])
+            user_controller = UserController()
             user_controller.authorized()
 
     @property

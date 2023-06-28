@@ -10,52 +10,62 @@ class OpenAIController:
     path_chat_completion = host_name + 'openai/chat_completion/'
     path_speech_to_text = host_name + 'openai/speech_to_text/'
 
-    def image_generation(self, prompt, image_count, image_size, callback, error, failure):
+    def image_generation(self, *args, **kwargs):
         token = storage.get('auth_token').get('token')
 
         UrlRequest(
             url=self.path_image_generation,
             method='GET',
-            on_success=callback,
-            on_error=error,
-            on_failure=failure,
+            on_success=kwargs.get('on_success'),
+            on_error=kwargs.get('on_error'),
+            on_failure=kwargs.get('on_failure'),
             req_headers={
                 'Content-type': 'application/json',
                 'Authorization': f"Token {token}",
             },
-            req_body=json.dumps({'prompt': prompt, 'image_count': image_count, 'image_size': image_size}),
+            req_body=json.dumps({
+                'prompt': kwargs.get('prompt'),
+                'image_count': kwargs.get('image_count'),
+                'image_size': kwargs.get('image_size'),
+            }),
         )
 
-    def image_edit(self, image, mask, prompt, image_count, image_size, callback, on_error, on_failure):
+    def image_edit(self, *args, **kwargs):
         token = storage.get('auth_token').get('token')
 
         UrlRequest(
             url=self.path_image_edit,
             method='GET',
-            on_success=callback,
-            on_error=on_error,
-            on_failure=on_failure,
+            on_success=kwargs.get('on_success'),
+            on_error=kwargs.get('on_error'),
+            on_failure=kwargs.get('on_failure'),
             req_headers={
                 'Content-type': 'application/json',
                 'Authorization': f"Token {token}",
             },
-            req_body=json.dumps({'image': image, 'mask': mask, 'prompt': prompt, 'image_count': image_count, 'image_size': image_size}),
+            req_body=json.dumps({
+                'image': kwargs.get('image'),
+                'mask': kwargs.get('mask'),
+                'prompt': kwargs.get('prompt'),
+                'image_count': kwargs.get('image_count'),
+                'image_size': kwargs.get('image_size'),
+            }),
         )
 
-    def image_variation(self, image, image_count, image_size, callback, on_error, on_failure):
+    def image_variation(self, *args, **kwargs):
         token = storage.get('auth_token').get('token')
 
         UrlRequest(
             url=self.path_image_variation,
             method='GET',
-            on_success=callback,
-            on_error=on_error,
-            on_failure=on_failure,
+            on_success=kwargs.get('on_success'),
+            on_error=kwargs.get('on_error'),
+            on_failure=kwargs.get('on_failure'),
             req_headers={
                 'Content-type': 'application/json',
                 'Authorization': f"Token {token}",
             },
-            req_body=json.dumps({'image': image, 'image_count': image_count, 'image_size': image_size}),
+            req_body=json.dumps({'image': kwargs.get('image'), 'image_count': kwargs.get('image_count'), 'image_size': kwargs.get('image_size')}),
         )
 
     def chat_completion(self, prompt, callback):

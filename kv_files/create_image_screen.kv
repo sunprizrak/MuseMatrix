@@ -4,7 +4,6 @@
     name: 'create_image_screen'
     md_bg_color: app.theme_cls.bg_light
 
-    core: app
     prompt: input_prompt.text
 
     MDFloatLayout:
@@ -115,7 +114,7 @@
                             md_bg_color: app.theme_cls.primary_color
                             size_hint_x: 1
                             on_release:
-                                root.create()
+                                root.generate()
 
         MDSpinner:
             id: create_spin

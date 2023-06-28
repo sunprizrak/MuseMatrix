@@ -5,6 +5,7 @@ from kivy.uix.image import Image
 from kivy.uix.label import Label
 from kivy.uix.screenmanager import FallOutTransition
 from kivy.properties import StringProperty, ObjectProperty, BoundedNumericProperty, NumericProperty
+from kivymd.app import MDApp
 from kivymd.toast import toast
 from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.button import MDFlatButton, MDRaisedButton
@@ -15,7 +16,7 @@ from kivymd.uix.swiper import MDSwiperItem, MDSwiper
 from kivy.core.image import Image as CoreImage
 from kivymd.uix.textfield import MDTextField
 from kivymd.uix.transition import MDSwapTransition
-import settings
+from settings import storage
 from widgets import MyImage
 import io
 import base64
@@ -36,16 +37,40 @@ if platform == 'android':
     from iabwrapper import BillingProcessor
 
 
-class StartScreen(MDScreen):
-    core = ObjectProperty()
+class BaseScreen(MDScreen):
+    def __init__(self, **kwargs):
+        super(BaseScreen, self).__init__(**kwargs)
+        self.app = MDApp.get_running_app()
 
 
-class LoginScreen(MDScreen):
-    core = ObjectProperty()
+class ImageScreen(BaseScreen):
+    image_count = BoundedNumericProperty(1, min=1, max=10, errorhandler=lambda x: 10 if x > 10 else 1)
+    image_size = StringProperty('256x256')
+    price = NumericProperty()
+
+    def __init__(self, **kwargs):
+        super(ImageScreen, self).__init__(**kwargs)
+        self.openai_controller = OpenAIController()
+        self.user_controller = UserController()
+
+    def on_pre_enter(self, *args):
+        if platform == 'android':
+            color_nav = get_hex_from_color(self.theme_cls.primary_color[:-1])
+            self.app.change_android_color(color_nav=color_nav)
+
+    def on_pre_leave(self, *args):
+        if platform == 'android':
+            self.app.change_android_color()
+
+class StartScreen(BaseScreen):
+    pass
+
+
+class LoginScreen(BaseScreen):
 
     def __init__(self, **kwargs):
         super(LoginScreen, self).__init__(**kwargs)
-        self.user_controller = UserController(screen=self)
+        self.user_controller = UserController()
 
     def on_pre_leave(self, *args):
         for field_name in self.ids.keys():
@@ -53,7 +78,42 @@ class LoginScreen(MDScreen):
                 self.ids[field_name].text = ''
 
     def login(self, email, password):
-        self.user_controller.auth(email=email, password=password)
+
+        def _output_error(error):
+            if type(error) is str:
+                self.app.show_dialog()
+                self.app.dialog.text = error
+            elif type(error) is dict:
+                if len({'password', 'email'} & set(error)) > 0:
+                    for el in {'password', 'email'} & set(error):
+                        error_text = error.get(el)[0]
+                        field = self.ids.get(f'{el}_field')
+                        field.error = True
+                        field.helper_text = error_text
+                else:
+                    error_text = ''
+                    for value in error.values():
+                        error_text += f'{value[0]}\n'
+                    self.app.show_dialog()
+                    self.app.dialog.text = error_text
+
+        def _on_success(request, response):
+            storage.put('auth_token', token=response.get('auth_token'))
+            self.user_controller.authorized()
+
+        def _on_error(request, error):
+            _output_error(error)
+
+        def _on_failure(request, response):
+            _output_error(response)
+
+        self.user_controller.auth(
+            email=email,
+            password=password,
+            on_success=_on_success,
+            on_error=_on_error,
+            on_failure=_on_failure
+        )
 
     def google_login(self):
 
@@ -82,7 +142,7 @@ class LoginScreen(MDScreen):
             text="Send",
             theme_text_color="Custom",
             text_color=self.core.theme_cls.primary_color,
-            on_release=lambda x: self.user_controller.reset_password(email=email_field.text),
+            on_release=lambda x: self.user_controller.reset_password(email_field.text),
         )
 
         self.core.show_dialog(button=button, content=content)
@@ -90,12 +150,11 @@ class LoginScreen(MDScreen):
         self.core.dialog.title = 'Enter your Email'
 
 
-class RegistrateScreen(MDScreen):
-    core = ObjectProperty()
+class RegistrateScreen(BaseScreen):
 
     def __init__(self, **kwargs):
         super(RegistrateScreen, self).__init__(**kwargs)
-        self.user_controller = UserController(screen=self)
+        self.user_controller = UserController()
 
     def on_pre_leave(self, *args):
         for field_name in self.ids.keys():
@@ -103,14 +162,58 @@ class RegistrateScreen(MDScreen):
                 self.ids[field_name].text = ''
 
     def registrate(self, email, password, re_password):
-        self.user_controller.registrate(email=email, password=password, re_password=re_password)
+        def _output_error(error):
+            if type(error) is str:
+                self.app.show_dialog()
+                self.app.dialog.text = error
+            elif type(error) is dict:
+                if {'email', 'password', 're_password'} & set(error):
+                    for el in {'email', 'password', 're_password'} & set(error):
+                        error_text = error.get(el)[0]
+                        field = self.ids.get(f'{el}_field')
+                        field.error = True
+                        field.helper_text = error_text
+                elif {'non_field_errors'} & set(error):
+                    error_text = error.get('non_field_errors')[0]
+                    for el in self.ids:
+                        if 'password' in el:
+                            field = self.ids.get(f'{el}')
+                            field.error = True
+                            field.helper_text = error_text
+                else:
+                    error_text = ''
+                    for value in error.values():
+                        error_text += f'{value[0]}\n'
+                    self.app.show_dialog()
+                    self.app.dialog.text = error_text
+
+        def _on_success(request, response):
+            self.app.root.current = 'login_screen'
+            self.app.show_dialog()
+            self.app.dialog.title = 'success!'
+            self.app.dialog.text = 'Login with email and password'
+
+        def _on_error(request, error):
+            _output_error(error)
+
+        def _on_failure(request, response):
+            _output_error(response)
+
+        self.user_controller.registrate(
+            email=email,
+            password=password,
+            re_password=re_password,
+            on_success=_on_success,
+            on_error=_on_error,
+            on_failure=_on_failure
+        )
 
 
-class ChangePasswordScreen(MDScreen):
+class ChangePasswordScreen(BaseScreen):
 
     def __init__(self, **kwargs):
         super(ChangePasswordScreen, self).__init__(**kwargs)
-        self.user_controller = UserController(screen=self)
+        self.user_controller = UserController()
 
     def on_pre_leave(self, *args):
         for field_name in self.ids.keys():
@@ -118,11 +221,53 @@ class ChangePasswordScreen(MDScreen):
                 self.ids[field_name].text = ''
 
     def change_password(self, current_password, new_password, re_new_password):
-        self.user_controller.set_password(current_password=current_password, new_password=new_password, re_new_password=re_new_password)
+        def _output_error(error):
+            if type(error) is str:
+                self.app.show_dialog()
+                self.app.dialog.text = error
+            elif type(error) is dict:
+                if {'current_password', 'new_password', 're_new_password'} & set(error):
+                    for el in {'current_password', 'new_password', 're_new_password'} & set(error):
+                        error_text = error.get(el)[0]
+                        field = self.ids.get(f'{el}_field')
+                        field.error = True
+                        field.helper_text = error_text
+                elif {'non_field_errors'} & set(error):
+                    error_text = error.get('non_field_errors')[0]
+                    for el in self.ids:
+                        if 'new_password' in el:
+                            field = self.ids.get(f'{el}')
+                            field.error = True
+                            field.helper_text = error_text
+                else:
+                    error_text = ''
+                    for value in error.values():
+                        error_text += f'{value[0]}\n'
+                    self.app.show_dialog()
+                    self.app.dialog.text = error_text
+
+        def _on_success(request, response):
+            self.app.show_dialog()
+            self.app.dialog.title = 'success!'
+            self.app.dialog.text = 'Password has been successfully changed!'
+
+        def _on_error(request, error):
+            _output_error(error)
+
+        def _on_failure(request, response):
+            _output_error(response)
+
+        self.user_controller.set_password(
+            current_password=current_password,
+            new_password=new_password,
+            re_new_password=re_new_password,
+            on_success=_on_success,
+            on_error=_on_error,
+            on_failure=_on_failure
+        )
 
 
-class MainScreen(MDScreen):
-    core = ObjectProperty()
+class MainScreen(BaseScreen):
     email = StringProperty('email')
     coin = NumericProperty()
     chat_token = NumericProperty()
@@ -130,77 +275,59 @@ class MainScreen(MDScreen):
 
     def __init__(self, **kwargs):
         super(MainScreen, self).__init__(**kwargs)
-        self.user_controller = UserController(screen=self)
+        self.user_controller = UserController()
 
     def add_chat_token(self):
-        def callback(request, response):
+        def _on_success(request, response):
             self.user_controller.user.update(data_user=response)
             self.coin = self.user_controller.user.coin
             self.chat_token = self.user_controller.user.chat_token
 
         if self.coin > 0:
             data = {'coin': self.coin - 1, 'chat_token': self.chat_token + 1000}
-            self.user_controller.update_user(fields=data, callback=callback)
+            self.user_controller.update_user(fields=data, on_success=_on_success)
         else:
-            self.core.show_dialog()
-            self.core.dialog.title = 'Notice!'
-            self.core.dialog.text = 'Not enough coins. Replenishment requires 1 coin(1 coin = 1000 chat tokens)'
+            self.app.show_dialog()
+            self.app.dialog.title = 'Notice!'
+            self.app.dialog.text = 'Not enough coins. Replenishment requires 1 coin(1 coin = 1000 chat tokens)'
 
     def show_ads(self):
         if platform == 'android':
-            self.core.reward_interstitial.show()
+            self.app.reward_interstitial.show()
 
     def open_settings(self):
         self.ids.nav_drawer.set_state("close")
-        self.core.root.transition = MDSwapTransition()
-        self.core.root.current = 'settings_screen'
+        self.app.root.transition = MDSwapTransition()
+        self.app.root.current = 'settings_screen'
 
     def open_collection(self):
-        screen = self.core.root.current
-        self.core.root.ids.collection_screen.ids.selection_list.back_item = ['arrow-left-bold', lambda x: self.core.back(screen=screen)]
+        screen = self.app.root.current
+        self.app.root.ids.collection_screen.ids.selection_list.back_item = ['arrow-left-bold', lambda x: self.app.back(screen)]
         self.ids.nav_drawer.set_state("close")
-        self.core.root.transition = MDSwapTransition()
-        self.core.root.current = 'collection_screen'
+        self.app.root.transition = MDSwapTransition()
+        self.app.root.current = 'collection_screen'
 
     def open_buy_credits(self):
         self.ids.nav_drawer.set_state('close')
-        self.core.root.transition = MDSwapTransition()
-        self.core.root.current = 'buy_coins_screen'
+        self.app.root.transition = MDSwapTransition()
+        self.app.root.current = 'buy_coins_screen'
 
     def exit(self):
         self.ids.nav_drawer.set_state("close")
         self.user_controller.un_login()
 
 
-class CreateImageScreen(MDScreen):
-    core = ObjectProperty()
+class CreateImageScreen(ImageScreen):
     prompt = StringProperty()
-    image_count = BoundedNumericProperty(1, min=1, max=10, errorhandler=lambda x: 10 if x > 10 else 1)
-    image_size = StringProperty('256x256')
-    price = NumericProperty()
 
-    def __init__(self, **kwargs):
-        super(CreateImageScreen, self).__init__(**kwargs)
-        self.openai_controller = OpenAIController()
-        self.user_controller = UserController(screen=self)
+    def generate(self):
 
-    def on_pre_enter(self, *args):
-        if platform == 'android':
-            color_nav = get_hex_from_color(self.theme_cls.primary_color[:-1])
-            self.core.change_android_color(color_nav=color_nav)
-
-    def on_pre_leave(self, *args):
-        if platform == 'android':
-            self.core.change_android_color()
-
-    def create(self):
-
-        def callback(request, response):
+        def _on_success(request, response):
             self.ids.create_spin.active = False
 
             if 'data' in response:
-                self.user_controller.user.coin = response['coin']
-                self.core.root.ids.main_screen.coin = self.user_controller.user.coin
+                self.user_controller.user.coin = response.get('coin')
+                self.app.root.ids.main_screen.coin = self.user_controller.user.coin
 
                 if len(response['data']) == 1:
                     url = response['data'][0].get('url')
@@ -245,16 +372,16 @@ class CreateImageScreen(MDScreen):
 
                 self.ids.image_section.add_widget(image)
 
-                self.core.show_dialog()
-                self.core.dialog.title = 'Notice!'
-                self.core.dialog.text = response['notice']
+                self.app.show_dialog()
+                self.app.dialog.title = 'Notice!'
+                self.app.dialog.text = response['notice']
 
-        def output_error(error):
+        def _output_error(error):
             self.ids.create_spin.active = False
             if type(error) is dict:
                 if {'error'} & set(error):
-                    self.core.show_dialog()
-                    self.core.dialog.text = error.get('error')
+                    self.app.show_dialog()
+                    self.app.dialog.text = error.get('error')
 
             image = Image(
                 source='assets/img/default.png',
@@ -263,11 +390,11 @@ class CreateImageScreen(MDScreen):
 
             self.ids.image_section.add_widget(image)
 
-        def callback_failure(request, response):
-            output_error(error=response)
+        def _on_failure(request, response):
+            _output_error(response)
 
-        def callback_error(request, error):
-            output_error(error=error)
+        def _on_error(request, error):
+            _output_error(error)
 
         if all([self.prompt, self.image_count, self.image_size]):
             for widget in self.ids.image_section.children:
@@ -280,34 +407,16 @@ class CreateImageScreen(MDScreen):
                 prompt=self.prompt,
                 image_count=self.image_count,
                 image_size=self.image_size,
-                callback=callback,
-                error=callback_error,
-                failure=callback_failure,
+                on_success=_on_success,
+                on_error=_on_error,
+                on_failure=_on_failure,
             )
 
 
-class EditImageScreen(MDScreen):
-    core = ObjectProperty()
+class EditImageScreen(ImageScreen):
     prompt = StringProperty()
-    image_count = BoundedNumericProperty(1, min=1, max=10, errorhandler=lambda x: 10 if x > 10 else 1)
-    image_size = StringProperty('256x256')
     image_original = io.BytesIO()
     image_mask = io.BytesIO()
-    price = NumericProperty()
-
-    def __init__(self, **kwargs):
-        super(EditImageScreen, self).__init__(**kwargs)
-        self.openai_controller = OpenAIController()
-        self.user_controller = UserController(screen=self)
-
-    def on_pre_enter(self, *args):
-        if platform == 'android':
-            color_nav = get_hex_from_color(self.theme_cls.primary_color[:-1])
-            self.core.change_android_color(color_nav=color_nav)
-
-    def on_pre_leave(self, *args):
-        if platform == 'android':
-            self.core.change_android_color()
 
     def add_image(self, path):
         self.ids.add_image_button.disabled = True
@@ -334,12 +443,12 @@ class EditImageScreen(MDScreen):
 
     def edit_image(self):
 
-        def callback(request, response):
+        def _on_success(request, response):
             self.ids.edit_spin.active = False
 
             if 'data' in response:
                 self.user_controller.user.coin = response['coin']
-                self.core.root.ids.main_screen.coin = self.user_controller.user.coin
+                self.app.root.ids.main_screen.coin = self.user_controller.user.coin
 
                 if len(response['data']) == 1:
                     url = response['data'][0].get('url')
@@ -375,11 +484,11 @@ class EditImageScreen(MDScreen):
                 self.ids.add_image_button.disabled = False
                 self.ids.edit_top_bar.right_action_items = []
 
-                self.core.show_dialog()
-                self.core.dialog.title = 'Notice!'
-                self.core.dialog.text = response['notice']
+                self.app.show_dialog()
+                self.app.dialog.title = 'Notice!'
+                self.app.dialog.text = response['notice']
 
-        def output_error(error):
+        def _output_error(error):
             self.ids.edit_spin.active = False
             self.ids.add_image_button.disabled = False
 
@@ -387,14 +496,14 @@ class EditImageScreen(MDScreen):
 
             if type(error) is dict:
                 if {'error'} & set(error):
-                    self.core.show_dialog()
-                    self.core.dialog.text = error.get('error')
+                    self.app.show_dialog()
+                    self.app.dialog.text = error.get('error')
 
-        def callback_failure(request, response):
-            output_error(error=response)
+        def _on_error(request, error):
+            _output_error(error)
 
-        def callback_error(request, error):
-            output_error(error=error)
+        def _on_failure(request, response):
+            _output_error(response)
 
         self.image_original.seek(0)
         if len(self.image_original.getvalue()) > 0:
@@ -429,9 +538,9 @@ class EditImageScreen(MDScreen):
                     prompt=self.prompt,
                     image_count=self.image_count,
                     image_size=self.image_size,
-                    callback=callback,
-                    on_error=callback_error,
-                    on_failure=callback_failure,
+                    callback=_on_success,
+                    on_error=_on_error,
+                    on_failure=_on_failure,
                 )
 
     def clear_selection(self):
@@ -452,26 +561,8 @@ class EditImageScreen(MDScreen):
             self.ids.edit_top_bar.right_action_items.remove(self.ids.edit_top_bar.right_action_items[-1])
 
 
-class VariableImageScreen(MDScreen):
-    core = ObjectProperty()
+class VariableImageScreen(ImageScreen):
     image = io.BytesIO()
-    image_count = BoundedNumericProperty(1, min=1, max=10, errorhandler=lambda x: 10 if x > 10 else 1)
-    image_size = StringProperty('256x256')
-    price = NumericProperty()
-
-    def __init__(self, **kwargs):
-        super(VariableImageScreen, self).__init__(**kwargs)
-        self.openai_controller = OpenAIController()
-        self.user_controller = UserController(screen=self)
-
-    def on_pre_enter(self, *args):
-        if platform == 'android':
-            color_nav = get_hex_from_color(self.theme_cls.primary_color[:-1])
-            self.core.change_android_color(color_nav=color_nav)
-
-    def on_pre_leave(self, *args):
-        if platform == 'android':
-            self.core.change_android_color()
 
     def add_image(self, path):
         self.ids.add_image_button.disabled = True
@@ -506,12 +597,12 @@ class VariableImageScreen(MDScreen):
 
     def generate(self):
 
-        def callback(request, response):
+        def _on_success(request, response):
             self.ids.variable_spin.active = False
 
             if 'data' in response:
                 self.user_controller.user.coin = response['coin']
-                self.core.root.ids.main_screen.coin = self.user_controller.user.coin
+                self.app.root.ids.main_screen.coin = self.user_controller.user.coin
 
                 if len(response['data']) == 1:
                     url = response['data'][0].get('url')
@@ -548,11 +639,11 @@ class VariableImageScreen(MDScreen):
 
                 self.ids.variable_top_bar.right_action_items = []
 
-                self.core.show_dialog()
-                self.core.dialog.title = 'Notice!'
-                self.core.dialog.text = response['notice']
+                self.app.show_dialog()
+                self.app.dialog.title = 'Notice!'
+                self.app.dialog.text = response['notice']
 
-        def output_error(error):
+        def _output_error(error):
             self.ids.variable_spin.active = False
             self.ids.add_image_button.disabled = False
 
@@ -560,14 +651,14 @@ class VariableImageScreen(MDScreen):
 
             if type(error) is dict:
                 if {'error'} & set(error):
-                    self.core.show_dialog()
-                    self.core.dialog.text = error.get('error')
+                    self.app.show_dialog()
+                    self.app.dialog.text = error.get('error')
 
-        def callback_failure(request, response):
-            output_error(error=response)
+        def _on_error(request, error):
+            _output_error(error)
 
-        def callback_error(request, error):
-            output_error(error=error)
+        def _on_failure(request, response):
+            _output_error(response)
 
         self.image.seek(0)
         if len(self.image.getvalue()) > 0:
@@ -587,9 +678,9 @@ class VariableImageScreen(MDScreen):
                     image=im_b64_image,
                     image_count=self.image_count,
                     image_size=self.image_size,
-                    callback=callback,
-                    on_error=callback_error,
-                    on_failure=callback_failure,
+                    callback=_on_success,
+                    on_error=_on_error,
+                    on_failure=_on_failure,
                 )
 
 
@@ -679,7 +770,7 @@ class CollectionScreen(MDScreen):
 
     def __init__(self, **kwargs):
         super(CollectionScreen, self).__init__(**kwargs)
-        self.image_controller = ImageController(screen=self)
+        self.image_controller = ImageController()
 
         menu_items = [
             {
@@ -724,7 +815,7 @@ class OpenImageScreen(MDScreen):
     def __init__(self, **kwargs):
         super(OpenImageScreen, self).__init__(**kwargs)
         self.user_controller = UserController(screen=self)
-        self.image_controller = ImageController(screen=self)
+        self.image_controller = ImageController()
 
     def on_pre_enter(self, *args):
         screen = self.core.root.get_screen(self.back_screen)
@@ -831,7 +922,6 @@ class SettingsScreen(MDScreen):
 
 class BuyCreditsScreen(MDScreen):
     core = ObjectProperty()
-    LICENSE_KEY = settings.PLAY_CONSOLE_KEY
 
     PROD_200 = 'a134b'
     PROD_400 = 'a135b'
@@ -851,12 +941,13 @@ class BuyCreditsScreen(MDScreen):
     def __init__(self, **kwargs):
         super(BuyCreditsScreen, self).__init__(**kwargs)
         self.user_controller = UserController(screen=self)
-        if platform == 'android':
-            self.bp = BillingProcessor(self.LICENSE_KEY, self.product_purchased, self.billing_error,
-                                       onBillingInitializedMethod=self.billing_initialized)
 
     def on_pre_enter(self, *args):
         if platform == 'android':
+            if not hasattr(self, 'bp'):
+                setattr(self, 'bp', BillingProcessor(self.user_controller.user.play_console_key, self.product_purchased, self.billing_error,
+                                                     onBillingInitializedMethod=self.billing_initialized))
+
             Logger.info(f"is_initialized: {self.bp.is_initialized()}")
             Logger.info(f'is_iab_service_available: {self.bp.is_iab_service_available()}')
             Logger.info(f"is_subscription_update_supported: {self.bp.is_subscription_update_supported()}")
@@ -878,7 +969,6 @@ class BuyCreditsScreen(MDScreen):
         self.ids.bottom_sheet.open()
 
     def initiate_purchase(self, method_name):
-
         if method_name == "gplay":
             if self.product_id in self.products:
                 # Get Details about a product

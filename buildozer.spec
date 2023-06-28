@@ -205,7 +205,7 @@ android.add_src = src
 #android.add_resources =
 
 # (list) Gradle dependencies to add
-android.gradle_dependencies = com.google.firebase:firebase-ads:22.1.0, com.anjlab.android.iab.v3:library:2.0.0
+android.gradle_dependencies = com.google.firebase:firebase-ads:22.1.0, com.anjlab.android.iab.v3:library:2.0.3
 
 
 # (bool) Enable AndroidX support. Enable when 'android.gradle_dependencies'

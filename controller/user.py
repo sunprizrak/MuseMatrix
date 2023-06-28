@@ -1,5 +1,6 @@
 from kivy.network.urlrequest import UrlRequest
 from kivy.uix.screenmanager import NoTransition, FallOutTransition
+from kivymd.app import MDApp
 from kivymd.uix.transition.transition import MDSwapTransition
 from models import User
 from controller.image import ImageController
@@ -17,144 +18,70 @@ class UserController:
     path_reset_password = host_name + 'auth/users/reset_password/'
     path_google_oauth2 = host_name + 'auth/o/google-oauth2/'
 
-    def __init__(self, screen):
+    def __init__(self, screen=None):
+        self.app = MDApp.get_running_app()
         self.screen = screen
-        self.image_controller = ImageController(screen=screen)
+        self.image_controller = ImageController()
 
-    def registrate(self, email, password, re_password):
-
-        def output_error(error):
-            if type(error) is str:
-                self.screen.core.show_dialog()
-                self.screen.core.dialog.text = error
-            elif type(error) is dict:
-                if {'email', 'password', 're_password'} & set(error):
-                    for el in {'email', 'password', 're_password'} & set(error):
-                        error_text = error.get(el)[0]
-                        field = self.screen.ids.get(f'{el}_field')
-                        field.error = True
-                        field.helper_text = error_text
-                elif {'non_field_errors'} & set(error):
-                    error_text = error.get('non_field_errors')[0]
-                    for el in self.screen.ids:
-                        if 'password' in el:
-                            field = self.screen.ids.get(f'{el}')
-                            field.error = True
-                            field.helper_text = error_text
-                else:
-                    error_text = ''
-                    for value in error.values():
-                        error_text += f'{value[0]}\n'
-                    self.screen.core.show_dialog()
-                    self.screen.core.dialog.text = error_text
-
-        def callback(request, response):
-            self.screen.parent.current = 'login_screen'
-            self.screen.core.show_dialog()
-            self.screen.core.dialog.title = 'success!'
-            self.screen.core.dialog.text = 'Login with email and password'
-
-        def callback_failure(request, response):
-            output_error(error=response)
-
-        def callback_error(request, error):
-            output_error(error=error)
+    def registrate(self, *args, **kwargs):
 
         UrlRequest(
             url=self.path_reg,
             method='POST',
-            on_success=callback,
-            on_error=callback_error,
-            on_failure=callback_failure,
+            on_success=kwargs.get('on_success'),
+            on_error=kwargs.get('on_error'),
+            on_failure=kwargs.get('on_failure'),
             req_headers={'Content-type': 'application/json'},
-            req_body=json.dumps({'email': email, 'password': password, 're_password': re_password}),
+            req_body=json.dumps({'email': kwargs.get('email'), 'password': kwargs.get('password'), 're_password': kwargs.get('re_password')}),
         )
 
-    def auth(self, email, password):
-
-        def output_error(error):
-            if type(error) is str:
-                self.screen.core.show_dialog()
-                self.screen.core.dialog.text = error
-            elif type(error) is dict:
-                if len({'password', 'email'} & set(error)) > 0:
-                    for el in {'password', 'email'} & set(error):
-                        error_text = error.get(el)[0]
-                        field = self.screen.ids.get(f'{el}_field')
-                        field.error = True
-                        field.helper_text = error_text
-                else:
-                    error_text = ''
-                    for value in error.values():
-                        error_text += f'{value[0]}\n'
-                    self.screen.core.show_dialog()
-                    self.screen.core.dialog.text = error_text
-
-        def callback(request, response):
-
-            storage.put('auth_token', token=response.get('auth_token'))
-
-            self.get_data_user()
-            self.image_controller.get_image_list()
-
-            self.screen.parent.transition = MDSwapTransition()
-            self.screen.parent.current = 'main_screen'
-
-        def callback_failure(request, response):
-            output_error(error=response)
-
-        def callback_error(request, error):
-            output_error(error=error)
+    def auth(self, *args, **kwargs):
 
         UrlRequest(
             url=self.path_login,
             method='POST',
-            on_success=callback,
-            on_error=callback_error,
-            on_failure=callback_failure,
+            on_success=kwargs.get('on_success'),
+            on_error=kwargs.get('on_error'),
+            on_failure=kwargs.get('on_failure'),
             req_headers={'Content-type': 'application/json'},
-            req_body=json.dumps({'email': email, 'password': password}),
+            req_body=json.dumps({'email': kwargs.get('email'), 'password': kwargs.get('password')}),
         )
 
     def authorized(self):
-        self.get_data_user()
+        self._get_data_user()
         self.image_controller.get_image_list()
 
-        self.screen.parent.transition = NoTransition()
-        self.screen.parent.current = 'main_screen'
+        if self.app.root.current == 'login_screen':
+            self.app.root.transition = MDSwapTransition()
+        else:
+            self.app.root.transition = NoTransition()
+
+        self.app.root.current = 'main_screen'
 
     def google_oauth2(self, callback):
 
-        def redirect(request, result):
+        def _redirect(request, result):
             print(result)
 
         UrlRequest(
             url=f'{self.path_google_oauth2}?redirect_uri={GOOGLE_REDIRECT_URL}',
             method='GET',
-            on_redirect=redirect,
+            on_redirect=_redirect,
             #on_success=callback,
             #on_error=callback_error,
             #on_failure=callback_failure,
             req_headers={'Content-type': 'application/json'},
         )
 
-    def un_login(self):
-        if storage.exists('auth_token'):
-            storage.delete('auth_token')
-
-            self.image_controller.clear_image_list(self.screen.core.root.ids.collection_screen.ids.selection_list.children)
-
-            self.screen.core.root.transition = FallOutTransition()
-            self.screen.core.root.current = 'start_screen'
-
-    def get_data_user(self):
+    def _get_data_user(self):
 
         def callback(request, response):
             self.user.update(data_user=response)
-            self.screen.core.root.ids.main_screen.email = self.user.email
-            self.screen.core.root.ids.main_screen.coin = self.user.coin
-            self.screen.core.root.ids.main_screen.avatar = self.user.avatar
-            self.screen.core.root.ids.main_screen.chat_token = self.user.chat_token
+            screen = self.app.root.get_screen('main_screen')
+            screen.email = self.user.email
+            screen.coin = self.user.coin
+            screen.avatar = self.user.avatar
+            screen.chat_token = self.user.chat_token
 
         UrlRequest(
             url=self.path_data_user,
@@ -165,118 +92,84 @@ class UserController:
                          },
         )
 
-    def update_user(self, fields: dict, callback):
+    def update_user(self, *args, **kwargs):
 
-        req_body = json.dumps(fields)
+        req_body = json.dumps(kwargs.get('fields'))
 
         UrlRequest(
             url=self.path_data_user,
             method='PATCH',
-            on_success=callback,
+            on_success=kwargs.get('on_success'),
             req_headers={'Content-type': 'application/json',
                          'Authorization': f"Token {storage.get('auth_token').get('token')}",
                          },
             req_body=req_body,
         )
 
-    def set_password(self, current_password, new_password, re_new_password):
-
-        def output_error(error):
-            if type(error) is str:
-                self.screen.core.show_dialog()
-                self.screen.core.dialog.text = error
-            elif type(error) is dict:
-                if {'current_password', 'new_password', 're_new_password'} & set(error):
-                    for el in {'current_password', 'new_password', 're_new_password'} & set(error):
-                        error_text = error.get(el)[0]
-                        field = self.screen.ids.get(f'{el}_field')
-                        field.error = True
-                        field.helper_text = error_text
-                elif {'non_field_errors'} & set(error):
-                    error_text = error.get('non_field_errors')[0]
-                    for el in self.screen.ids:
-                        if 'new_password' in el:
-                            field = self.screen.ids.get(f'{el}')
-                            field.error = True
-                            field.helper_text = error_text
-                else:
-                    error_text = ''
-                    for value in error.values():
-                        error_text += f'{value[0]}\n'
-                    self.screen.core.show_dialog()
-                    self.screen.core.dialog.text = error_text
-
-        def callback(request, response):
-            self.screen.core.show_dialog()
-            self.screen.core.dialog.title = 'success!'
-            self.screen.core.dialog.text = 'Password has been successfully changed!'
-
-        def callback_failure(request, response):
-            output_error(error=response)
-
-        def callback_error(request, error):
-            output_error(error=error)
+    def set_password(self, *args, **kwargs):
 
         UrlRequest(
             url=self.path_set_password,
             method='POST',
-            on_success=callback,
-            on_error=callback_error,
-            on_failure=callback_failure,
+            on_success=kwargs.get('on_success'),
+            on_error=kwargs.get('on_error'),
+            on_failure=kwargs.get('on_failure'),
             req_headers={'Content-type': 'application/json',
                          'Authorization': f"Token {storage.get('auth_token').get('token')}",
                          },
-            req_body=json.dumps({'new_password': new_password,
-                                 're_new_password': re_new_password,
-                                 'current_password': current_password,
+            req_body=json.dumps({'new_password': kwargs.get('new_password'),
+                                 're_new_password': kwargs.get('re_new_password'),
+                                 'current_password': kwargs.get('current_password'),
                                  }),
         )
 
     def reset_password(self, email):
 
-        def output_error(error):
+        def _output_error(error):
             if type(error) is dict:
-                self.screen.core.dialog.dismiss()
+                self.app.dialog.dismiss()
                 error_text = ''
                 for value in error.values():
                     error_text += f'{value[0]}\n'
-                self.screen.core.show_dialog()
-                self.screen.core.dialog.text = error_text
+                self.app.show_dialog()
+                self.app.dialog.text = error_text
 
-        def callback(request, response):
-            self.screen.core.dialog.dismiss()
+        def _callback(request, response):
+            self.app.dialog.dismiss()
 
-        def callback_failure(request, response):
-            output_error(error=response)
+        def _callback_failure(request, response):
+            _output_error(response)
 
-        def callback_error(request, error):
-            output_error(error=error)
+        def _callback_error(request, error):
+            _output_error(error)
 
         UrlRequest(
             url=self.path_reset_password,
             method='POST',
-            on_success=callback,
-            on_error=callback_error,
-            on_failure=callback_failure,
+            on_success=_callback,
+            on_error=_callback_error,
+            on_failure=_callback_failure,
             req_headers={'Content-type': 'application/json'},
             req_body=json.dumps({'email': email}),
         )
 
-    def del_token(self):
+    def un_login(self):
+        if storage.exists('auth_token'):
+            self._del_token()
+            storage.delete('auth_token')
 
-        def callback(request, response):
-            pass
+            self.image_controller.clear_image_list()
 
-        def callback_failure(request, response):
-            pass
+            self.app.root.transition = FallOutTransition()
+            self.app.root.current = 'start_screen'
+
+    def _del_token(self):
 
         UrlRequest(
             url=self.path_logout,
             method='POST',
-            on_success=callback,
-            on_failure=callback_failure,
             req_headers={'Content-type': 'application/json',
-                         'Authorization': f'Token {"token"}',
+                         'Authorization': f"Token {storage.get('auth_token').get('token')}",
                          },
         )
 
