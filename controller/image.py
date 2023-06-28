@@ -20,7 +20,6 @@ class ImageController:
             image = self.object(data_image=response)
 
             img = MyImage(
-                sm=self.app.root,
                 source=image.source,
                 fit_mode='contain',
                 mipmap=True,
@@ -60,7 +59,6 @@ class ImageController:
             for index, image in enumerate(self.object.images):
 
                 img = MyImage(
-                    sm=self.app.root,
                     source=image.source,
                     fit_mode='contain',
                     mipmap=True,

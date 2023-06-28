@@ -334,7 +334,6 @@ class CreateImageScreen(ImageScreen):
                     url = response['data'][0].get('url')
 
                     image = MyImage(
-                        sm=self.parent,
                         source=url,
                         fit_mode='contain',
                         mipmap=True,
@@ -354,7 +353,6 @@ class CreateImageScreen(ImageScreen):
                         item = MDSwiperItem()
 
                         image = MyImage(
-                            sm=self.parent,
                             source=url,
                             mipmap=True,
                             fit_mode='contain',
@@ -455,7 +453,6 @@ class EditImageScreen(ImageScreen):
                     url = response['data'][0].get('url')
 
                     image = MyImage(
-                        sm=self.parent,
                         source=url,
                         fit_mode='contain',
                         mipmap=True,
@@ -471,7 +468,6 @@ class EditImageScreen(ImageScreen):
                         item = MDSwiperItem()
 
                         image = MyImage(
-                            sm=self.parent,
                             source=url,
                             mipmap=True,
                             fit_mode='contain',
@@ -539,7 +535,7 @@ class EditImageScreen(ImageScreen):
                     prompt=self.prompt,
                     image_count=self.image_count,
                     image_size=self.image_size,
-                    callback=_on_success,
+                    on_success=_on_success,
                     on_error=_on_error,
                     on_failure=_on_failure,
                 )
@@ -569,10 +565,10 @@ class VariableImageScreen(ImageScreen):
         self.ids.add_image_button.disabled = True
 
         for widget in self.ids.image_section.children:
-            if isinstance(widget, MyImage) or isinstance(widget, MDSwiper):
+            if isinstance(widget, Image) or isinstance(widget, MDSwiper):
                 self.ids.image_section.remove_widget(widget)
 
-        image = MyImage(
+        image = Image(
             source=path,
             fit_mode='contain',
             mipmap=True,
@@ -588,7 +584,7 @@ class VariableImageScreen(ImageScreen):
 
     def reload_image(self):
         for widget in self.ids.image_section.children:
-            if isinstance(widget, MyImage) or isinstance(widget, MDSwiper):
+            if isinstance(widget, Image) or isinstance(widget, MDSwiper) or isinstance(widget, MyImage):
                 self.ids.image_section.remove_widget(widget)
 
         self.image.truncate(0)
@@ -609,7 +605,6 @@ class VariableImageScreen(ImageScreen):
                     url = response['data'][0].get('url')
 
                     image = MyImage(
-                        sm=self.parent,
                         source=url,
                         fit_mode='contain',
                         mipmap=True,
@@ -625,10 +620,9 @@ class VariableImageScreen(ImageScreen):
                         item = MDSwiperItem()
 
                         image = MyImage(
-                            sm=self.parent,
                             source=url,
                             mipmap=True,
-                            allow_stretch=True,
+                            fit_mode='contain',
                         )
 
                         item.add_widget(image)
@@ -665,7 +659,7 @@ class VariableImageScreen(ImageScreen):
         if len(self.image.getvalue()) > 0:
             if all([self.image_count, self.image_size]):
                 for widget in self.ids.image_section.children:
-                    if isinstance(widget, MyImage) or isinstance(widget, MDSwiper):
+                    if isinstance(widget, MyImage) or isinstance(widget, MDSwiper) or isinstance(widget, Image):
                         self.ids.image_section.remove_widget(widget)
 
                 self.ids.add_image_button.disabled = True
@@ -679,7 +673,7 @@ class VariableImageScreen(ImageScreen):
                     image=im_b64_image,
                     image_count=self.image_count,
                     image_size=self.image_size,
-                    callback=_on_success,
+                    on_success=_on_success,
                     on_error=_on_error,
                     on_failure=_on_failure,
                 )
@@ -919,7 +913,7 @@ class SettingsScreen(BaseScreen):
     pass
 
 
-class BuyCreditsScreen(BaseScreen):
+class BuyCoinsScreen(BaseScreen):
     PROD_200 = 'a134b'
     PROD_400 = 'a135b'
     PROD_1000 = 'a136b'
@@ -936,7 +930,7 @@ class BuyCreditsScreen(BaseScreen):
     amounts = {PROD_200: 200, PROD_400: 400, PROD_1000: 1000, PROD_1600: 1600, PROD_3600: 3600, PROD_5000: 5000, PROD_20000: 20000}
 
     def __init__(self, **kwargs):
-        super(BuyCreditsScreen, self).__init__(**kwargs)
+        super(BuyCoinsScreen, self).__init__(**kwargs)
         self.user_controller = UserController()
 
     def on_pre_enter(self, *args):

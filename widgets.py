@@ -12,10 +12,10 @@ from kivymd.uix.list import MDList, OneLineListItem, IRightBodyTouch
 from kivymd.uix.selection import MDSelectionList
 from kivymd.uix.selection.selection import SelectionItem, SelectionIconCheck
 from kivymd.uix.tab import MDTabsBase
+from kivymd.app import MDApp
 
 
 class MyImage(AsyncImage):
-    sm = ObjectProperty()
     img_id = NumericProperty()
     index = NumericProperty()
 
@@ -59,12 +59,13 @@ class MyImage(AsyncImage):
         return super(MyImage, self).collide_point(x, y)
 
     def open_img_screen(self):
-        if self.sm:
-            self.sm.ids.open_img_screen.back_screen = self.sm.current
-            self.sm.transition = RiseInTransition()
-            self.sm.current = 'open_img_screen'
-            self.sm.ids.open_img_screen.ids.carousel.index = self.index
-            self.sm.ids.open_img_screen.ids.app_bar.title = 'x'.join(str(self.texture_size).split(', '))
+        app = MDApp.get_running_app()
+        screen = app.root.get_screen('open_img_screen')
+        screen.back_screen = app.root.current
+        app.root.transition = RiseInTransition()
+        app.root.current = 'open_img_screen'
+        screen.ids.carousel.index = self.index
+        screen.ids.app_bar.title = 'x'.join(str(self.texture_size).split(', '))
 
 
     def get_mask_image(self):
