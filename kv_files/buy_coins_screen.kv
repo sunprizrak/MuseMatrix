@@ -22,11 +22,9 @@
     md_bg_color: app.theme_cls.primary_color
 
 
-<BuyCreditsScreen>
+<BuyCoinsScreen>
     name: 'buy_coins_screen'
     md_bg_color: app.theme_cls.bg_light
-
-    core: app
 
     MDFloatLayout:
         md_bg_color: root.md_bg_color if bottom_sheet.state == 'close' else app.theme_cls.bg_dark

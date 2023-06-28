@@ -62,6 +62,7 @@ class ImageScreen(BaseScreen):
         if platform == 'android':
             self.app.change_android_color()
 
+
 class StartScreen(BaseScreen):
     pass
 
@@ -684,14 +685,13 @@ class VariableImageScreen(ImageScreen):
                 )
 
 
-class ChatGptScreen(MDScreen):
-    core = ObjectProperty()
+class ChatGptScreen(BaseScreen):
     prompt = StringProperty()
 
     def __init__(self, **kwargs):
-        super(ChatGptScreen, self).__init__(*kwargs)
+        super(ChatGptScreen, self).__init__(**kwargs)
         self.openai_controller = OpenAIController()
-        self.user_controller = UserController(screen=self)
+        self.user_controller = UserController()
 
     def on_pre_enter(self, *args):
         Window.softinput_mode = 'pan'
@@ -701,11 +701,11 @@ class ChatGptScreen(MDScreen):
 
     def send(self):
 
-        def callback(request, response):
+        def _on_success(request, response):
             if 'choices' in response:
                 text = response['choices'][0].get('message').get('content').lstrip()
                 self.user_controller.user.chat_token = response['chat_token']
-                self.core.root.ids.main_screen.chat_token = self.user_controller.user.chat_token
+                self.app.root.ids.main_screen.chat_token = self.user_controller.user.chat_token
 
                 lab = Label(text=text, font_size=sp(16), padding=[dp(20), dp(5)])
                 lab.texture_update()
@@ -730,9 +730,9 @@ class ChatGptScreen(MDScreen):
 
                 self.ids.chat_gpt.data.append(msg)
             elif 'notice' in response:
-                self.core.show_dialog()
-                self.core.dialog.title = 'Notice!'
-                self.core.dialog.text = response['notice']
+                self.app.show_dialog()
+                self.app.dialog.title = 'Notice!'
+                self.app.dialog.text = response['notice']
 
         if self.prompt:
 
@@ -761,12 +761,11 @@ class ChatGptScreen(MDScreen):
 
             self.openai_controller.chat_completion(
                 prompt=self.prompt,
-                callback=callback,
+                on_success=_on_success,
             )
 
 
-class CollectionScreen(MDScreen):
-    core = ObjectProperty()
+class CollectionScreen(BaseScreen):
 
     def __init__(self, **kwargs):
         super(CollectionScreen, self).__init__(**kwargs)
@@ -794,7 +793,7 @@ class CollectionScreen(MDScreen):
 
         def del_images():
             self.image_controller.del_images(images_id=images_id, widget_list=widget_list)
-            self.core.dialog.dismiss()
+            self.app.dialog.dismiss()
 
         button = MDFlatButton(
             text="Delete",
@@ -803,22 +802,21 @@ class CollectionScreen(MDScreen):
             on_release=lambda x: del_images(),
         )
 
-        self.core.show_dialog(button=button)
-        self.core.dialog.title = 'Delete'
-        self.core.dialog.text = 'Are you sure you want to delete?'
+        self.app.show_dialog(button=button)
+        self.app.dialog.title = 'Delete'
+        self.app.dialog.text = 'Are you sure you want to delete?'
 
 
-class OpenImageScreen(MDScreen):
-    core = ObjectProperty()
+class OpenImageScreen(BaseScreen):
     back_screen = StringProperty()
 
     def __init__(self, **kwargs):
         super(OpenImageScreen, self).__init__(**kwargs)
-        self.user_controller = UserController(screen=self)
+        self.user_controller = UserController()
         self.image_controller = ImageController()
 
     def on_pre_enter(self, *args):
-        screen = self.core.root.get_screen(self.back_screen)
+        screen = self.app.root.get_screen(self.back_screen)
 
         if self.back_screen == 'collection_screen':
             images = [el.instance_item for el in screen.ids.selection_list.children]
@@ -852,8 +850,8 @@ class OpenImageScreen(MDScreen):
     def back(self, screen):
         if len(self.ids.app_bar.right_action_items) > 1:
             self.ids.app_bar.right_action_items.remove(self.ids.app_bar.right_action_items[0])
-        self.parent.transition = FallOutTransition()
-        self.parent.current = screen
+        self.app.root.transition = FallOutTransition()
+        self.app.root.current = screen
 
     def download(self, img):
 
@@ -861,12 +859,12 @@ class OpenImageScreen(MDScreen):
             image = CoreImage(img.texture)
 
             if platform == 'android':
-                private_path = join(self.core.ss.get_cache_dir(), f'{str(uuid.uuid4())}.png')
+                private_path = join(self.app.ss.get_cache_dir(), f'{str(uuid.uuid4())}.png')
 
                 image.save(private_path)
 
                 if exists(private_path):
-                    self.core.ss.copy_to_shared(private_path)
+                    self.app.ss.copy_to_shared(private_path)
 
             if self.back_screen in ('create_image_screen', 'edit_image_screen', 'variable_image_screen'):
                 data = io.BytesIO()
@@ -879,13 +877,14 @@ class OpenImageScreen(MDScreen):
                     'source': im_b64,
                 }
 
-                for screen in self.core.root.screens:
-                    if screen.name == self.back_screen and screen.name != 'variable_image_screen':
-                        data_image['description'] = screen.prompt
+                screen = self.app.root.get_screen(self.back_screen)
+
+                if screen.name != 'variable_image_screen':
+                    data_image['description'] = screen.prompt
 
                 self.image_controller.save_image(data_image=data_image)
 
-            self.core.dialog.dismiss()
+            self.app.dialog.dismiss()
 
         button = MDFlatButton(
             text="Save",
@@ -894,15 +893,15 @@ class OpenImageScreen(MDScreen):
             on_release=lambda x: save_image(),
         )
 
-        self.core.show_dialog(button=button)
-        self.core.dialog.title = 'Save image'
-        self.core.dialog.text = 'Do you want to save the picture?'
+        self.app.show_dialog(button=button)
+        self.app.dialog.title = 'Save image'
+        self.app.dialog.text = 'Do you want to save the picture?'
 
     def delete(self, img_id, widget_selection):
 
         def del_image():
             self.image_controller.del_image(image_id=img_id, widget_selection=widget_selection, widget_carousel=self.ids.carousel.current_slide)
-            self.core.dialog.dismiss()
+            self.app.dialog.dismiss()
 
         button = MDFlatButton(
             text="Delete",
@@ -911,18 +910,16 @@ class OpenImageScreen(MDScreen):
             on_release=lambda x: del_image(),
         )
 
-        self.core.show_dialog(button=button)
-        self.core.dialog.title = 'Delete'
-        self.core.dialog.text = 'Are you sure you want to delete??'
+        self.app.show_dialog(button=button)
+        self.app.dialog.title = 'Delete'
+        self.app.dialog.text = 'Are you sure you want to delete??'
 
 
-class SettingsScreen(MDScreen):
+class SettingsScreen(BaseScreen):
     pass
 
 
-class BuyCreditsScreen(MDScreen):
-    core = ObjectProperty()
-
+class BuyCreditsScreen(BaseScreen):
     PROD_200 = 'a134b'
     PROD_400 = 'a135b'
     PROD_1000 = 'a136b'
@@ -940,7 +937,7 @@ class BuyCreditsScreen(MDScreen):
 
     def __init__(self, **kwargs):
         super(BuyCreditsScreen, self).__init__(**kwargs)
-        self.user_controller = UserController(screen=self)
+        self.user_controller = UserController()
 
     def on_pre_enter(self, *args):
         if platform == 'android':
@@ -986,12 +983,12 @@ class BuyCreditsScreen(MDScreen):
 
         total_amount = self.user_controller.user.coin + self.amounts.get(product_id)
 
-        def callback(request, response):
+        def _on_success(request, response):
             self.user_controller.user.update(data_user=response)
-            screen = self.core.root.get_screen('main_screen')
+            screen = self.app.root.get_screen('main_screen')
             screen.coin = self.user_controller.user.coin
 
-        self.user_controller.update_user(fields={'coin': total_amount}, callback=callback)
+        self.user_controller.update_user(fields={'coin': total_amount}, on_success=_on_success)
 
         self.ids.bottom_sheet.dismiss()
 
@@ -1018,15 +1015,14 @@ class BuyCreditsScreen(MDScreen):
             toast("No purchase details received")
 
 
-class SpeechToTextScreen(MDScreen):
-    core = ObjectProperty()
+class SpeechToTextScreen(BaseScreen):
     sound = ObjectProperty(allownone=True)
     sound_pos = NumericProperty()
 
     def __init__(self, **kwargs):
         super(SpeechToTextScreen, self).__init__(**kwargs)
         self.openai_controller = OpenAIController()
-        self.user_controller = UserController(screen=self)
+        self.user_controller = UserController()
         self.event = None
 
     def sound_play(self):
@@ -1044,10 +1040,10 @@ class SpeechToTextScreen(MDScreen):
 
                 end_sound = self.sound.length - self.sound.get_pos() + 1
 
-                def callback(args, **kwargs):
+                def _callback(args, **kwargs):
                     self.ids.sound_option.icon_play = 'play'
 
-                self.event = Clock.schedule_once(callback=callback, timeout=end_sound)
+                self.event = Clock.schedule_once(callback=_callback, timeout=end_sound)
                 self.event()
 
     def sound_stop(self):
@@ -1086,28 +1082,27 @@ class SpeechToTextScreen(MDScreen):
         self.ids.speech_layout.clear_widgets(remove_widgets)
 
     def transcript(self):
-        def callback(request, response):
+        def _on_success(request, response):
             self.ids.audio_transcript.text = response['text']
             self.user_controller.user.coin = response['coin']
-            self.core.root.ids.main_screen.coin = self.user_controller.user.coin
+            self.app.root.ids.main_screen.coin = self.user_controller.user.coin
 
-        def callback_failure(request, response):
-            print('failure')
-            output_error(error=response)
-
-        def callback_error(request, error):
+        def _on_error(request, error):
             print('error')
-            output_error(error=error)
+            _output_error(error)
 
-        def output_error(error):
+        def _on_failure(request, response):
+            print('failure')
+            _output_error(response)
+
+        def _output_error(error):
             print(error)
             button = MDRaisedButton(
                 text='transcript',
                 pos_hint={'center_x': .5, 'center_y': .5},
                 font_size=sp(25),
                 md_bg_color=self.theme_cls.primary_color,
-                on_release=lambda
-                    x: self.root.ids.speech_to_text_screen.transcript()
+                on_release=lambda x: self.transcript()
             )
 
             text_button = MDChipText(text='translate to english')
@@ -1125,7 +1120,7 @@ class SpeechToTextScreen(MDScreen):
             self.ids.speech_layout.add_widget(button)
             self.ids.speech_layout.add_widget(chip)
 
-        def callback_finish(request):
+        def _on_finish(request):
             self.ids.speech_spin.active = False
 
         if self.sound:
@@ -1153,16 +1148,15 @@ class SpeechToTextScreen(MDScreen):
                     audio_file=base64_audio,
                     audio_name=name,
                     audio_length=length,
-                    failure=callback_failure,
-                    error=callback_error,
-                    finish=callback_finish,
-                    callback=callback,
+                    on_failure=_on_failure,
+                    on_error=_on_error,
+                    on_finish=_on_finish,
+                    on_success=_on_success,
                     translate=translate,
                 )
 
 
-class InstructionScreen(MDScreen):
-    core = ObjectProperty()
+class InstructionScreen(BaseScreen):
 
     def on_pre_enter(self, *args):
         if platform == 'android':
@@ -1171,11 +1165,11 @@ class InstructionScreen(MDScreen):
 
     def on_pre_leave(self, *args):
         if platform == 'android':
-            self.core.change_android_color()
+            self.app.change_android_color()
 
     def move_to_screen(self, instance, value):
         if value == 'Purchase via google play store':
-            self.core.root.transition = MDSwapTransition()
-            self.core.root.current = 'buy_coins_screen'
+            self.app.root.transition = MDSwapTransition()
+            self.app.root.current = 'buy_coins_screen'
         elif value == 'View ads':
-            self.core.root.ids.main_screen.show_ads()
+            self.app.root.ids.main_screen.show_ads()

@@ -68,33 +68,37 @@ class OpenAIController:
             req_body=json.dumps({'image': kwargs.get('image'), 'image_count': kwargs.get('image_count'), 'image_size': kwargs.get('image_size')}),
         )
 
-    def chat_completion(self, prompt, callback):
+    def chat_completion(self, *args, **kwargs):
         token = storage.get('auth_token').get('token')
 
         UrlRequest(
             url=self.path_chat_completion,
             method='GET',
-            on_success=callback,
+            on_success=kwargs.get('on_success'),
             req_headers={
                 'Content-type': 'application/json',
                 'Authorization': f"Token {token}",
             },
-            req_body=json.dumps({'prompt': prompt}),
+            req_body=json.dumps({'prompt': kwargs.get('prompt')}),
         )
 
-    def speech_to_text(self, audio_file, audio_name, audio_length, translate, callback, error, failure, finish):
+    def speech_to_text(self, *args, **kwargs):
         token = storage.get('auth_token').get('token')
 
         UrlRequest(
             url=self.path_speech_to_text,
             method='GET',
-            on_success=callback,
-            on_failure=failure,
-            on_error=error,
-            on_finish=finish,
+            on_success=kwargs.get('on_success'),
+            on_failure=kwargs.get('on_failure'),
+            on_error=kwargs.get('on_error'),
+            on_finish=kwargs.get('on_finish'),
             req_headers={
                 'Content-type': 'application/json',
                 'Authorization': f"Token {token}",
             },
-            req_body=json.dumps({'audio_file': audio_file, 'audio_name': audio_name, 'audio_length': audio_length, 'translate': translate}),
+            req_body=json.dumps({'audio_file': kwargs.get('audio_file'),
+                                 'audio_name': kwargs.get('audio_name'),
+                                 'audio_length': kwargs.get('audio_length'),
+                                 'translate': kwargs.get('translate'),
+                                 }),
         )
