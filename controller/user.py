@@ -75,7 +75,7 @@ class UserController:
 
     def _get_data_user(self):
 
-        def callback(request, response):
+        def _on_success(request, response):
             self.user.update(data_user=response)
             screen = self.app.root.get_screen('main_screen')
             screen.email = self.user.email
@@ -86,7 +86,7 @@ class UserController:
         UrlRequest(
             url=self.path_data_user,
             method='GET',
-            on_success=callback,
+            on_success=_on_success,
             req_headers={'Content-type': 'application/json',
                          'Authorization': f"Token {storage.get('auth_token').get('token')}",
                          },
@@ -134,21 +134,21 @@ class UserController:
                 self.app.show_dialog()
                 self.app.dialog.text = error_text
 
-        def _callback(request, response):
+        def _on_success(request, response):
             self.app.dialog.dismiss()
 
-        def _callback_failure(request, response):
+        def _on_failure(request, response):
             _output_error(response)
 
-        def _callback_error(request, error):
+        def _on_error(request, error):
             _output_error(error)
 
         UrlRequest(
             url=self.path_reset_password,
             method='POST',
-            on_success=_callback,
-            on_error=_callback_error,
-            on_failure=_callback_failure,
+            on_success=_on_success,
+            on_error=_on_error,
+            on_failure=_on_failure,
             req_headers={'Content-type': 'application/json'},
             req_body=json.dumps({'email': email}),
         )

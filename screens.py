@@ -120,7 +120,7 @@ class LoginScreen(BaseScreen):
 
         def callback(request, response):
             url = response.get('authorization_url')
-            self.core.view_browser(url=url)
+            self.app.view_browser(url=url)
 
         self.user_controller.google_oauth2(callback=callback)
 
@@ -146,9 +146,9 @@ class LoginScreen(BaseScreen):
             on_release=lambda x: self.user_controller.reset_password(email_field.text),
         )
 
-        self.core.show_dialog(button=button, content=content)
+        self.app.show_dialog(button=button, content=content)
 
-        self.core.dialog.title = 'Enter your Email'
+        self.app.dialog.title = 'Enter your Email'
 
 
 class RegistrateScreen(BaseScreen):
