@@ -159,18 +159,18 @@ class MainApp(MDApp):
             self.reward_interstitial.load(TestID.REWARD_INTERSTITIAL)
 
     def reward_callback(self, *args):
-        user_controller = UserController(screen=self.root.get_screen('main_screen'))
+        user_controller = UserController()
         reward_name = 'coin'
         reward_amount = 1
         total_amount = user_controller.user.coin + reward_amount
 
-        def callback(request, response):
+        def _on_success(request, response):
             self.load_ads_video()
             user_controller.user.update(data_user=response)
             screen = self.root.get_screen('main_screen')
             screen.coin = user_controller.user.coin
 
-        user_controller.update_user(fields={reward_name: total_amount}, callback=callback)
+        user_controller.update_user(fields={reward_name: total_amount}, on_success=_on_success)
 
     def view_browser(self, url=None):
         self.browser = WebView(
@@ -260,9 +260,9 @@ class MainApp(MDApp):
                 screen.ids.speech_layout.add_widget(button)
                 screen.ids.speech_layout.add_widget(chip)
         elif screen.name == 'main_screen':
-            user_controller = UserController(screen=screen)
+            user_controller = UserController()
 
-            def callback(request, response):
+            def _on_success(request, response):
                 user_controller.user.update(data_user=response)
                 screen.avatar = user_controller.user.avatar
 
@@ -276,7 +276,7 @@ class MainApp(MDApp):
 
             im_b64 = base64.b64encode(png_bytes).decode('utf-8')
 
-            user_controller.update_user(fields={'avatar': im_b64}, callback=callback)
+            user_controller.update_user(fields={'avatar': im_b64}, on_success=_on_success)
         else:
             if f'.{path.split(".")[-1]}' in ['.jpg', '.jpeg', '.jpe', '.jfif', '.png', '.ico']:
                 screen.add_image(path=path)

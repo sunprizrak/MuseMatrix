@@ -18,9 +18,8 @@ class UserController:
     path_reset_password = host_name + 'auth/users/reset_password/'
     path_google_oauth2 = host_name + 'auth/o/google-oauth2/'
 
-    def __init__(self, screen=None):
+    def __init__(self):
         self.app = MDApp.get_running_app()
-        self.screen = screen
         self.image_controller = ImageController()
 
     def registrate(self, *args, **kwargs):

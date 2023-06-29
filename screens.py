@@ -118,11 +118,19 @@ class LoginScreen(BaseScreen):
 
     def google_login(self):
 
-        def callback(request, response):
-            url = response.get('authorization_url')
-            self.app.view_browser(url=url)
+        # def callback(request, response):
+        #     url = response.get('authorization_url')
+        #     self.app.view_browser(url=url)
+        #
 
-        self.user_controller.google_oauth2(callback=callback)
+        def _callback():
+            self.app.close_dialog(self)
+            self.app.root.current = 'reg_screen'
+
+        self.app.show_dialog()
+        self.app.dialog.text = 'Under construction....\nplease [ref=register][color=0000ff]register[/color][/ref]'
+        self.app.dialog.children[0].children[3].line_height = 1.5
+        self.app.dialog.children[0].children[3].on_ref_press = lambda x: _callback()
 
     def forgot_password(self):
 
