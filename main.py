@@ -23,7 +23,6 @@ from kivymd.utils.set_bars_colors import set_bars_colors
 
 from settings import storage
 from controller.user import UserController
-from kivy.utils import get_hex_from_color
 from kivy.loader import Loader
 
 
