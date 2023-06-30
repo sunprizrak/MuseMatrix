@@ -55,7 +55,7 @@ class ImageScreen(BaseScreen):
 
     def on_pre_enter(self, *args):
         if platform == 'android':
-            color_nav = get_hex_from_color(self.theme_cls.primary_color[:-1])
+            color_nav = self.theme_cls.primary_color
             self.app.change_android_color(color_nav=color_nav)
 
     def on_pre_leave(self, *args):
@@ -129,7 +129,6 @@ class LoginScreen(BaseScreen):
 
         self.app.show_dialog()
         self.app.dialog.text = 'Under construction....\nplease [ref=register][color=0000ff]register[/color][/ref]'
-        self.app.dialog.children[0].children[3].line_height = 1.5
         self.app.dialog.children[0].children[3].on_ref_press = lambda x: _callback()
 
     def forgot_password(self):
@@ -178,6 +177,17 @@ class RegistrateScreen(BaseScreen):
             elif type(error) is dict:
                 if {'email', 'password', 're_password'} & set(error):
                     for el in {'email', 'password', 're_password'} & set(error):
+                        if el == 'email' and 'email address already exists' in  error.get(el)[0]:
+                            def _callback():
+                                def _on_callback(request, response):
+                                    toast(f"email sent to mail {self.ids.email_field.text}")
+
+                                self.user_controller.resend_activation(email=self.ids.email_field.text, on_success=_on_callback)
+                                self.app.close_dialog(self)
+
+                            self.app.show_dialog()
+                            self.app.dialog.text = f"{' '.join(error.get(el)[0].split(' ')[2:])}\n[ref=Resend activation email][color=0000ff]Resend activation email[/color][/ref]"
+                            self.app.dialog.children[0].children[3].on_ref_press = lambda x: _callback()
                         error_text = error.get(el)[0]
                         field = self.ids.get(f'{el}_field')
                         field.error = True
@@ -200,12 +210,13 @@ class RegistrateScreen(BaseScreen):
             self.app.root.current = 'login_screen'
             self.app.show_dialog()
             self.app.dialog.title = 'success!'
-            self.app.dialog.text = 'Login with email and password'
+            self.app.dialog.text = 'An email has been sent to you with an activation letter for your account, confirm it and login with email and password.'
 
         def _on_error(request, error):
             _output_error(error)
 
         def _on_failure(request, response):
+            print(response)
             _output_error(response)
 
         self.user_controller.registrate(
@@ -1162,7 +1173,7 @@ class InstructionScreen(BaseScreen):
 
     def on_pre_enter(self, *args):
         if platform == 'android':
-            color_nav = get_hex_from_color(self.theme_cls.primary_color[:-1])
+            color_nav = self.theme_cls.primary_color
             self.app.change_android_color(color_nav=color_nav)
 
     def on_pre_leave(self, *args):

@@ -17,6 +17,7 @@ class UserController:
     path_set_password = host_name + 'auth/users/set_password/'
     path_reset_password = host_name + 'auth/users/reset_password/'
     path_google_oauth2 = host_name + 'auth/o/google-oauth2/'
+    path_resend_activation = host_name + 'auth/users/resend_activation/'
 
     def __init__(self):
         self.app = MDApp.get_running_app()
@@ -31,7 +32,21 @@ class UserController:
             on_error=kwargs.get('on_error'),
             on_failure=kwargs.get('on_failure'),
             req_headers={'Content-type': 'application/json'},
-            req_body=json.dumps({'email': kwargs.get('email'), 'password': kwargs.get('password'), 're_password': kwargs.get('re_password')}),
+            req_body=json.dumps({
+                'email': kwargs.get('email'),
+                'password': kwargs.get('password'),
+                're_password': kwargs.get('re_password'),
+            }),
+        )
+
+    def resend_activation(self, *args, **kwargs):
+
+        UrlRequest(
+            url=self.path_resend_activation,
+            method='POST',
+            on_success=kwargs.get('on_success'),
+            req_headers={'Content-type': 'application/json'},
+            req_body=json.dumps({'email': kwargs.get('email')}),
         )
 
     def auth(self, *args, **kwargs):
@@ -43,7 +58,10 @@ class UserController:
             on_error=kwargs.get('on_error'),
             on_failure=kwargs.get('on_failure'),
             req_headers={'Content-type': 'application/json'},
-            req_body=json.dumps({'email': kwargs.get('email'), 'password': kwargs.get('password')}),
+            req_body=json.dumps({
+                'email': kwargs.get('email'),
+                'password': kwargs.get('password')
+            }),
         )
 
     def authorized(self):

@@ -18,6 +18,9 @@ from kivy.utils import platform
 from kivy.clock import mainthread
 from kivy.logger import Logger
 from shutil import rmtree
+
+from kivymd.utils.set_bars_colors import set_bars_colors
+
 from settings import storage
 from controller.user import UserController
 from kivy.utils import get_hex_from_color
@@ -28,27 +31,12 @@ os.environ["KIVY_AUDIO"] = "ffpyplayer"
 
 
 if platform == 'android':
-    from android import api_version, python_act as PythonActivity
-    from android.runnable import run_on_ui_thread
+    from android import api_version
     from android.permissions import request_permissions, check_permission, Permission
-    from jnius import autoclass
     from androidstorage4kivy import SharedStorage, Chooser
     from kivads import KivAds, RewardedInterstitial, TestID
     from utility.webview import WebView
 
-    LayoutParams = autoclass('android.view.WindowManager$LayoutParams')
-    AndroidColor = autoclass('android.graphics.Color')
-
-    context = PythonActivity.mActivity
-
-    @run_on_ui_thread
-    def set_android_color(*args, **kwargs):
-        color_stat = kwargs['color_stat']
-        color_nav = kwargs['color_nav']
-        window = context.getWindow()
-        window.addFlags(LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
-        window.setStatusBarColor(AndroidColor.parseColor(color_stat))
-        window.setNavigationBarColor(AndroidColor.parseColor(color_nav))
 elif platform == 'linux':
     Window.size = (360, 600)
 
@@ -143,16 +131,16 @@ class MainApp(MDApp):
             if self.browser:
                 self.browser.resume()
 
-    def change_android_color(self, **kwargs):
+    def change_android_color(self, *args, **kwargs):
         if platform == 'android':
-            color_stat = get_hex_from_color(self.theme_cls.bg_light[:-1])
-            color_nav = get_hex_from_color(self.theme_cls.bg_light[:-1])
-            if 'color_stat' in kwargs:
+            color_stat = self.theme_cls.bg_light
+            color_nav = self.theme_cls.bg_light
+            if kwargs.get('color_stat'):
                 color_stat = kwargs.get('color_stat')
-            if 'color_nav' in kwargs:
+            if kwargs.get('color_nav'):
                 color_nav = kwargs.get('color_nav')
 
-            set_android_color(color_stat=color_stat, color_nav=color_nav)
+            set_bars_colors(color_stat, color_nav)
 
     def load_ads_video(self):
         if platform == 'android':
@@ -303,6 +291,8 @@ class MainApp(MDApp):
                 ),
             ],
         )
+        self.dialog.children[0].children[3].line_height = 1.5
+        self.dialog.children[0].children[3].color = 'white'
         self.dialog.open()
 
     def close_dialog(self, inst):
