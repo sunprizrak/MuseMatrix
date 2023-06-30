@@ -177,21 +177,27 @@ class RegistrateScreen(BaseScreen):
             elif type(error) is dict:
                 if {'email', 'password', 're_password'} & set(error):
                     for el in {'email', 'password', 're_password'} & set(error):
-                        if el == 'email' and 'email address already exists' in  error.get(el)[0]:
+                        if el == 'email' and 'email address already exists' in error.get(el)[0]:
                             def _callback():
                                 def _on_callback(request, response):
-                                    toast(f"email sent to mail {self.ids.email_field.text}")
+                                    toast(f"email sent to mail")
 
                                 self.user_controller.resend_activation(email=self.ids.email_field.text, on_success=_on_callback)
                                 self.app.close_dialog(self)
 
                             self.app.show_dialog()
-                            self.app.dialog.text = f"{' '.join(error.get(el)[0].split(' ')[2:])}\n[ref=Resend activation email][color=0000ff]Resend activation email[/color][/ref]"
+                            error_text = ' '.join(error.get(el)[0].split(' ')[2:])
+                            self.app.dialog.text = f"{error_text}\n[ref=Resend activation email][color=0000ff]Resend activation email[/color][/ref]"
                             self.app.dialog.children[0].children[3].on_ref_press = lambda x: _callback()
-                        error_text = error.get(el)[0]
-                        field = self.ids.get(f'{el}_field')
-                        field.error = True
-                        field.helper_text = error_text
+
+                            field = self.ids.get(f'{el}_field')
+                            field.error = True
+                            field.helper_text = error_text
+                        else:
+                            error_text = error.get(el)[0]
+                            field = self.ids.get(f'{el}_field')
+                            field.error = True
+                            field.helper_text = error_text
                 elif {'non_field_errors'} & set(error):
                     error_text = error.get('non_field_errors')[0]
                     for el in self.ids:
@@ -216,7 +222,6 @@ class RegistrateScreen(BaseScreen):
             _output_error(error)
 
         def _on_failure(request, response):
-            print(response)
             _output_error(response)
 
         self.user_controller.registrate(
