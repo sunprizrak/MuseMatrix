@@ -45,7 +45,7 @@ requirements = python3, kivy==master, https://github.com/kivymd/KivyMD/archive/m
 requirements.source.kivymd = ../../kivymd
 
 # (str) Presplash of the application
-presplash.filename = %(source.dir)s/assets/img/start_loading.png
+presplash.filename = %(source.dir)s/assets/img/logo_app.png
 
 # (str) Icon of the application
 icon.filename = %(source.dir)s/assets/img/logo_app.png
