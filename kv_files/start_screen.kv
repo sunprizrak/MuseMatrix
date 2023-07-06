@@ -9,11 +9,13 @@
     MDFloatLayout:
 
         MDBoxLayout:
-            padding: dp(10)
+            #padding: dp(10)
+            size_hint: None, None
+            size: dp(256), dp(256)
             pos_hint: {'center_x': .5, 'center_y': .65}
 
             Image:
-                source: 'assets/img/head_ii.png'
+                source: 'assets/img/logo_app.png'
                 fit_mode: 'contain'
                 mipmap: True
 
