@@ -143,7 +143,6 @@ class MainApp(MDApp):
             self.reward_interstitial.load(ID_REWARD_INTERSTITIAL)
 
     def reward_callback(self, *args):
-        print(args)
         user_controller = UserController()
         reward_name = 'coin'
         reward_amount = 1
