@@ -5,7 +5,6 @@
 
 <LogTextField@MDTextField>
     mode: "rectangle"
-    unfocus_on_touch: False
     text_color_normal: 'white'
     hint_text_color_normal: 'white'
     helper_text_mode: 'on_error'
@@ -29,8 +28,8 @@
 
         MDBoxLayout:
             orientation: 'vertical'
-            spacing: dp(20)
-            pos_hint: {'center_x': .5, 'center_y': .75}
+            spacing: dp(30)
+            pos_hint: {'center_x': .5, 'center_y': .68}
             adaptive_height: True
             size_hint_max_x: dp(300)
 
@@ -59,34 +58,35 @@
                         self.icon = "eye" if self.icon == "eye-off" else "eye-off"
                         password_field.password = False if password_field.password is True else True
 
-        MDBoxLayout:
-            orientation: 'vertical'
-            pos_hint: {'center_x': .5, 'center_y': .52}
-            adaptive_height: True
-            size_hint_max_x: dp(300)
-            spacing: dp(15)
-
             MDBoxLayout:
-                orientation: 'horizontal'
+                orientation: 'vertical'
+                pos_hint: {'center_x': .5}
                 adaptive_height: True
-                pos_hint: {'center_x': .5}
+                size_hint_max_x: dp(300)
+                spacing: dp(15)
 
-                MDRaisedButton:
-                    text: 'Login'
-                    font_size: sp(20)
-                    size_hint_x: 1
-                    md_bg_color: app.theme_cls.primary_color
+                MDBoxLayout:
+                    orientation: 'horizontal'
+                    adaptive_height: True
+                    size_hint_max_x: dp(300)
+                    pos_hint: {'center_x': .5}
+
+                    MDRaisedButton:
+                        text: 'Login'
+                        font_size: sp(20)
+                        size_hint_x: 1
+                        md_bg_color: app.theme_cls.primary_color
+                        on_release:
+                            root.login(email_field.text, password_field.text)
+
+                MDTextButton:
+                    text: "Forgot Password?"
+                    theme_text_color: "Custom"
+                    font_size: sp(25)
+                    text_color: "orange"
+                    pos_hint: {'center_x': .5}
                     on_release:
-                        root.login(email_field.text, password_field.text)
-
-            MDTextButton:
-                text: "Forgot Password?"
-                theme_text_color: "Custom"
-                font_size: sp(25)
-                text_color: "orange"
-                pos_hint: {'center_x': .5}
-                on_release:
-                    root.forgot_password()
+                        root.forgot_password()
 
 #        MDBoxLayout:
 #            orientation: 'vertical'

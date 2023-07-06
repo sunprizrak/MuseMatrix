@@ -2,7 +2,7 @@ from kivymd.app import MDApp
 from models import Image
 from widgets import MyImage
 from kivy.network.urlrequest import UrlRequest
-from settings import storage, host_name
+from settings import host_name
 import json
 
 
@@ -43,7 +43,7 @@ class ImageController:
             on_failure=_on_failure,
             req_headers={
                 'Content-type': 'application/json',
-                'Authorization': f"Token {storage.get('auth_token').get('token')}",
+                'Authorization': f"Token {self.app.storage.get('auth_token').get('token')}",
             },
             req_body=json.dumps(data_image),
         )
@@ -74,7 +74,7 @@ class ImageController:
             on_success=_on_success,
             req_headers={
                 'Content-type': 'application/json',
-                'Authorization': f"Token {storage.get('auth_token').get('token')}",
+                'Authorization': f"Token {self.app.storage.get('auth_token').get('token')}",
             },
         )
 
@@ -98,7 +98,7 @@ class ImageController:
             on_failure=_on_failure,
             req_headers={
                 'Content-type': 'application/json',
-                'Authorization': f"Token {storage.get('auth_token').get('token')}",
+                'Authorization': f"Token {self.app.storage.get('auth_token').get('token')}",
             },
         )
 
@@ -127,7 +127,7 @@ class ImageController:
             on_failure=_on_failure,
             req_headers={
                 'Content-type': 'application/json',
-                'Authorization': f"Token {storage.get('auth_token').get('token')}",
+                'Authorization': f"Token {self.app.storage.get('auth_token').get('token')}",
             },
             req_body=json.dumps(images_id),
         )

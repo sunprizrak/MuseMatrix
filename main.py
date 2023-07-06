@@ -17,11 +17,8 @@ from kivymd.uix.transition import MDSlideTransition
 from kivy.utils import platform
 from kivy.clock import mainthread
 from kivy.logger import Logger
-from shutil import rmtree
-
 from kivymd.utils.set_bars_colors import set_bars_colors
-
-from settings import storage
+from kivy.storage.jsonstore import JsonStore
 from controller.user import UserController
 from kivy.loader import Loader
 
@@ -74,7 +71,7 @@ class MainApp(MDApp):
         self.title = "MuseMatrix"
         self.theme_cls = CustomThemeManager()
         self.dialog = None
-        # self.browser = None
+        self.browser = None
         self.manager_open = False
         self.file_manager = MDFileManager(
             exit_manager=self.exit_manager,
@@ -89,22 +86,20 @@ class MainApp(MDApp):
                 TestID.REWARD_INTERSTITIAL, self.reward_callback
             )
             self.ss = SharedStorage()
+            self.storage = JsonStore(f"{self.ss.get_cache_dir()}/storage.json")
             self.chooser = Chooser(self.chooser_callback)
 
             if api_version >= 29:
                 self.permissions = [Permission.READ_EXTERNAL_STORAGE]
             else:
                 self.permissions = [Permission.READ_EXTERNAL_STORAGE, Permission.WRITE_EXTERNAL_STORAGE]
+        elif platform == 'linux':
+            self.storage = JsonStore('storage.json')
 
     def build(self):
         if platform == 'android':
             if not self.check_android_permissions:
                 self.req_android_permissions()
-
-            cache = self.ss.get_cache_dir()
-
-            if cache and os.path.exists(cache):
-                rmtree(cache)
 
         Window.softinput_mode = 'below_target'
         Window.bind(on_keyboard=self.key_input)
@@ -117,18 +112,18 @@ class MainApp(MDApp):
     def on_start(self):
         self.check_user_authentication()
 
-    # def on_pause(self):
-    #     if platform == 'android':
-    #         if self.browser:
-    #             self.browser.pause()
-    #     return True
+    def on_pause(self):
+        if platform == 'android':
+            if self.browser:
+                self.browser.pause()
+        return True
 
     def on_resume(self):
         if platform == 'android':
             self.load_ads_video()
 
-            # if self.browser:
-            #     self.browser.resume()
+            if self.browser:
+                self.browser.resume()
         pass
 
     def change_android_color(self, *args, **kwargs):
@@ -166,9 +161,8 @@ class MainApp(MDApp):
     #         enable_javascript=True,
     #     )
 
-    @staticmethod
-    def check_user_authentication():
-        if storage.exists('auth_token'):
+    def check_user_authentication(self):
+        if self.storage.exists('auth_token'):
             user_controller = UserController()
             user_controller.authorized()
 

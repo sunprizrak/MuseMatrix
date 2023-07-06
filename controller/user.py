@@ -1,4 +1,3 @@
-from kivy.clock import mainthread
 from kivy.network.urlrequest import UrlRequest
 from kivy.uix.screenmanager import NoTransition, FallOutTransition
 from kivymd.app import MDApp
@@ -6,7 +5,7 @@ from kivymd.uix.transition.transition import MDSwapTransition
 from models import User
 from controller.image import ImageController
 import json
-from settings import storage, host_name
+from settings import host_name
 
 
 class UserController:
@@ -108,7 +107,7 @@ class UserController:
             method='GET',
             on_success=_on_success,
             req_headers={'Content-type': 'application/json',
-                         'Authorization': f"Token {storage.get('auth_token').get('token')}",
+                         'Authorization': f"Token {self.app.storage.get('auth_token').get('token')}",
                          },
         )
 
@@ -121,7 +120,7 @@ class UserController:
             method='PATCH',
             on_success=kwargs.get('on_success'),
             req_headers={'Content-type': 'application/json',
-                         'Authorization': f"Token {storage.get('auth_token').get('token')}",
+                         'Authorization': f"Token {self.app.storage.get('auth_token').get('token')}",
                          },
             req_body=req_body,
         )
@@ -135,7 +134,7 @@ class UserController:
             on_error=kwargs.get('on_error'),
             on_failure=kwargs.get('on_failure'),
             req_headers={'Content-type': 'application/json',
-                         'Authorization': f"Token {storage.get('auth_token').get('token')}",
+                         'Authorization': f"Token {self.app.storage.get('auth_token').get('token')}",
                          },
             req_body=json.dumps({'new_password': kwargs.get('new_password'),
                                  're_new_password': kwargs.get('re_new_password'),
@@ -174,9 +173,9 @@ class UserController:
         )
 
     def un_login(self):
-        if storage.exists('auth_token'):
+        if self.app.storage.exists('auth_token'):
             self._del_token()
-            storage.delete('auth_token')
+            self.app.storage.delete('auth_token')
 
             self.image_controller.clear_image_list()
 
@@ -189,7 +188,7 @@ class UserController:
             url=self.path_logout,
             method='POST',
             req_headers={'Content-type': 'application/json',
-                         'Authorization': f"Token {storage.get('auth_token').get('token')}",
+                         'Authorization': f"Token {self.app.storage.get('auth_token').get('token')}",
                          },
         )
 

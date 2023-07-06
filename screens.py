@@ -16,7 +16,6 @@ from kivymd.uix.swiper import MDSwiperItem, MDSwiper
 from kivy.core.image import Image as CoreImage
 from kivymd.uix.textfield import MDTextField
 from kivymd.uix.transition import MDSwapTransition
-from settings import storage
 from widgets import MyImage
 import io
 import base64
@@ -29,7 +28,6 @@ from controller.openai import OpenAIController
 from controller.image import ImageController
 import logging
 from kivy.clock import Clock
-from kivy.utils import get_hex_from_color
 
 logging.getLogger('PIL').setLevel(logging.WARNING)
 
@@ -99,7 +97,7 @@ class LoginScreen(BaseScreen):
                     self.app.dialog.text = error_text
 
         def _on_success(request, response):
-            storage.put('auth_token', token=response.get('auth_token'))
+            self.app.storage.put('auth_token', token=response.get('auth_token'))
             self.user_controller.authorized()
 
         def _on_error(request, error):
