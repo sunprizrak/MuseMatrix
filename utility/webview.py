@@ -1,7 +1,7 @@
 from kivy.uix.modalview import ModalView
 from kivy.clock import Clock
 from kivy.utils import platform
-from settings import host_name
+from controller.user import UserController
 
 if platform == 'android':
     from android.runnable import run_on_ui_thread
@@ -19,6 +19,8 @@ if platform == 'android':
     Environment = autoclass('android.os.Environment')
     Context = autoclass('android.content.Context')
     PythonActivity = autoclass('org.kivy.android.PythonActivity')
+
+    System = autoclass('java.lang.System')
 
 
     class DownloadListener(PythonJavaClass):
@@ -77,6 +79,7 @@ if platform == 'android':
             mActivity = PythonActivity.mActivity
             webview = WebViewA(mActivity)
             webview.setWebViewClient(WebViewClient())
+            webview.getSettings().setUserAgentString(System.getProperty("http.agent"))
             webview.getSettings().setJavaScriptEnabled(self.enable_javascript)
             webview.getSettings().setBuiltInZoomControls(self.enable_zoom)
             webview.getSettings().setDisplayZoomControls(False)
@@ -91,17 +94,10 @@ if platform == 'android':
             self.webview = webview
             self.layout = layout
             try:
-                webview.loadUrl(self.url)
-
-                #self.event = Clock.schedule_interval(self.google_complete, 1)
+                self.webview.loadUrl(self.url)
             except Exception as e:
                 print('Webview.on_open(): ' + str(e))
                 self.dismiss()
-
-        # def google_complete(self, dt):
-        #     url = self.webview.getUrl()
-        #     if f'{host_name}/users/google_complete/' in url:
-        #         print(url)
 
         @run_on_ui_thread
         def on_dismiss(self):

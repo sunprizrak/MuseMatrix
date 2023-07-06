@@ -117,12 +117,11 @@ class LoginScreen(BaseScreen):
         )
 
     def google_login(self):
-
-        # def callback(request, response):
+        # def _on_success(request, response):
         #     url = response.get('authorization_url')
-        #     self.app.view_browser(url=url)
+        #     self.app.view_browser(url)
         #
-
+        # self.user_controller.google_oauth2(on_success=_on_success)
         def _callback():
             self.app.close_dialog(self)
             self.app.root.current = 'reg_screen'
@@ -141,7 +140,9 @@ class LoginScreen(BaseScreen):
 
         email_field = MDTextField(
             hint_text='Email',
-            mode="rectangle",
+            mode='rectangle',
+            text_color_normal='white',
+            hint_text_color_normal='white',
         )
 
         content.add_widget(email_field)
@@ -149,7 +150,7 @@ class LoginScreen(BaseScreen):
         button = MDFlatButton(
             text="Send",
             theme_text_color="Custom",
-            text_color=self.core.theme_cls.primary_color,
+            text_color=self.app.theme_cls.primary_color,
             on_release=lambda x: self.user_controller.reset_password(email_field.text),
         )
 

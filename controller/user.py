@@ -1,3 +1,4 @@
+from kivy.clock import mainthread
 from kivy.network.urlrequest import UrlRequest
 from kivy.uix.screenmanager import NoTransition, FallOutTransition
 from kivymd.app import MDApp
@@ -5,7 +6,7 @@ from kivymd.uix.transition.transition import MDSwapTransition
 from models import User
 from controller.image import ImageController
 import json
-from settings import storage, host_name, GOOGLE_REDIRECT_URL
+from settings import storage, host_name
 
 
 class UserController:
@@ -18,6 +19,7 @@ class UserController:
     path_reset_password = host_name + 'auth/users/reset_password/'
     path_google_oauth2 = host_name + 'auth/o/google-oauth2/'
     path_resend_activation = host_name + 'auth/users/resend_activation/'
+    path_google_redirect = host_name + 'users/google_complete/'
 
     def __init__(self):
         self.app = MDApp.get_running_app()
@@ -75,19 +77,20 @@ class UserController:
 
         self.app.root.current = 'main_screen'
 
-    def google_oauth2(self, callback):
+    def google_oauth2(self, *args, **kwargs):
 
-        def _redirect(request, result):
-            print(result)
+        def _on_failure(request, response):
+            print(response)
+
+        def _on_error(request, error):
+            print(error)
 
         UrlRequest(
-            url=f'{self.path_google_oauth2}?redirect_uri={GOOGLE_REDIRECT_URL}',
+            url=f'{self.path_google_oauth2}?redirect_uri={self.path_google_redirect}',
             method='GET',
-            on_redirect=_redirect,
-            #on_success=callback,
-            #on_error=callback_error,
-            #on_failure=callback_failure,
-            req_headers={'Content-type': 'application/json'},
+            on_failure=_on_failure,
+            on_error=_on_error,
+            on_success=kwargs.get('on_success'),
         )
 
     def _get_data_user(self):

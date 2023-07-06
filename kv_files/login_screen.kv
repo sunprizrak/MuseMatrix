@@ -4,14 +4,10 @@
 
 
 <LogTextField@MDTextField>
-    theme_text_color: 'Custom'
+    mode: "rectangle"
+    unfocus_on_touch: False
     text_color_normal: 'white'
-    text_color_focus: 'green'
     hint_text_color_normal: 'white'
-    hint_text_color_focus: 'green'
-    icon_left_color_normal: 'white'
-    icon_left_color_focus: 'white'
-    line_color_focus: 'green'
     helper_text_mode: 'on_error'
 
 
@@ -25,29 +21,22 @@
         MDTopAppBar:
             pos_hint: {'top': 1}
             type_height: 'small'
+            title: 'Login'
+            anchor_title: 'left'
             md_bg_color: root.md_bg_color
             left_action_items: [['arrow-left-bold', lambda x: app.back(screen='start_screen')]]
             elevation: 0
 
-        MDLabel:
-            text: 'Login'
-            theme_text_color: 'Custom'
-            text_color: "green"
-            font_size: sp(50)
-            halign: 'center'
-            pos_hint: {'center_y': .8}
-
         MDBoxLayout:
             orientation: 'vertical'
-            spacing: dp(15)
-            pos_hint: {'center_x': .5, 'center_y': .5}
+            spacing: dp(20)
+            pos_hint: {'center_x': .5, 'center_y': .75}
             adaptive_height: True
             size_hint_max_x: dp(300)
 
             LogTextField:
                 id: email_field
                 hint_text: 'email'
-                icon_left: 'email'
                 pos_hint: {'center_x': .5}
 
             MDRelativeLayout:
@@ -57,52 +46,38 @@
 
                 LogTextField:
                     id: password_field
-                    icon_left: 'key-variant'
                     password: True
                     hint_text: 'Password'
-                    unfocus_on_touch: False if platform == 'android' else True
 
                 MDIconButton:
                     icon: "eye"
-                    pos_hint: {"center_y": .5}
+                    pos_hint: {"center_y": .45}
                     theme_text_color: "Custom"
-                    text_color: 'white'
+                    text_color: password_field.text_color_focus if password_field.focus else 'white'
                     pos: password_field.width - self.width, 0
                     on_release:
                         self.icon = "eye" if self.icon == "eye-off" else "eye-off"
                         password_field.password = False if password_field.password is True else True
 
         MDBoxLayout:
-            orientation: 'horizontal'
-            size_hint_x: None
-            width: dp(150)
-            pos_hint: {'center_x': .5, 'center_y': .3}
-            adaptive_height: True
-
-
-            MDRaisedButton:
-                text: 'Login'
-                font_size: sp(20)
-                size_hint: 1, 1
-                md_bg_color: 'green'
-                on_release:
-                    root.login(email_field.text, password_field.text)
-
-        MDBoxLayout:
             orientation: 'vertical'
-            spacing: dp(20)
-            pos_hint: {'center_x': .5, 'center_y': .1}
+            pos_hint: {'center_x': .5, 'center_y': .52}
             adaptive_height: True
+            size_hint_max_x: dp(300)
+            spacing: dp(15)
 
-            MDRoundFlatIconButton:
-                text: 'Continue with Google'
-                text_color: 'white'
-                icon: 'assets/img/google_icon.png'
-                line_color: 1, 1, 1, 1
-                font_size: sp(15)
+            MDBoxLayout:
+                orientation: 'horizontal'
+                adaptive_height: True
                 pos_hint: {'center_x': .5}
-                on_release:
-                    root.google_login()
+
+                MDRaisedButton:
+                    text: 'Login'
+                    font_size: sp(20)
+                    size_hint_x: 1
+                    md_bg_color: app.theme_cls.primary_color
+                    on_release:
+                        root.login(email_field.text, password_field.text)
 
             MDTextButton:
                 text: "Forgot Password?"
@@ -112,3 +87,20 @@
                 pos_hint: {'center_x': .5}
                 on_release:
                     root.forgot_password()
+
+#        MDBoxLayout:
+#            orientation: 'vertical'
+#            spacing: dp(20)
+#            pos_hint: {'center_x': .5, 'center_y': .1}
+#            adaptive_height: True
+#
+#            MDRoundFlatIconButton:
+#                text: 'Continue with Google'
+#                text_color: 'white'
+#                icon: 'assets/img/google_icon.png'
+#                line_color: 1, 1, 1, 1
+#                font_size: sp(15)
+#                pos_hint: {'center_x': .5}
+#                on_release:
+#                    root.google_login()
+

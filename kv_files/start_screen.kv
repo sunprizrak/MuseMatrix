@@ -8,16 +8,6 @@
 
     MDFloatLayout:
 
-        MDTextButton:
-            text: 'Sign in'
-            theme_text_color: 'Custom'
-            text_color: 'green'
-            font_size: sp(30)
-            pos_hint: {'x': .7, 'y': .9}
-            on_release:
-                app.root.transition = MDSwapTransition()
-                app.root.current = 'login_screen'
-
         MDBoxLayout:
             padding: dp(10)
             pos_hint: {'center_x': .5, 'center_y': .65}
@@ -36,14 +26,35 @@
             halign: 'center'
             pos_hint: {'center_y': .3}
 
-        MDTextButton:
-            id: b_registration
-            text: 'Sign up'
-            theme_text_color: 'Custom'
-            text_color: "#2525db"
-            font_size: sp(50)
-            pos_hint: {'center_x': .5, 'y': .05}
-            on_release:
-                app.root.transition = MDSlideTransition()
-                app.root.transition.direction = 'up'
-                app.root.current = 'reg_screen'
+        MDBoxLayout:
+            orientation: 'horizontal'
+            adaptive_height: True
+            spacing: dp(15)
+            padding: dp(15), dp(15), dp(15), dp(15)
+            pos_hint: {'center_x': .5}
+
+            MDBoxLayout:
+                adaptive_height: True
+
+                MDRaisedButton:
+                    text: "login"
+                    md_bg_color: app.theme_cls.primary_color
+                    font_size: sp(20)
+                    size_hint_x: 1
+                    on_release:
+                        app.root.transition = MDSwapTransition()
+                        app.root.current = 'login_screen'
+
+            MDBoxLayout:
+                adaptive_height: True
+
+                MDRaisedButton:
+                    text: 'registrate'
+                    theme_text_color: 'Custom'
+                    text_color: app.theme_cls.bg_light
+                    font_size: sp(20)
+                    md_bg_color: 'white'
+                    size_hint_x: 1
+                    on_release:
+                        app.root.transition = MDSwapTransition()
+                        app.root.current = 'reg_screen'

@@ -34,7 +34,7 @@ if platform == 'android':
     from android.permissions import request_permissions, check_permission, Permission
     from androidstorage4kivy import SharedStorage, Chooser
     from kivads import KivAds, RewardedInterstitial, TestID
-    from utility.webview import WebView
+    # from utility.webview import WebView
 
 elif platform == 'linux':
     Window.size = (360, 600)
@@ -74,7 +74,7 @@ class MainApp(MDApp):
         self.title = "MuseMatrix"
         self.theme_cls = CustomThemeManager()
         self.dialog = None
-        self.browser = None
+        # self.browser = None
         self.manager_open = False
         self.file_manager = MDFileManager(
             exit_manager=self.exit_manager,
@@ -117,18 +117,19 @@ class MainApp(MDApp):
     def on_start(self):
         self.check_user_authentication()
 
-    def on_pause(self):
-        if platform == 'android':
-            if self.browser:
-                self.browser.pause()
-        return True
+    # def on_pause(self):
+    #     if platform == 'android':
+    #         if self.browser:
+    #             self.browser.pause()
+    #     return True
 
     def on_resume(self):
         if platform == 'android':
             self.load_ads_video()
 
-            if self.browser:
-                self.browser.resume()
+            # if self.browser:
+            #     self.browser.resume()
+        pass
 
     def change_android_color(self, *args, **kwargs):
         if platform == 'android':
@@ -159,11 +160,11 @@ class MainApp(MDApp):
 
         user_controller.update_user(fields={reward_name: total_amount}, on_success=_on_success)
 
-    def view_browser(self, url=None):
-        self.browser = WebView(
-            url,
-            enable_javascript=True,
-        )
+    # def view_browser(self, url=None):
+    #     self.browser = WebView(
+    #         url,
+    #         enable_javascript=True,
+    #     )
 
     @staticmethod
     def check_user_authentication():
