@@ -20,6 +20,7 @@ from kivy.logger import Logger
 from kivymd.utils.set_bars_colors import set_bars_colors
 from kivy.storage.jsonstore import JsonStore
 from controller.user import UserController
+from settings import ID_REWARD_INTERSTITIAL
 from kivy.loader import Loader
 
 
@@ -83,7 +84,7 @@ class MainApp(MDApp):
             self.change_android_color()
             self.ads = KivAds()
             self.reward_interstitial = RewardedInterstitial(
-                TestID.REWARD_INTERSTITIAL, self.reward_callback
+                ID_REWARD_INTERSTITIAL, self.reward_callback
             )
             self.ss = SharedStorage()
             self.storage = JsonStore(f"{self.ss.get_cache_dir()}/storage.json")
@@ -139,9 +140,10 @@ class MainApp(MDApp):
 
     def load_ads_video(self):
         if platform == 'android':
-            self.reward_interstitial.load(TestID.REWARD_INTERSTITIAL)
+            self.reward_interstitial.load(ID_REWARD_INTERSTITIAL)
 
     def reward_callback(self, *args):
+        print(args)
         user_controller = UserController()
         reward_name = 'coin'
         reward_amount = 1
