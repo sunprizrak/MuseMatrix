@@ -29,7 +29,7 @@ source.exclude_dirs = tests, bin, venv, .git, .idea
 #source.exclude_patterns = license,images/*/*.jpg
 
 # (str) Application versioning (method 1)
-version = 0.68
+version = 0.7
 
 # (str) Application versioning (method 2)
 # version.regex = __version__ = ['"](.*)['"]
@@ -45,7 +45,7 @@ requirements = python3, kivy==master, https://github.com/kivymd/KivyMD/archive/m
 requirements.source.kivymd = ../../kivymd
 
 # (str) Presplash of the application
-presplash.filename = %(source.dir)s/assets/img/logo_app.png
+presplash.filename = %(source.dir)s/assets/img/presplash_screen.png
 
 # (str) Icon of the application
 icon.filename = %(source.dir)s/assets/img/logo_app.png
