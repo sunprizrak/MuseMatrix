@@ -114,20 +114,6 @@ class LoginScreen(BaseScreen):
             on_failure=_on_failure
         )
 
-    def google_login(self):
-        # def _on_success(request, response):
-        #     url = response.get('authorization_url')
-        #     self.app.view_browser(url)
-        #
-        # self.user_controller.google_oauth2(on_success=_on_success)
-        def _callback():
-            self.app.close_dialog(self)
-            self.app.root.current = 'reg_screen'
-
-        self.app.show_dialog()
-        self.app.dialog.text = 'Under construction....\nplease [ref=register][color=0000ff]register[/color][/ref]'
-        self.app.dialog.children[0].children[3].on_ref_press = lambda x: _callback()
-
     def forgot_password(self):
 
         content = MDBoxLayout(

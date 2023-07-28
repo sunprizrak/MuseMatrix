@@ -21,8 +21,6 @@ from kivymd.utils.set_bars_colors import set_bars_colors
 from kivy.storage.jsonstore import JsonStore
 from controller.user import UserController
 from settings import ID_REWARD_INTERSTITIAL
-from kivy.loader import Loader
-
 
 os.environ["KIVY_AUDIO"] = "ffpyplayer"
 
@@ -31,8 +29,7 @@ if platform == 'android':
     from android import api_version
     from android.permissions import request_permissions, check_permission, Permission
     from androidstorage4kivy import SharedStorage, Chooser
-    from kivads import KivAds, RewardedInterstitial, TestID
-    # from utility.webview import WebView
+    from utility.kivads import KivAds, RewardedInterstitial
 
 elif platform == 'linux':
     Window.size = (360, 600)
@@ -113,18 +110,9 @@ class MainApp(MDApp):
     def on_start(self):
         self.check_user_authentication()
 
-    def on_pause(self):
-        if platform == 'android':
-            if self.browser:
-                self.browser.pause()
-        return True
-
     def on_resume(self):
         if platform == 'android':
             self.load_ads_video()
-
-            if self.browser:
-                self.browser.resume()
         pass
 
     def change_android_color(self, *args, **kwargs):
@@ -155,12 +143,6 @@ class MainApp(MDApp):
             screen.coin = user_controller.user.coin
 
         user_controller.update_user(fields={reward_name: total_amount}, on_success=_on_success)
-
-    # def view_browser(self, url=None):
-    #     self.browser = WebView(
-    #         url,
-    #         enable_javascript=True,
-    #     )
 
     def check_user_authentication(self):
         if self.storage.exists('auth_token'):
