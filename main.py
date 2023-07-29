@@ -69,7 +69,6 @@ class MainApp(MDApp):
         self.title = "MuseMatrix"
         self.theme_cls = CustomThemeManager()
         self.dialog = None
-        self.browser = None
         self.manager_open = False
         self.file_manager = MDFileManager(
             exit_manager=self.exit_manager,
