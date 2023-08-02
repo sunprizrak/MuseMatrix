@@ -86,10 +86,10 @@ class MainApp(MDApp):
             self.storage = JsonStore(f"{self.ss.get_cache_dir()}/storage.json")
             self.chooser = Chooser(self.chooser_callback)
 
-            if api_version >= 29:
-                self.permissions = [Permission.READ_EXTERNAL_STORAGE]
+            if api_version >= 33:
+                self.permissions = [Permission.READ_MEDIA_IMAGES, Permission.READ_MEDIA_AUDIO]
             else:
-                self.permissions = [Permission.READ_EXTERNAL_STORAGE, Permission.WRITE_EXTERNAL_STORAGE]
+                self.permissions = [Permission.READ_EXTERNAL_STORAGE, Permission.WRITE_EXTERNAL_STORAGE, Permission.READ_EXTERNAL_STORAGE]
         elif platform == 'linux':
             self.storage = JsonStore('storage.json')
 
