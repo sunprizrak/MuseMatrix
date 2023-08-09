@@ -1,10 +1,23 @@
+
 #:import MainScreen screens
 #:import ScrollEffect kivy.effects.scroll.ScrollEffect
 
 <ContentNavigationDrawer@MDBoxLayout>:
-    orientation: 'horizontal'
+    orientation: 'vertical'
 
-<AvatarBox@ButtonBehavior+MDBoxLayout>
+
+<AvatarBox@ButtonBehavior+MDBoxLayout>:
+
+
+<MyNavigationDrawerDivider@MDNavigationDrawerDivider>:
+    color: app.theme_cls.primary_color
+
+
+<MyNavigationDrawerItem@MDNavigationDrawerItem>:
+    theme_text_color: 'Custom'
+    text_color: 'white'
+    focus_color: app.theme_cls.primary_color
+    selected_color: "white"
 
 
 <MainCard@MDCard>:
@@ -31,89 +44,107 @@
 
 <MainScreen>
     name: 'main_screen'
-    md_bg_color: app.theme_cls.bg_light
-
-    MDBoxLayout:
-        orientation: 'vertical'
-        md_bg_color: root.md_bg_color if nav_drawer.state == 'close' else app.theme_cls.bg_dark
-
-        MDTopAppBar:
-            id: main_top_bar
-            type_height: 'small'
-            md_bg_color: self.parent.md_bg_color
-            left_action_items: [["menu", lambda x: nav_drawer.set_state("open")]]
-            elevation: 0
-
-        MDGridLayout:
-            cols: 2
-            padding: dp(15), dp(15), dp(15), dp(35)
-            spacing: dp(15)
-
-            MainCard:
-                image: 'assets/img/picture_icon.png'
-                text: 'Create image'
-                on_release:
-                    app.root.transition = MDSwapTransition()
-                    app.root.current = 'create_image_screen'
-
-            MainCard:
-                image: 'assets/img/pencil_icon.png'
-                text: 'Edit image'
-                on_release:
-                    app.root.transition = MDSwapTransition()
-                    app.root.current = 'edit_image_screen'
-
-            MainCard:
-                image: 'assets/img/magic_icon.png'
-                text: 'Variable image'
-                on_release:
-                    app.root.transition = MDSwapTransition()
-                    app.root.current = 'variable_image_screen'
-
-            MainCard:
-                image: 'assets/img/music_icon.png'
-                text: 'Speech to text'
-                on_release:
-                    app.root.transition = MDSwapTransition()
-                    app.root.current = 'speech_to_text_screen'
-
-            MainCard:
-                image: 'assets/img/chat_icon.png'
-                text: 'Chat gpt'
-                on_release:
-                    app.root.transition = MDSwapTransition()
-                    app.root.current = 'chat_gpt_screen'
-
-            MainCard:
-                image: 'assets/img/books.png'
-                text: 'instruction'
-                on_release:
-                    app.root.transition = MDSwapTransition()
-                    app.root.current = 'instruction_screen'
 
     MDNavigationLayout:
 
+        MDScreenManager:
+
+            MDScreen:
+
+                MDBoxLayout:
+                    orientation: 'vertical'
+                    md_bg_color: root.md_bg_color
+
+                    MyTopAppBar:
+                        id: main_top_bar
+                        type_height: 'small'
+                        md_bg_color: self.parent.md_bg_color
+                        left_action_items: [["menu", lambda x: nav_drawer.set_state("open")]]
+                        elevation: 0
+
+                    MDGridLayout:
+                        cols: 2
+                        padding: dp(15), dp(15), dp(15), dp(35)
+                        spacing: dp(15)
+
+                        MainCard:
+                            image: 'assets/img/picture_icon.png'
+                            text: 'Create image'
+                            on_release:
+                                app.root.transition = MDSwapTransition()
+                                app.root.current = 'create_image_screen'
+
+                        MainCard:
+                            image: 'assets/img/pencil_icon.png'
+                            text: 'Edit image'
+                            on_release:
+                                app.root.transition = MDSwapTransition()
+                                app.root.current = 'edit_image_screen'
+
+                        MainCard:
+                            image: 'assets/img/magic_icon.png'
+                            text: 'Variable image'
+                            on_release:
+                                app.root.transition = MDSwapTransition()
+                                app.root.current = 'variable_image_screen'
+
+                        MainCard:
+                            image: 'assets/img/music_icon.png'
+                            text: 'Speech to text'
+                            on_release:
+                                app.root.transition = MDSwapTransition()
+                                app.root.current = 'speech_to_text_screen'
+
+                        MainCard:
+                            image: 'assets/img/chat_icon.png'
+                            text: 'Chat gpt'
+                            on_release:
+                                app.root.transition = MDSwapTransition()
+                                app.root.current = 'chat_gpt_screen'
+
+                        MainCard:
+                            image: 'assets/img/books.png'
+                            text: 'instruction'
+                            on_release:
+                                app.root.transition = MDSwapTransition()
+                                app.root.current = 'instruction_screen'
+
         MDNavigationDrawer:
             id: nav_drawer
-            radius: (0, 16, 16, 0)
+            orientation: 'vertical'
+            radius: (0, dp(25), dp(25), 0)
+            elevation: dp(2) if self.state == 'open' else 0
+            shadow_color: app.theme_cls.primary_color
+            padding: [dp(15), dp(15), dp(30), dp(15)]
+            size_hint_y: .95
+            pos_hint: {'center_y': .5}
+            scrim_color: 0, 0, 0, .2
 
-            MDNavigationDrawerMenu:
-                do_scroll_y: False
+            ContentNavigationDrawer:
+                spacing: dp(10)
+                adaptive_height: True
 
-                ContentNavigationDrawer:
+                MDLabel:
+                    text: root.email
+                    halign: 'center'
+                    font_size: sp(20)
+                    color: app.theme_cls.primary_color
                     adaptive_height: True
-                    padding: dp(5)
 
-                    MDFloatLayout:
+                MDBoxLayout:
+                    orientation: 'horizontal'
+                    size_hint_y: None
+                    height: dp(100)
+
+                    MDAnchorLayout:
                         size_hint_x: .4
-                        size_hint_y: None
-                        height: profile_info.height
 
                         AvatarBox:
                             source: root.avatar
                             size_hint: None, None
                             size: dp(85), dp(85)
-                            pos_hint: {'center_x': .5, 'center_y': .5}
+                            anchor_x: 'center'
+                            anchor_y: 'center'
                             on_release:
                                 app.file_manager_open()
 
@@ -122,128 +153,104 @@
                                 mipmap: True
                                 radius: dp(50), dp(50), dp(50), dp(50)
 
-
-                    MDFloatLayout:
-                        id: profile_info
+                    MDBoxLayout:
+                        orientation: 'horizontal'
                         size_hint_x: .6
-                        size_hint_y: None
-                        height: dp(100)
-
-                        MDLabel:
-                            text: root.email
-                            pos_hint: {'center_x': .5, 'center_y': .9}
-                            adaptive_size: True
 
                         MDBoxLayout:
-                            orientation: 'horizontal'
-                            adaptive_size: True
-                            spacing: dp(5)
-                            pos_hint: {'center_x': .5, 'center_y': .55}
-
-                            Image:
-                                source: 'assets/img/coin_icon.png'
-                                size_hint: None, None
-                                fit_mode: 'contain'
-                                mipmap: True
-                                size: dp(25), dp(25)
-
-                            MDLabel:
-                                text: str(root.coin)
-                                color: '#FFD700'
-                                adaptive_width: True
-
-                        MDBoxLayout:
-                            orientation: 'horizontal'
+                            orientation: 'vertical'
+                            pos_hint: {'center_y': .5}
                             adaptive_height: True
-                            pos_hint: {'x': 0, 'y': 0}
 
                             MDBoxLayout:
                                 orientation: 'horizontal'
-                                adaptive_height: True
                                 spacing: dp(5)
-                                pos_hint: {'center_y': .5}
+                                adaptive_size: True
+
+                                Image:
+                                    source: 'assets/img/coin_icon.png'
+                                    size_hint: None, None
+                                    fit_mode: 'contain'
+                                    mipmap: True
+                                    size: dp(35), dp(35)
+
+                                MDLabel:
+                                    text: str(root.coin)
+                                    color: '#FFD700'
+                                    adaptive_width: True
+
+                            MDBoxLayout:
+                                orientation: 'horizontal'
+                                spacing: dp(5)
+                                adaptive_size: True
 
                                 Image:
                                     source: 'assets/img/chat_icon.png'
                                     size_hint: None, None
                                     fit_mode: 'contain'
                                     mipmap: True
-                                    size: dp(25), dp(25)
+                                    size: dp(35), dp(35)
 
                                 MDLabel:
                                     text: str(root.chat_token)
                                     color: '#157ded'
                                     adaptive_width: True
 
-                            MDRaisedButton:
-                                text: "add"
-                                md_bg_color: "green"
-                                size_hint_y: .5
-                                pos_hint: {'center_y': .5}
-                                on_release:
-                                    root.add_chat_token()
+                        MyIconButton:
+                            icon: 'swap-vertical-circle-outline'
+                            icon_size: sp(35)
+                            md_bg_color: root.md_bg_color
+                            pos_hint: {'center_y': .5}
+                            on_release:
+                                root.add_chat_token()
 
-                MDNavigationDrawerDivider:
+            MDNavigationDrawerMenu:
+                do_scroll_x: False
+                effect_cls: ScrollEffect
+                bar_width: 0
 
-                MDNavigationDrawerItem:
+                MyNavigationDrawerDivider:
+
+                MyNavigationDrawerItem:
                     icon: "assets/img/settings_icon.png"
                     text: "Settings"
-                    theme_text_color: 'Custom'
-                    text_color: 'white'
-                    focus_color: app.theme_cls.primary_color
-                    selected_color: "white"
                     on_release:
                         root.open_settings()
 
-                MDNavigationDrawerDivider:
+                MyNavigationDrawerDivider:
 
-                MDNavigationDrawerItem:
+                MyNavigationDrawerItem:
                     id: collection
                     icon: 'assets/img/picture_icon.png'
-                    icon_size: sp(20)
                     text: 'My Collection'
-                    theme_text_color: 'Custom'
-                    text_color: 'white'
-                    focus_color: app.theme_cls.primary_color
-                    selected_color: "white"
                     on_release:
                         root.open_collection()
 
-                MDNavigationDrawerDivider:
+                MyNavigationDrawerDivider:
 
-                MDNavigationDrawerItem:
+                MyNavigationDrawerItem:
                     icon: 'assets/img/shopping_cart.png'
                     text: 'Buy Coins'
-                    theme_text_color: 'Custom'
-                    text_color: 'white'
-                    focus_color: app.theme_cls.primary_color
-                    selected_color: "white"
                     on_release:
                         root.open_buy_credits()
 
-                MDNavigationDrawerDivider:
+                MyNavigationDrawerDivider:
 
-                MDNavigationDrawerItem:
+                MyNavigationDrawerItem:
                     icon: 'assets/img/video_icon.png'
                     text: 'Earn Coins'
-                    theme_text_color: 'Custom'
-                    text_color: 'white'
-                    focus_color: app.theme_cls.primary_color
-                    selected_color: "white"
                     on_release:
                         root.show_ads()
 
-                MDNavigationDrawerDivider:
+                MyNavigationDrawerDivider:
 
-                MDNavigationDrawerItem:
+                MyNavigationDrawerItem:
                     icon: 'assets/img/key_icon.png'
                     text: 'Logout'
-                    theme_text_color: 'Custom'
-                    text_color: 'white'
-                    focus_color: app.theme_cls.primary_color
-                    selected_color: 'white'
                     on_release:
                         root.exit()
+
+                MyNavigationDrawerDivider:
 
 
 

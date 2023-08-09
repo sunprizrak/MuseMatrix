@@ -13,11 +13,10 @@
 
 <LoginScreen>
     name: 'login_screen'
-    md_bg_color: app.theme_cls.bg_light
 
     MDFloatLayout:
 
-        MDTopAppBar:
+        MyTopAppBar:
             pos_hint: {'top': 1}
             type_height: 'small'
             title: 'Login'
@@ -48,7 +47,7 @@
                     password: True
                     hint_text: 'Password'
 
-                MDIconButton:
+                MyIconButton:
                     icon: "eye"
                     pos_hint: {"center_y": .45}
                     theme_text_color: "Custom"

@@ -2,7 +2,6 @@
 
 <CreateImageScreen>
     name: 'create_image_screen'
-    md_bg_color: app.theme_cls.bg_light
 
     prompt: input_prompt.text
 
@@ -11,7 +10,7 @@
         MDBoxLayout:
             orientation: 'vertical'
 
-            MDTopAppBar:
+            MyTopAppBar:
                 id: create_top_bar
                 type_height: 'small'
                 title: 'create image'
@@ -39,11 +38,12 @@
                     width: dp(140)
                     adaptive_height: True
 
-                    MDIconButton:
+                    MyIconButton:
                         icon: 'minus-box-outline'
                         icon_size: sp(30)
                         theme_icon_color: "Custom"
                         icon_color: app.theme_cls.primary_color
+                        md_bg_color: root.md_bg_color
                         on_release:
                             root.image_count -= 1
 
@@ -54,11 +54,12 @@
                         halign: 'center'
 
 
-                    MDIconButton:
+                    MyIconButton:
                         icon: 'plus-box-outline'
                         icon_size: sp(30)
                         theme_icon_color: "Custom"
                         icon_color: app.theme_cls.primary_color
+                        md_bg_color: root.md_bg_color
                         on_release:
                             root.image_count += 1
 

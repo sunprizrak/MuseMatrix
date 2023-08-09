@@ -26,11 +26,10 @@ os.environ["KIVY_AUDIO"] = "ffpyplayer"
 
 
 if platform == 'android':
-    from android import api_version
+    from android import api_version, loadingscreen
     from android.permissions import request_permissions, check_permission, Permission
     from androidstorage4kivy import SharedStorage, Chooser
     from utility.kivads import KivAds, RewardedInterstitial
-
 elif platform == 'linux':
     Window.size = (360, 600)
 
@@ -95,6 +94,8 @@ class MainApp(MDApp):
 
     def build(self):
         if platform == 'android':
+            loadingscreen.hide_loading_screen()
+
             if not self.check_android_permissions:
                 self.req_android_permissions()
 
@@ -206,7 +207,7 @@ class MainApp(MDApp):
                     font_size=sp(25),
                     md_bg_color=self.theme_cls.primary_color,
                     on_release=lambda
-                        x: screen.transcript()
+                        x: screen.transcript(),
                 )
 
                 text_button = MDChipText(text='translate to english')

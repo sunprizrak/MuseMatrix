@@ -3,7 +3,6 @@
 
 <SpeechToTextScreen>
     name: 'speech_to_text_screen'
-    md_bg_color: app.theme_cls.bg_light
 
     MDFloatLayout:
         id: speech_layout
@@ -11,7 +10,7 @@
         MDBoxLayout:
             orientation: 'vertical'
 
-            MDTopAppBar:
+            MyTopAppBar:
                 id: speech_top_bar
                 type_height: 'small'
                 title: 'speech to text'
@@ -58,7 +57,7 @@
                         pos_hint: {"center_x": .5}
                         adaptive_size: True
 
-                        MDIconButton:
+                        MyIconButton:
                             icon: self.parent.icon_play
                             size_hint: None, None
                             size: icon.size
@@ -66,7 +65,7 @@
                             on_release:
                                 root.sound_play()
 
-                        MDIconButton:
+                        MyIconButton:
                             icon: self.parent.icon_stop
                             size_hint: None, None
                             size: icon.size
@@ -75,7 +74,7 @@
                                 root.sound_stop()
 
 
-                    MDIconButton:
+                    MyIconButton:
                         id: delete_button
                         icon: 'close' if root.sound else ''
                         size_hint: None, None
@@ -102,7 +101,7 @@
                         font_style: 'Sound_name'
                         adaptive_height: True
 
-        MDIconButton:
+        MyIconButton:
             id: add_sound_button
             icon: 'music-note-plus'
             icon_size: dp(70)
@@ -110,6 +109,7 @@
             disabled: True if root.sound else False
             disabled_color: 1, 1, 1, 0
             icon_color: 'gray'
+            md_bg_color: root.md_bg_color
             pos_hint: {"center_x": .5, "center_y": .5}
             on_release:
                 app.file_manager_open()

@@ -2,14 +2,13 @@
 
 <VariableImageScreen>
     name: 'variable_image_screen'
-    md_bg_color: app.theme_cls.bg_light
 
     MDFloatLayout:
 
         MDBoxLayout:
             orientation: 'vertical'
 
-            MDTopAppBar:
+            MyTopAppBar:
                 id: variable_top_bar
                 type_height: 'small'
                 title: 'variable image'
@@ -33,11 +32,12 @@
                     width: dp(140)
                     adaptive_height: True
 
-                    MDIconButton:
+                    MyIconButton:
                         icon: 'minus-box-outline'
                         icon_size: sp(30)
                         theme_icon_color: "Custom"
                         icon_color: app.theme_cls.primary_color
+                        md_bg_color: root.md_bg_color
                         on_release:
                             root.image_count -= 1
 
@@ -47,11 +47,12 @@
                         font_size: sp(30)
                         halign: 'center'
 
-                    MDIconButton:
+                    MyIconButton:
                         icon: 'plus-box-outline'
                         icon_size: sp(30)
                         theme_icon_color: "Custom"
                         icon_color: app.theme_cls.primary_color
+                        md_bg_color: root.md_bg_color
                         on_release:
                             root.image_count += 1
 
@@ -97,13 +98,14 @@
             pos_hint: {'center_x': .5, 'center_y': .68}
             active: False
 
-        MDIconButton:
+        MyIconButton:
             id: add_image_button
             icon: 'image-plus'
             icon_size: dp(70)
             theme_icon_color: "Custom"
             disabled_color: 1, 1, 1, 0
             icon_color: 'gray'
+            md_bg_color: root.md_bg_color
             pos_hint: {"center_x": .5, "center_y": .55}
             on_release:
                 app.file_manager_open()

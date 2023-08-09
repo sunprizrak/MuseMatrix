@@ -2,7 +2,6 @@
 
 <ChatGptScreen>
     name: 'chat_gpt_screen'
-    md_bg_color: app.theme_cls.bg_light
 
     prompt: send_field.text
 
@@ -12,7 +11,7 @@
             orientation: 'vertical'
             md_bg_color: '#71b4f2'
 
-            MDTopAppBar:
+            MyTopAppBar:
                 id: chat_gpt_top_bar
                 type_height: 'small'
                 title: 'chat gpt'
@@ -57,9 +56,8 @@
                     cursor_width: dp(2)
                     pos_hint: {'center_y': .5}
 
-                MDIconButton:
+                MyIconButton:
                     icon: "send"
-                    size_hint_y: None
                     icon_size: dp(25)
 
                     on_release:

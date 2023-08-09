@@ -39,6 +39,7 @@ class BaseScreen(MDScreen):
     def __init__(self, **kwargs):
         super(BaseScreen, self).__init__(**kwargs)
         self.app = MDApp.get_running_app()
+        self.md_bg_color = self.app.theme_cls.bg_light
 
 
 class ImageScreen(BaseScreen):
@@ -428,6 +429,7 @@ class EditImageScreen(ImageScreen):
 
     def add_image(self, path):
         self.ids.add_image_button.disabled = True
+        self.ids.add_image_button.opacity = 0
 
         for widget in self.ids.image_section.children:
             if isinstance(widget, MyImage) or isinstance(widget, MDSwiper):
@@ -562,8 +564,9 @@ class EditImageScreen(ImageScreen):
         self.image_original.truncate(0)
         self.image_mask.truncate(0)
         self.ids.add_image_button.disabled = False
+        self.ids.add_image_button.opacity = 1
 
-        while len(self.ids.edit_top_bar.right_action_items) !=0:
+        while len(self.ids.edit_top_bar.right_action_items) != 0:
             self.ids.edit_top_bar.right_action_items.remove(self.ids.edit_top_bar.right_action_items[-1])
 
 
@@ -572,6 +575,7 @@ class VariableImageScreen(ImageScreen):
 
     def add_image(self, path):
         self.ids.add_image_button.disabled = True
+        self.ids.add_image_button.opacity = 0
 
         for widget in self.ids.image_section.children:
             if isinstance(widget, Image) or isinstance(widget, MDSwiper):
@@ -598,6 +602,7 @@ class VariableImageScreen(ImageScreen):
 
         self.image.truncate(0)
         self.ids.add_image_button.disabled = False
+        self.ids.add_image_button.opacity = 1
 
         self.ids.variable_top_bar.right_action_items.remove(self.ids.variable_top_bar.right_action_items[-1])
 

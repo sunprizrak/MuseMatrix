@@ -12,11 +12,10 @@
 
 <RegistrateScreen>
     name: 'reg_screen'
-    md_bg_color: app.theme_cls.bg_light
 
     MDFloatLayout:
 
-        MDTopAppBar:
+        MyTopAppBar:
             pos_hint: {'top': 1}
             type_height: 'small'
             title: 'Registrate'
@@ -47,7 +46,7 @@
                     hint_text: 'Password'
                     password: True
 
-                MDIconButton:
+                MyIconButton:
                     icon: "eye"
                     pos_hint: {"center_y": .45}
                     pos: password_field.width - self.width, 0
@@ -67,7 +66,7 @@
                     hint_text: 'Password repeat'
                     password: True
 
-                MDIconButton:
+                MyIconButton:
                     icon: "eye"
                     pos_hint: {"center_y": .45}
                     pos: re_password_field.width - self.width, 0
