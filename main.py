@@ -9,7 +9,7 @@ from kivymd.app import MDApp
 from kivy.lang import Builder
 from kivy.core.window import Window
 from kivymd.theming import ThemeManager
-from kivymd.uix.button import MDFlatButton, MDRaisedButton
+from kivymd.uix.button import MDFlatButton, MDRaisedButton, MDFillRoundFlatButton
 from kivymd.uix.chip import MDChip, MDChipText
 from kivymd.uix.dialog import MDDialog
 from kivymd.uix.filemanager import MDFileManager
@@ -21,6 +21,7 @@ from kivymd.utils.set_bars_colors import set_bars_colors
 from kivy.storage.jsonstore import JsonStore
 from controller.user import UserController
 from settings import ID_REWARD_INTERSTITIAL
+from widgets import MyIconButton
 
 os.environ["KIVY_AUDIO"] = "ffpyplayer"
 
@@ -254,16 +255,17 @@ class MainApp(MDApp):
     def show_dialog(self, button=None, content=None):
         self.dialog = MDDialog(
             title='Notice!',
-            md_bg_color=self.theme_cls.primary_color,
             type='custom',
-            radius=[dp(20), dp(7), dp(20), dp(7)],
+            md_bg_color=self.theme_cls.bg_light,
+            radius=[dp(25), dp(25), dp(25), dp(25)],
+            elevation=7,
+            shadow_color=self.theme_cls.primary_color,
+            shadow_softness=0,
             content_cls=content,
             buttons=[
                 button,
-                MDFlatButton(
-                    text="Close",
-                    theme_text_color="Custom",
-                    text_color='white',
+                MDFillRoundFlatButton(
+                    text='Close',
                     on_release=self.close_dialog,
                 ),
             ],

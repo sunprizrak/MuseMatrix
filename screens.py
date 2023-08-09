@@ -8,7 +8,7 @@ from kivy.properties import StringProperty, ObjectProperty, BoundedNumericProper
 from kivymd.app import MDApp
 from kivymd.toast import toast
 from kivymd.uix.boxlayout import MDBoxLayout
-from kivymd.uix.button import MDFlatButton, MDRaisedButton
+from kivymd.uix.button import MDFlatButton, MDRaisedButton, MDFillRoundFlatButton
 from kivymd.uix.chip import MDChip, MDChipText
 from kivymd.uix.menu import MDDropdownMenu
 from kivymd.uix.screen import MDScreen
@@ -803,10 +803,8 @@ class CollectionScreen(BaseScreen):
             self.image_controller.del_images(images_id=images_id, widget_list=widget_list)
             self.app.dialog.dismiss()
 
-        button = MDFlatButton(
+        button = MDFillRoundFlatButton(
             text="Delete",
-            theme_text_color="Custom",
-            text_color='white',
             on_release=lambda x: del_images(),
         )
 
@@ -894,10 +892,8 @@ class OpenImageScreen(BaseScreen):
 
             self.app.dialog.dismiss()
 
-        button = MDFlatButton(
+        button = MDFillRoundFlatButton(
             text="Save",
-            theme_text_color="Custom",
-            text_color='white',
             on_release=lambda x: save_image(),
         )
 
@@ -911,10 +907,8 @@ class OpenImageScreen(BaseScreen):
             self.image_controller.del_image(image_id=img_id, widget_selection=widget_selection, widget_carousel=self.ids.carousel.current_slide)
             self.app.dialog.dismiss()
 
-        button = MDFlatButton(
+        button = MDFillRoundFlatButton(
             text="Delete",
-            theme_text_color="Custom",
-            text_color='white',
             on_release=lambda x: del_image(),
         )
 

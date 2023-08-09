@@ -147,6 +147,8 @@
                             anchor_y: 'center'
                             on_release:
                                 app.file_manager_open()
+                                print(nav_drawer.shadow_softness)
+                                print(nav_drawer.shadow_offset)
 
                             FitImage:
                                 source: self.parent.source
@@ -199,6 +201,8 @@
                         MyIconButton:
                             icon: 'swap-vertical-circle-outline'
                             icon_size: sp(35)
+                            theme_icon_color: "Custom"
+                            icon_color: app.theme_cls.primary_color
                             md_bg_color: root.md_bg_color
                             pos_hint: {'center_y': .5}
                             on_release:
