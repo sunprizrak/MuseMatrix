@@ -760,7 +760,7 @@ class ChatGptScreen(BaseScreen):
                 'theme_text_color': 'Custom',
                 'text_color': (1, 1, 1, 1),
                 'font_style': 'Message',
-                'bg_color': 'blue',
+                'bg_color': self.app.theme_cls.primary_color,
                 'radius': [10, 10, 10, 10],
                 'pos_hint': {'right': 1},
             }

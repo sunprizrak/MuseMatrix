@@ -12,7 +12,7 @@
             type_height: 'small'
             md_bg_color: root.md_bg_color
             left_action_items: [['arrow-left-bold', lambda x: root.back(root.back_screen)]]
-            right_action_items: [['trash-can', lambda x: root.delete(img_id=carousel.current_slide.img_id, widget_selection=carousel.current_slide.pre_parent)], ['download', lambda x: root.download(carousel.current_slide)]] if root.back_screen == 'collection_screen' else [['download', lambda x: root.download(carousel.current_slide)]]
+            right_action_items: [['delete', lambda x: root.delete(img_id=carousel.current_slide.img_id, widget_selection=carousel.current_slide.pre_parent)], ['download', lambda x: root.download(carousel.current_slide)]] if root.back_screen == 'collection_screen' else [['download', lambda x: root.download(carousel.current_slide)]]
             elevation: 0
 
         MDCarousel:

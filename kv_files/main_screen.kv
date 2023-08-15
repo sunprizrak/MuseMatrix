@@ -14,7 +14,6 @@
 
 
 <MyNavigationDrawerItem@MDNavigationDrawerItem>:
-    theme_text_color: 'Custom'
     text_color: 'white'
     focus_color: app.theme_cls.primary_color
     selected_color: "white"
@@ -128,7 +127,7 @@
                     text: root.email
                     halign: 'center'
                     font_size: sp(20)
-                    color: app.theme_cls.primary_color
+                    color: 'white'
                     adaptive_height: True
 
                 MDBoxLayout:
@@ -162,19 +161,20 @@
                         MDBoxLayout:
                             orientation: 'vertical'
                             pos_hint: {'center_y': .5}
+                            spacing: dp(30)
+                            padding: dp(20)
                             adaptive_height: True
 
                             MDBoxLayout:
                                 orientation: 'horizontal'
-                                spacing: dp(5)
+                                spacing: dp(15)
                                 adaptive_size: True
 
-                                Image:
-                                    source: 'assets/img/coin_icon.png'
-                                    size_hint: None, None
-                                    fit_mode: 'contain'
-                                    mipmap: True
-                                    size: dp(35), dp(35)
+                                MDIcon:
+                                    icon: 'crown-circle'
+                                    icon_size: sp(25)
+                                    theme_text_color: 'Custom'
+                                    text_color: '#FFD700'
 
                                 MDLabel:
                                     text: str(root.coin)
@@ -183,15 +183,14 @@
 
                             MDBoxLayout:
                                 orientation: 'horizontal'
-                                spacing: dp(5)
+                                spacing: dp(15)
                                 adaptive_size: True
 
-                                Image:
-                                    source: 'assets/img/chat_icon.png'
-                                    size_hint: None, None
-                                    fit_mode: 'contain'
-                                    mipmap: True
-                                    size: dp(35), dp(35)
+                                MDIcon:
+                                    icon: 'water-circle'
+                                    icon_size: sp(25)
+                                    theme_text_color: 'Custom'
+                                    text_color: '#157ded'
 
                                 MDLabel:
                                     text: str(root.chat_token)
@@ -200,9 +199,8 @@
 
                         MyIconButton:
                             icon: 'swap-vertical-circle-outline'
-                            icon_size: sp(35)
+                            icon_size: sp(30)
                             theme_icon_color: "Custom"
-                            icon_color: app.theme_cls.primary_color
                             md_bg_color: root.md_bg_color
                             pos_hint: {'center_y': .5}
                             on_release:
@@ -216,7 +214,7 @@
                 MyNavigationDrawerDivider:
 
                 MyNavigationDrawerItem:
-                    icon: "assets/img/settings_icon.png"
+                    icon: "cog"
                     text: "Settings"
                     on_release:
                         root.open_settings()
@@ -225,7 +223,7 @@
 
                 MyNavigationDrawerItem:
                     id: collection
-                    icon: 'assets/img/picture_icon.png'
+                    icon: 'image-multiple'
                     text: 'My Collection'
                     on_release:
                         root.open_collection()
@@ -233,7 +231,7 @@
                 MyNavigationDrawerDivider:
 
                 MyNavigationDrawerItem:
-                    icon: 'assets/img/shopping_cart.png'
+                    icon: 'shopping'
                     text: 'Buy Coins'
                     on_release:
                         root.open_buy_credits()
@@ -241,7 +239,7 @@
                 MyNavigationDrawerDivider:
 
                 MyNavigationDrawerItem:
-                    icon: 'assets/img/video_icon.png'
+                    icon: 'movie-open'
                     text: 'Earn Coins'
                     on_release:
                         root.show_ads()
@@ -249,7 +247,7 @@
                 MyNavigationDrawerDivider:
 
                 MyNavigationDrawerItem:
-                    icon: 'assets/img/key_icon.png'
+                    icon: 'logout'
                     text: 'Logout'
                     on_release:
                         root.exit()
