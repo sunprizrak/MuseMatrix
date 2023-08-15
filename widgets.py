@@ -1,23 +1,29 @@
+from kivy.core.clipboard import Clipboard
 from kivy.core.image import Image as CoreImage
 from kivy.core.window import Window
 from kivy.graphics import Color, Ellipse, Line
 from kivy.metrics import sp, dp
 from kivy.properties import ObjectProperty, ColorProperty, NumericProperty, ListProperty, StringProperty
-from kivymd.uix.behaviors import MagicBehavior
+from kivy.uix.behaviors import ButtonBehavior
+from kivy.uix.widget import Widget
+from kivymd.uix.behaviors import MagicBehavior, RectangularRippleBehavior
+from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.button import MDIconButton
-from kivymd.uix.card import MDCard
 from kivymd.uix.floatlayout import MDFloatLayout
 from kivymd.uix.label import MDLabel
 from kivymd.uix.segmentedcontrol import MDSegmentedControl, MDSegmentedControlItem
 from kivy.uix.image import AsyncImage
 from kivy.uix.screenmanager import RiseInTransition
-from kivymd.uix.list import MDList, OneLineListItem, IRightBodyTouch
+from kivymd.uix.list import MDList, IRightBodyTouch
 from kivymd.uix.selection import MDSelectionList
 from kivymd.uix.selection.selection import SelectionItem, SelectionIconCheck
 from kivymd.uix.tab import MDTabsBase
 from kivymd.app import MDApp
 from kivymd.uix.toolbar import MDTopAppBar
 from kivymd.uix.tooltip import MDTooltip
+import time
+
+from kivymd.uix.widget import MDWidget
 
 
 class MyImage(AsyncImage):
@@ -188,14 +194,6 @@ class MySelectionList(MDSelectionList):
             self.toolbar.title = str(len(instance_selection_list.get_selected_list_items()))
 
 
-class Message(OneLineListItem):
-
-    def __init__(self, **kwargs):
-        super(Message, self).__init__(**kwargs)
-        self.ids._lbl_primary.shorten = False
-        self.ids._lbl_primary.size_hint_y = 1
-
-
 class RightLabel(IRightBodyTouch, MDLabel):
     pass
 
@@ -264,5 +262,3 @@ class MyTopAppBar(MDTopAppBar):
             )
 
         instance_box_layout.width = new_width
-
-MDCard

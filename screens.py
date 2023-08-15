@@ -1,3 +1,5 @@
+import time
+
 from kivy import Logger
 from kivy.core.window import Window
 from kivy.metrics import sp, dp
@@ -708,6 +710,33 @@ class ChatGptScreen(BaseScreen):
         Window.softinput_mode = 'below_target'
 
     def send(self):
+        def create_message(text, sense=None):
+            label = Label(text=text, font_size=sp(16), padding=[dp(15), dp(15), dp(35), dp(10)])
+            label.texture_update()
+            width, height = label.texture_size
+
+            max_width = dp(Window.width / 100 * 80)
+            min_width = dp(60)
+
+            if width > max_width:
+                label = Label(text=text, font_size=sp(16), padding=dp(15), text_size=(max_width, None))
+                label.texture_update()
+                width, height = label.texture_size
+            elif width < min_width:
+                width = min_width
+
+            curr_time = time.strftime('%H:%M', time.localtime())
+
+            message = {
+                'width': width,
+                'height': height,
+                'message': text,
+                'time': curr_time,
+                'md_bg_color': (.2, .2, .2, 1) if sense else self.app.theme_cls.primary_color,
+                'pos_hint': {'left': 1} if sense else {'right': 1},
+            }
+
+            return message
 
         def _on_success(request, response):
             if 'choices' in response:
@@ -715,28 +744,9 @@ class ChatGptScreen(BaseScreen):
                 self.user_controller.user.chat_token = response['chat_token']
                 self.app.root.ids.main_screen.chat_token = self.user_controller.user.chat_token
 
-                lab = Label(text=text, font_size=sp(16), padding=[dp(20), dp(5)])
-                lab.texture_update()
-                w, h = lab.texture_size
+                response_message = create_message(text=text, sense=True)
 
-                if w > dp(300):
-                    lab = Label(text=text, font_size=sp(16), padding=[dp(20), dp(5)], text_size=(dp(300), None))
-                    lab.texture_update()
-                    w, h = lab.texture_size
-
-                msg = {
-                    'width': w,
-                    'height': h,
-                    'text': text,
-                    'theme_text_color': 'Custom',
-                    'text_color': (1, 1, 1, 1),
-                    'font_style': 'Message',
-                    'bg_color': (.2, .2, .2, 1),
-                    'radius': [10, 10, 10, 10],
-                    'pos_hint': {'left': 1},
-                }
-
-                self.ids.chat_gpt.data.append(msg)
+                self.ids.chat_gpt.data.append(response_message)
             elif 'notice' in response:
                 self.app.show_dialog()
                 self.app.dialog.title = 'Notice!'
@@ -744,33 +754,14 @@ class ChatGptScreen(BaseScreen):
 
         if self.prompt:
 
-            label = Label(text=self.prompt, font_size=sp(16), padding=[dp(20), dp(5)])
-            label.texture_update()
-            width, height = label.texture_size
+            send_message = create_message(text=self.prompt)
 
-            if width > dp(300):
-                label = Label(text=self.prompt, font_size=sp(16), padding=[dp(20), dp(5)], text_size=(dp(300), None))
-                label.texture_update()
-                width, height = label.texture_size
+            self.ids.chat_gpt.data.append(send_message)
 
-            message = {
-                'width': width,
-                'height': height,
-                'text': self.prompt,
-                'theme_text_color': 'Custom',
-                'text_color': (1, 1, 1, 1),
-                'font_style': 'Message',
-                'bg_color': self.app.theme_cls.primary_color,
-                'radius': [10, 10, 10, 10],
-                'pos_hint': {'right': 1},
-            }
-
-            self.ids.chat_gpt.data.append(message)
-
-            self.openai_controller.chat_completion(
-                prompt=self.prompt,
-                on_success=_on_success,
-            )
+            # self.openai_controller.chat_completion(
+            #     prompt=self.prompt,
+            #     on_success=_on_success,
+            # )
 
 
 class CollectionScreen(BaseScreen):
@@ -789,7 +780,8 @@ class CollectionScreen(BaseScreen):
 
         self.menu = MDDropdownMenu(
             items=menu_items,
-            width_mult=2.5,
+            elevation=dp(2),
+            shadow_color=self.theme_cls.primary_color,
         )
 
     def menu_callback(self, button):

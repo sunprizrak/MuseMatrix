@@ -1,5 +1,31 @@
 #:import ChatGptScreen screens
 
+
+<Message@ButtonBehavior+MDRelativeLayout>
+    message: ''
+    time: ''
+    radius: dp(15)
+    on_release:
+        print(self.size)
+
+    MDLabel:
+        text: root.message
+        padding: [dp(10), dp(10), dp(5), dp(10)]
+        theme_text_color: 'Custom'
+        text_color: 'white'
+        font_style: 'Message'
+
+    MDLabel:
+        id: time
+        text: root.time
+        font_size: sp(11)
+        bold: True
+        font_style: 'Message'
+        padding: [0, 0, dp(5), dp(5)]
+        adaptive_size: True
+        pos_hint: {'bottom': 1, 'right': 1}
+
+
 <ChatGptScreen>
     name: 'chat_gpt_screen'
 
@@ -9,7 +35,7 @@
 
         MDBoxLayout:
             orientation: 'vertical'
-            md_bg_color: '#71b4f2'
+            md_bg_color: '#157ded'
 
             MyTopAppBar:
                 id: chat_gpt_top_bar
@@ -17,7 +43,7 @@
                 title: 'chat gpt'
                 anchor_title: 'left'
                 md_bg_color: root.md_bg_color
-                left_action_items: [['assets/img/back_arrow_icon.png', lambda x: app.back(screen='main_screen')]]
+                left_action_items: [['arrow-left-bold', lambda x: print(down_box.height)]]  # app.back(screen='main_screen')
                 elevation: 0
 
             MDRecycleView:
@@ -36,6 +62,7 @@
                     padding: dp(10)
 
             MDBoxLayout:
+                id: down_box
                 orientation: 'horizontal'
                 adaptive_height: True
                 padding: dp(10), 0, 0, 0
@@ -63,3 +90,11 @@
                     on_release:
                         root.send()
                         send_field.text = ''
+
+        MDBoxLayout:
+            md_bg_color: 'black'
+            size_hint: None, None
+            size: dp(20), dp(20)
+            pos_hint_y: None
+            pos: 0, 49.0
+            pos_hint: {'right': 1}
