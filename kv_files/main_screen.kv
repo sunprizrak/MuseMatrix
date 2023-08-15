@@ -6,8 +6,12 @@
     orientation: 'vertical'
 
 
-<AvatarBox@ButtonBehavior+MDBoxLayout>:
-
+<AvatarBox@ButtonBehavior+MDBoxLayout+CommonElevationBehavior>:
+    line_color: app.theme_cls.primary_color
+    line_width: dp(1.5)
+    elevation: dp(2)
+    shadow_color: app.theme_cls.primary_color
+    radius: 50
 
 <MyNavigationDrawerDivider@MDNavigationDrawerDivider>:
     color: app.theme_cls.primary_color

@@ -5,6 +5,7 @@ from kivy.metrics import sp, dp
 from kivy.properties import ObjectProperty, ColorProperty, NumericProperty, ListProperty, StringProperty
 from kivymd.uix.behaviors import MagicBehavior
 from kivymd.uix.button import MDIconButton
+from kivymd.uix.card import MDCard
 from kivymd.uix.floatlayout import MDFloatLayout
 from kivymd.uix.label import MDLabel
 from kivymd.uix.segmentedcontrol import MDSegmentedControl, MDSegmentedControlItem
@@ -263,3 +264,5 @@ class MyTopAppBar(MDTopAppBar):
             )
 
         instance_box_layout.width = new_width
+
+MDCard
