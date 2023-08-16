@@ -1,9 +1,8 @@
 import time
-
 from kivy import Logger
 from kivy.core.window import Window
 from kivy.metrics import sp, dp
-from kivy.uix.image import Image
+from kivy.uix.image import Image, AsyncImage
 from kivy.uix.label import Label
 from kivy.uix.screenmanager import FallOutTransition
 from kivy.properties import StringProperty, ObjectProperty, BoundedNumericProperty, NumericProperty
@@ -704,13 +703,21 @@ class ChatGptScreen(BaseScreen):
         self.user_controller = UserController()
 
     def on_pre_enter(self, *args):
+        if platform == 'android':
+            color_nav = self.theme_cls.primary_color
+            color_stat = self.theme_cls.primary_color
+            self.app.change_android_color(color_nav=color_nav, color_stat=color_stat)
+
         Window.softinput_mode = 'pan'
 
     def on_pre_leave(self, *args):
+        if platform == 'android':
+            self.app.change_android_color()
+
         Window.softinput_mode = 'below_target'
 
     def send(self):
-        def create_message(text, sense=None):
+        def _create_message(text, sense=None, spin=None):
             label = Label(text=text, font_size=sp(16), padding=[dp(15), dp(15), dp(35), dp(10)])
             label.texture_update()
             width, height = label.texture_size
@@ -727,24 +734,59 @@ class ChatGptScreen(BaseScreen):
 
             curr_time = time.strftime('%H:%M', time.localtime())
 
+            def calculate_triangle_points():
+                triangle_height = dp(10)  # Высота треугольника
+                triangle_base = dp(15)  # Основание треугольника
+
+                triangle_x = dp(width) - triangle_base / 2
+                triangle_y = 0
+
+                if sense:
+                    triangle_x = 0 - triangle_base / 2
+
+                points = [
+                    triangle_x, triangle_y,
+                    triangle_x + triangle_base, triangle_y,
+                    triangle_x + triangle_base / 2, triangle_y + triangle_height
+                ]
+                return points
+
+            triangle_points = calculate_triangle_points()
+
             message = {
                 'width': width,
                 'height': height,
                 'message': text,
-                'time': curr_time,
-                'md_bg_color': (.2, .2, .2, 1) if sense else self.app.theme_cls.primary_color,
+                'time': curr_time if not spin else '',
+                'triangle_points': triangle_points,
+                'image_path': 'assets/gif/message_await.gif' if spin else 'assets/img/message_transparent.png',
+                'radius': [dp(15), dp(15), dp(15), 0] if sense else [dp(15), dp(15), 0, dp(15)],
+                'md_bg_color': '#2979FF' if sense else self.app.theme_cls.primary_color,
                 'pos_hint': {'left': 1} if sense else {'right': 1},
             }
 
             return message
 
+        def _output_error(error):
+            self.ids.chat_gpt.data.pop(-1)
+            self.ids.send_button.disabled = False
+
+        def _on_error(request, error):
+            _output_error(error)
+
+        def _on_failure(request, response):
+            _output_error(response)
+
         def _on_success(request, response):
+            self.ids.chat_gpt.data.pop(-1)
+            self.ids.send_button.disabled = False
+
             if 'choices' in response:
                 text = response['choices'][0].get('message').get('content').lstrip()
                 self.user_controller.user.chat_token = response['chat_token']
                 self.app.root.ids.main_screen.chat_token = self.user_controller.user.chat_token
 
-                response_message = create_message(text=text, sense=True)
+                response_message = _create_message(text=text, sense=True)
 
                 self.ids.chat_gpt.data.append(response_message)
             elif 'notice' in response:
@@ -754,14 +796,18 @@ class ChatGptScreen(BaseScreen):
 
         if self.prompt:
 
-            send_message = create_message(text=self.prompt)
-
+            send_message = _create_message(text=self.prompt)
             self.ids.chat_gpt.data.append(send_message)
 
-            # self.openai_controller.chat_completion(
-            #     prompt=self.prompt,
-            #     on_success=_on_success,
-            # )
+            await_message = _create_message(text=' ', sense=True, spin=True)
+            self.ids.chat_gpt.data.append(await_message)
+
+            self.ids.send_button.disabled = True
+
+            self.openai_controller.chat_completion(
+                prompt=self.prompt,
+                on_success=_on_success,
+            )
 
 
 class CollectionScreen(BaseScreen):

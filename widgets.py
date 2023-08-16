@@ -5,12 +5,11 @@ from kivy.graphics import Color, Ellipse, Line
 from kivy.metrics import sp, dp
 from kivy.properties import ObjectProperty, ColorProperty, NumericProperty, ListProperty, StringProperty
 from kivy.uix.behaviors import ButtonBehavior
-from kivy.uix.widget import Widget
-from kivymd.uix.behaviors import MagicBehavior, RectangularRippleBehavior
-from kivymd.uix.boxlayout import MDBoxLayout
+from kivymd.uix.behaviors import MagicBehavior, RectangularRippleBehavior, CommonElevationBehavior
 from kivymd.uix.button import MDIconButton
 from kivymd.uix.floatlayout import MDFloatLayout
 from kivymd.uix.label import MDLabel
+from kivymd.uix.relativelayout import MDRelativeLayout
 from kivymd.uix.segmentedcontrol import MDSegmentedControl, MDSegmentedControlItem
 from kivy.uix.image import AsyncImage
 from kivy.uix.screenmanager import RiseInTransition
@@ -21,9 +20,6 @@ from kivymd.uix.tab import MDTabsBase
 from kivymd.app import MDApp
 from kivymd.uix.toolbar import MDTopAppBar
 from kivymd.uix.tooltip import MDTooltip
-import time
-
-from kivymd.uix.widget import MDWidget
 
 
 class MyImage(AsyncImage):
@@ -262,3 +258,14 @@ class MyTopAppBar(MDTopAppBar):
             )
 
         instance_box_layout.width = new_width
+
+
+class Message(RectangularRippleBehavior, ButtonBehavior, MDRelativeLayout):
+    message = StringProperty()
+    time = StringProperty()
+    image_path = StringProperty()
+    triangle_points = ListProperty()
+
+    def on_release(self):
+        Clipboard.copy(self.message)
+
