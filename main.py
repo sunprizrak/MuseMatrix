@@ -9,7 +9,7 @@ from kivymd.app import MDApp
 from kivy.lang import Builder
 from kivy.core.window import Window
 from kivymd.theming import ThemeManager
-from kivymd.uix.button import MDFlatButton, MDRaisedButton, MDFillRoundFlatButton
+from kivymd.uix.button import MDRaisedButton, MDFillRoundFlatButton
 from kivymd.uix.chip import MDChip, MDChipText
 from kivymd.uix.dialog import MDDialog
 from kivymd.uix.filemanager import MDFileManager
