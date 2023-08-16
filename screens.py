@@ -2,7 +2,7 @@ import time
 from kivy import Logger
 from kivy.core.window import Window
 from kivy.metrics import sp, dp
-from kivy.uix.image import Image, AsyncImage
+from kivy.uix.image import Image
 from kivy.uix.label import Label
 from kivy.uix.screenmanager import FallOutTransition
 from kivy.properties import StringProperty, ObjectProperty, BoundedNumericProperty, NumericProperty

@@ -5,7 +5,7 @@ from kivy.graphics import Color, Ellipse, Line
 from kivy.metrics import sp, dp
 from kivy.properties import ObjectProperty, ColorProperty, NumericProperty, ListProperty, StringProperty
 from kivy.uix.behaviors import ButtonBehavior
-from kivymd.uix.behaviors import MagicBehavior, RectangularRippleBehavior, CommonElevationBehavior
+from kivymd.uix.behaviors import MagicBehavior, RectangularRippleBehavior
 from kivymd.uix.button import MDIconButton
 from kivymd.uix.floatlayout import MDFloatLayout
 from kivymd.uix.label import MDLabel
