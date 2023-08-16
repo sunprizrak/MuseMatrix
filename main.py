@@ -21,7 +21,6 @@ from kivymd.utils.set_bars_colors import set_bars_colors
 from kivy.storage.jsonstore import JsonStore
 from controller.user import UserController
 from settings import ID_REWARD_INTERSTITIAL
-from widgets import MyIconButton
 
 os.environ["KIVY_AUDIO"] = "ffpyplayer"
 
