@@ -2,15 +2,24 @@
 #:import MDSwapTransition kivymd.uix.transition.transition.MDSwapTransition
 #:import MDSlideTransition kivymd.uix.transition.transition.MDSlideTransition
 
-<StartScreen>
+<LogoBox@CommonElevationBehavior+MDBoxLayout>:
+
+
+<StartScreen>:
     name: 'start_screen'
 
     MDFloatLayout:
 
-        MDBoxLayout:
+        LogoBox:
             size_hint: None, None
             size: dp(256), dp(256)
             pos_hint: {'center_x': .5, 'center_y': .65}
+            radius: dp(67)
+            elevation: dp(5)
+            shadow_radius: dp(67)
+            shadow_softness: dp(12)
+            shadow_offset: dp(12), dp(-12)
+            shadow_color: 'white'
 
             Image:
                 source: 'assets/img/logo_app.png'
