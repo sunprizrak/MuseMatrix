@@ -10,7 +10,7 @@
     line_width: dp(1.5)
     elevation: dp(2)
     shadow_color: app.theme_cls.primary_color
-    radius: 50
+    radius: dp(50)
 
 
 <MyNavigationDrawerDivider@MDNavigationDrawerDivider>:
@@ -150,8 +150,7 @@
                             anchor_y: 'center'
                             on_release:
                                 app.file_manager_open()
-                                print(nav_drawer.shadow_softness)
-                                print(nav_drawer.shadow_offset)
+
 
                             FitImage:
                                 source: self.parent.source

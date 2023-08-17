@@ -738,7 +738,7 @@ class ChatGptScreen(BaseScreen):
                 triangle_height = dp(10)  # Высота треугольника
                 triangle_base = dp(15)  # Основание треугольника
 
-                triangle_x = dp(width) - triangle_base / 2
+                triangle_x = width - triangle_base / 2
                 triangle_y = 0
 
                 if sense:
