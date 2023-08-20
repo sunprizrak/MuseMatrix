@@ -198,6 +198,7 @@ class MainApp(MDApp):
                 else:
                     sound_name = path.split('/')[-1]
 
+                screen.ids.add_sound_button.disabled = True
                 screen.sound = SoundLoader.load(path)
                 screen.ids.sound.text = sound_name
 

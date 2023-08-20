@@ -1,5 +1,6 @@
 import time
 from kivy import Logger
+from kivy.core.clipboard import Clipboard
 from kivy.core.window import Window
 from kivy.metrics import sp, dp
 from kivy.uix.image import Image
@@ -1120,12 +1121,15 @@ class SpeechToTextScreen(BaseScreen):
                 remove_widgets.append(widget)
 
         self.ids.speech_layout.clear_widgets(remove_widgets)
+        self.ids.add_sound_button.disabled = False
+        self.ids.speech_top_bar.right_action_items = []
 
     def transcript(self):
         def _on_success(request, response):
             self.ids.audio_transcript.text = response['text']
             self.user_controller.user.coin = response['coin']
             self.app.root.ids.main_screen.coin = self.user_controller.user.coin
+            self.ids.speech_top_bar.right_action_items = [['content-copy', lambda x: Clipboard.copy(self.ids.audio_transcript.text)]]
 
         def _on_error(request, error):
             print('error')
