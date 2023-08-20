@@ -8,7 +8,6 @@ from kivy.uix.label import Label
 from kivy.uix.screenmanager import FallOutTransition
 from kivy.properties import StringProperty, ObjectProperty, BoundedNumericProperty, NumericProperty
 from kivymd.app import MDApp
-from kivymd.toast import toast
 from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.button import MDFlatButton, MDRaisedButton, MDFillRoundFlatButton
 from kivymd.uix.chip import MDChip, MDChipText
@@ -35,6 +34,9 @@ logging.getLogger('PIL').setLevel(logging.WARNING)
 
 if platform == 'android':
     from iabwrapper import BillingProcessor
+    from kivymd.toast.androidtoast.androidtoast import toast
+elif platform == 'linux':
+    from kivymd.toast import toast
 
 
 class BaseScreen(MDScreen):
@@ -929,7 +931,7 @@ class OpenImageScreen(BaseScreen):
 
                 self.image_controller.save_image(data_image=data_image)
 
-            toast(text='image saved', background=self.app.theme_cls.primary_color)
+            toast(text='image saved')
             self.app.dialog.dismiss()
 
         button = MDFillRoundFlatButton(
@@ -1002,7 +1004,7 @@ class BuyCoinsScreen(BaseScreen):
 
     def open_payment_layout(self, sku):
         if self.bp.is_subscribed(sku):
-            toast(text="Already Subscribed", background=self.app.theme_cls.primary_color)
+            toast(text="Already Subscribed")
             return
         setattr(self, 'product_id', sku)
         self.ids.bottom_sheet.open()
@@ -1018,10 +1020,10 @@ class BuyCoinsScreen(BaseScreen):
                 self.bp.get_subscription_listing_async(self.product_id, self.purchase_details_received)
                 self.bp.subscribe_product(self.product_id)
         else:
-            toast(text="Payment method not implemented", background=self.app.theme_cls.primary_color)
+            toast(text="Payment method not implemented")
 
     def product_purchased(self, product_id, purchase_info):
-        toast(text="Product purchased", background=self.app.theme_cls.primary_color)
+        toast(text="Product purchased")
 
         total_amount = self.user_controller.user.coin + self.amounts.get(product_id)
 
