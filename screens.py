@@ -929,6 +929,7 @@ class OpenImageScreen(BaseScreen):
 
                 self.image_controller.save_image(data_image=data_image)
 
+            toast(text='image saved', background=self.app.theme_cls.primary_color)
             self.app.dialog.dismiss()
 
         button = MDFillRoundFlatButton(
@@ -1001,7 +1002,7 @@ class BuyCoinsScreen(BaseScreen):
 
     def open_payment_layout(self, sku):
         if self.bp.is_subscribed(sku):
-            toast("Already Subscribed")
+            toast(text="Already Subscribed", background=self.app.theme_cls.primary_color)
             return
         setattr(self, 'product_id', sku)
         self.ids.bottom_sheet.open()
@@ -1017,10 +1018,10 @@ class BuyCoinsScreen(BaseScreen):
                 self.bp.get_subscription_listing_async(self.product_id, self.purchase_details_received)
                 self.bp.subscribe_product(self.product_id)
         else:
-            toast("Payment method not implemented")
+            toast(text="Payment method not implemented", background=self.app.theme_cls.primary_color)
 
     def product_purchased(self, product_id, purchase_info):
-        toast("Product purchased")
+        toast(text="Product purchased", background=self.app.theme_cls.primary_color)
 
         total_amount = self.user_controller.user.coin + self.amounts.get(product_id)
 
