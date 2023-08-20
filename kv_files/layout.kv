@@ -1,18 +1,18 @@
 #:include kv_files/start_screen.kv
 #:include kv_files/login_screen.kv
 #:include kv_files/registrate_screen.kv
-#:include kv_files/change_password_screen.kv
-#:include kv_files/settings_screen.kv
 #:include kv_files/main_screen.kv
 #:include kv_files/open_image_screen.kv
 #:include kv_files/create_image_screen.kv
 #:include kv_files/edit_image_screen.kv
 #:include kv_files/variable_image_screen.kv
 #:include kv_files/chat_gpt_screen.kv
-#:include kv_files/collection_screen.kv
-#:include kv_files/buy_coins_screen.kv
 #:include kv_files/speech_to_text_screen.kv
 #:include kv_files/instruction_screen.kv
+#:include kv_files/change_password_screen.kv
+#:include kv_files/settings_screen.kv
+#:include kv_files/collection_screen.kv
+#:include kv_files/buy_coins_screen.kv
 
 
 <SM@MDScreenManager>
@@ -49,6 +49,9 @@ SM:
     InstructionScreen:
         id: instruction_screen
 
+    OpenImageScreen:
+        id: open_img_screen
+
     SettingsScreen:
         id: settings_screen
 
@@ -59,10 +62,7 @@ SM:
         id: collection_screen
 
     BuyCoinsScreen:
-        id: buy_coins_screen
-
-    OpenImageScreen:
-        id: open_img_screen
+        id: buy_coins_scree
 
 
 

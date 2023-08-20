@@ -1,4 +1,6 @@
+import time
 from kivy import Logger
+from kivy.core.clipboard import Clipboard
 from kivy.core.window import Window
 from kivy.metrics import sp, dp
 from kivy.uix.image import Image
@@ -6,9 +8,8 @@ from kivy.uix.label import Label
 from kivy.uix.screenmanager import FallOutTransition
 from kivy.properties import StringProperty, ObjectProperty, BoundedNumericProperty, NumericProperty
 from kivymd.app import MDApp
-from kivymd.toast import toast
 from kivymd.uix.boxlayout import MDBoxLayout
-from kivymd.uix.button import MDFlatButton, MDRaisedButton
+from kivymd.uix.button import MDFlatButton, MDRaisedButton, MDFillRoundFlatButton
 from kivymd.uix.chip import MDChip, MDChipText
 from kivymd.uix.menu import MDDropdownMenu
 from kivymd.uix.screen import MDScreen
@@ -33,12 +34,16 @@ logging.getLogger('PIL').setLevel(logging.WARNING)
 
 if platform == 'android':
     from iabwrapper import BillingProcessor
+    from kivymd.toast.androidtoast.androidtoast import toast
+elif platform == 'linux':
+    from kivymd.toast import toast
 
 
 class BaseScreen(MDScreen):
     def __init__(self, **kwargs):
         super(BaseScreen, self).__init__(**kwargs)
         self.app = MDApp.get_running_app()
+        self.md_bg_color = self.app.theme_cls.bg_light
 
 
 class ImageScreen(BaseScreen):
@@ -428,6 +433,7 @@ class EditImageScreen(ImageScreen):
 
     def add_image(self, path):
         self.ids.add_image_button.disabled = True
+        self.ids.add_image_button.opacity = 0
 
         for widget in self.ids.image_section.children:
             if isinstance(widget, MyImage) or isinstance(widget, MDSwiper):
@@ -562,8 +568,9 @@ class EditImageScreen(ImageScreen):
         self.image_original.truncate(0)
         self.image_mask.truncate(0)
         self.ids.add_image_button.disabled = False
+        self.ids.add_image_button.opacity = 1
 
-        while len(self.ids.edit_top_bar.right_action_items) !=0:
+        while len(self.ids.edit_top_bar.right_action_items) != 0:
             self.ids.edit_top_bar.right_action_items.remove(self.ids.edit_top_bar.right_action_items[-1])
 
 
@@ -572,6 +579,7 @@ class VariableImageScreen(ImageScreen):
 
     def add_image(self, path):
         self.ids.add_image_button.disabled = True
+        self.ids.add_image_button.opacity = 0
 
         for widget in self.ids.image_section.children:
             if isinstance(widget, Image) or isinstance(widget, MDSwiper):
@@ -598,6 +606,7 @@ class VariableImageScreen(ImageScreen):
 
         self.image.truncate(0)
         self.ids.add_image_button.disabled = False
+        self.ids.add_image_button.opacity = 1
 
         self.ids.variable_top_bar.right_action_items.remove(self.ids.variable_top_bar.right_action_items[-1])
 
@@ -697,41 +706,92 @@ class ChatGptScreen(BaseScreen):
         self.user_controller = UserController()
 
     def on_pre_enter(self, *args):
+        if platform == 'android':
+            color_nav = self.theme_cls.primary_color
+            color_stat = self.theme_cls.primary_color
+            self.app.change_android_color(color_nav=color_nav, color_stat=color_stat)
+
         Window.softinput_mode = 'pan'
 
     def on_pre_leave(self, *args):
+        if platform == 'android':
+            self.app.change_android_color()
+
         Window.softinput_mode = 'below_target'
 
     def send(self):
+        def _create_message(text, sense=None, spin=None):
+            label = Label(text=text, font_size=sp(16), padding=[dp(15), dp(15), dp(35), dp(10)])
+            label.texture_update()
+            width, height = label.texture_size
+
+            max_width = dp(Window.width / 100 * 80)
+            min_width = dp(60)
+
+            if width > max_width:
+                label = Label(text=text, font_size=sp(16), padding=dp(15), text_size=(max_width, None))
+                label.texture_update()
+                width, height = label.texture_size
+            elif width < min_width:
+                width = min_width
+
+            curr_time = time.strftime('%H:%M', time.localtime())
+
+            def calculate_triangle_points():
+                triangle_height = dp(10)  # Высота треугольника
+                triangle_base = dp(15)  # Основание треугольника
+
+                triangle_x = width - triangle_base / 2
+                triangle_y = 0
+
+                if sense:
+                    triangle_x = 0 - triangle_base / 2
+
+                points = [
+                    triangle_x, triangle_y,
+                    triangle_x + triangle_base, triangle_y,
+                    triangle_x + triangle_base / 2, triangle_y + triangle_height
+                ]
+                return points
+
+            triangle_points = calculate_triangle_points()
+
+            message = {
+                'width': width,
+                'height': height,
+                'message': text,
+                'time': curr_time if not spin else '',
+                'triangle_points': triangle_points,
+                'image_path': 'assets/gif/message_await.gif' if spin else 'assets/img/message_transparent.png',
+                'radius': [dp(15), dp(15), dp(15), 0] if sense else [dp(15), dp(15), 0, dp(15)],
+                'md_bg_color': '#2979FF' if sense else self.app.theme_cls.primary_color,
+                'pos_hint': {'left': 1} if sense else {'right': 1},
+            }
+
+            return message
+
+        def _output_error(error):
+            self.ids.chat_gpt.data.pop(-1)
+            self.ids.send_button.disabled = False
+
+        def _on_error(request, error):
+            _output_error(error)
+
+        def _on_failure(request, response):
+            _output_error(response)
 
         def _on_success(request, response):
+            self.ids.chat_gpt.data.pop(-1)
+            self.ids.send_button.disabled = False
+
             if 'choices' in response:
                 text = response['choices'][0].get('message').get('content').lstrip()
                 self.user_controller.user.chat_token = response['chat_token']
                 self.app.root.ids.main_screen.chat_token = self.user_controller.user.chat_token
 
-                lab = Label(text=text, font_size=sp(16), padding=[dp(20), dp(5)])
-                lab.texture_update()
-                w, h = lab.texture_size
+                response_message = _create_message(text=text, sense=True)
 
-                if w > dp(300):
-                    lab = Label(text=text, font_size=sp(16), padding=[dp(20), dp(5)], text_size=(dp(300), None))
-                    lab.texture_update()
-                    w, h = lab.texture_size
-
-                msg = {
-                    'width': w,
-                    'height': h,
-                    'text': text,
-                    'theme_text_color': 'Custom',
-                    'text_color': (1, 1, 1, 1),
-                    'font_style': 'Message',
-                    'bg_color': (.2, .2, .2, 1),
-                    'radius': [10, 10, 10, 10],
-                    'pos_hint': {'left': 1},
-                }
-
-                self.ids.chat_gpt.data.append(msg)
+                self.ids.chat_gpt.data.append(response_message)
             elif 'notice' in response:
                 self.app.show_dialog()
                 self.app.dialog.title = 'Notice!'
@@ -739,28 +799,13 @@ class ChatGptScreen(BaseScreen):
 
         if self.prompt:
 
-            label = Label(text=self.prompt, font_size=sp(16), padding=[dp(20), dp(5)])
-            label.texture_update()
-            width, height = label.texture_size
+            send_message = _create_message(text=self.prompt)
+            self.ids.chat_gpt.data.append(send_message)
 
-            if width > dp(300):
-                label = Label(text=self.prompt, font_size=sp(16), padding=[dp(20), dp(5)], text_size=(dp(300), None))
-                label.texture_update()
-                width, height = label.texture_size
+            await_message = _create_message(text=' ', sense=True, spin=True)
+            self.ids.chat_gpt.data.append(await_message)
 
-            message = {
-                'width': width,
-                'height': height,
-                'text': self.prompt,
-                'theme_text_color': 'Custom',
-                'text_color': (1, 1, 1, 1),
-                'font_style': 'Message',
-                'bg_color': 'blue',
-                'radius': [10, 10, 10, 10],
-                'pos_hint': {'right': 1},
-            }
-
-            self.ids.chat_gpt.data.append(message)
+            self.ids.send_button.disabled = True
 
             self.openai_controller.chat_completion(
                 prompt=self.prompt,
@@ -784,7 +829,8 @@ class CollectionScreen(BaseScreen):
 
         self.menu = MDDropdownMenu(
             items=menu_items,
-            width_mult=2.5,
+            elevation=dp(2),
+            shadow_color=self.theme_cls.primary_color,
         )
 
     def menu_callback(self, button):
@@ -798,10 +844,8 @@ class CollectionScreen(BaseScreen):
             self.image_controller.del_images(images_id=images_id, widget_list=widget_list)
             self.app.dialog.dismiss()
 
-        button = MDFlatButton(
+        button = MDFillRoundFlatButton(
             text="Delete",
-            theme_text_color="Custom",
-            text_color='white',
             on_release=lambda x: del_images(),
         )
 
@@ -887,12 +931,11 @@ class OpenImageScreen(BaseScreen):
 
                 self.image_controller.save_image(data_image=data_image)
 
+            toast(text='image saved')
             self.app.dialog.dismiss()
 
-        button = MDFlatButton(
+        button = MDFillRoundFlatButton(
             text="Save",
-            theme_text_color="Custom",
-            text_color='white',
             on_release=lambda x: save_image(),
         )
 
@@ -906,10 +949,8 @@ class OpenImageScreen(BaseScreen):
             self.image_controller.del_image(image_id=img_id, widget_selection=widget_selection, widget_carousel=self.ids.carousel.current_slide)
             self.app.dialog.dismiss()
 
-        button = MDFlatButton(
+        button = MDFillRoundFlatButton(
             text="Delete",
-            theme_text_color="Custom",
-            text_color='white',
             on_release=lambda x: del_image(),
         )
 
@@ -963,7 +1004,7 @@ class BuyCoinsScreen(BaseScreen):
 
     def open_payment_layout(self, sku):
         if self.bp.is_subscribed(sku):
-            toast("Already Subscribed")
+            toast(text="Already Subscribed")
             return
         setattr(self, 'product_id', sku)
         self.ids.bottom_sheet.open()
@@ -979,10 +1020,10 @@ class BuyCoinsScreen(BaseScreen):
                 self.bp.get_subscription_listing_async(self.product_id, self.purchase_details_received)
                 self.bp.subscribe_product(self.product_id)
         else:
-            toast("Payment method not implemented")
+            toast(text="Payment method not implemented")
 
     def product_purchased(self, product_id, purchase_info):
-        toast("Product purchased")
+        toast(text="Product purchased")
 
         total_amount = self.user_controller.user.coin + self.amounts.get(product_id)
 
@@ -1083,12 +1124,15 @@ class SpeechToTextScreen(BaseScreen):
                 remove_widgets.append(widget)
 
         self.ids.speech_layout.clear_widgets(remove_widgets)
+        self.ids.add_sound_button.disabled = False
+        self.ids.speech_top_bar.right_action_items = []
 
     def transcript(self):
         def _on_success(request, response):
             self.ids.audio_transcript.text = response['text']
             self.user_controller.user.coin = response['coin']
             self.app.root.ids.main_screen.coin = self.user_controller.user.coin
+            self.ids.speech_top_bar.right_action_items = [['content-copy', lambda x: Clipboard.copy(self.ids.audio_transcript.text)]]
 
         def _on_error(request, error):
             print('error')

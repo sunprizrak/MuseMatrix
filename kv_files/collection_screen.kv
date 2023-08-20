@@ -2,12 +2,11 @@
 
 <CollectionScreen>
     name: 'collection_screen'
-    md_bg_color: app.theme_cls.bg_light
 
     MDBoxLayout:
         orientation: 'vertical'
 
-        MDTopAppBar:
+        MyTopAppBar:
             id: collection_app_bar
             type_height: 'small'
             md_bg_color: root.md_bg_color
@@ -26,6 +25,9 @@
                 cols: 4
                 padding: dp(2)
                 spacing: dp(2)
+                icon: 'assets/img/check_true.png'
+                icon_bg_color: 1, 1, 1, 0
+                progress_round_color: app.theme_cls.primary_color
                 row_default_height: (self.width - self.cols * self.spacing[0]) / self.cols
                 row_force_default: True
                 col_default_width: (self.width - (self.cols * self.spacing[0] + self.padding[0])) / self.cols

@@ -9,7 +9,7 @@ from kivymd.app import MDApp
 from kivy.lang import Builder
 from kivy.core.window import Window
 from kivymd.theming import ThemeManager
-from kivymd.uix.button import MDFlatButton, MDRaisedButton
+from kivymd.uix.button import MDRaisedButton, MDFillRoundFlatButton
 from kivymd.uix.chip import MDChip, MDChipText
 from kivymd.uix.dialog import MDDialog
 from kivymd.uix.filemanager import MDFileManager
@@ -26,11 +26,10 @@ os.environ["KIVY_AUDIO"] = "ffpyplayer"
 
 
 if platform == 'android':
-    from android import api_version
+    from android import api_version, loadingscreen
     from android.permissions import request_permissions, check_permission, Permission
     from androidstorage4kivy import SharedStorage, Chooser
     from utility.kivads import KivAds, RewardedInterstitial
-
 elif platform == 'linux':
     Window.size = (360, 600)
 
@@ -95,6 +94,8 @@ class MainApp(MDApp):
 
     def build(self):
         if platform == 'android':
+            loadingscreen.hide_loading_screen()
+
             if not self.check_android_permissions:
                 self.req_android_permissions()
 
@@ -197,6 +198,7 @@ class MainApp(MDApp):
                 else:
                     sound_name = path.split('/')[-1]
 
+                screen.ids.add_sound_button.disabled = True
                 screen.sound = SoundLoader.load(path)
                 screen.ids.sound.text = sound_name
 
@@ -206,7 +208,7 @@ class MainApp(MDApp):
                     font_size=sp(25),
                     md_bg_color=self.theme_cls.primary_color,
                     on_release=lambda
-                        x: screen.transcript()
+                        x: screen.transcript(),
                 )
 
                 text_button = MDChipText(text='translate to english')
@@ -253,16 +255,19 @@ class MainApp(MDApp):
     def show_dialog(self, button=None, content=None):
         self.dialog = MDDialog(
             title='Notice!',
-            md_bg_color=self.theme_cls.primary_color,
             type='custom',
-            radius=[dp(20), dp(7), dp(20), dp(7)],
+            md_bg_color=self.theme_cls.bg_light,
+            radius=[dp(25), dp(25), dp(25), dp(25)],
+            elevation=dp(2),
+            shadow_color='white',
+            shadow_radius=dp(25),
+            shadow_offset=(dp(2), dp(-2)),
+            shadow_softness=dp(1),
             content_cls=content,
             buttons=[
                 button,
-                MDFlatButton(
-                    text="Close",
-                    theme_text_color="Custom",
-                    text_color='white',
+                MDFillRoundFlatButton(
+                    text='Close',
                     on_release=self.close_dialog,
                 ),
             ],

@@ -1,23 +1,54 @@
 #:import ChatGptScreen screens
 
-<ChatGptScreen>
+
+<Message>:
+
+    canvas:
+        Color:
+            rgba: self.md_bg_color
+        Triangle:
+            points: root.triangle_points
+
+    MDLabel:
+        text: root.message
+        padding: [dp(10), dp(10), dp(5), dp(10)]
+        font_style: 'Message'
+
+    MDLabel:
+        text: root.time
+        font_size: sp(10)
+        bold: True
+        font_style: 'Message'
+        padding: [0, 0, dp(10), dp(5)]
+        adaptive_size: True
+        pos_hint: {'bottom': 1, 'right': 1}
+
+    Image:
+        source: root.image_path
+        fit_mode: 'cover'
+        anim_delay: 0
+        mipmap: True
+
+
+
+<ChatGptScreen>:
     name: 'chat_gpt_screen'
-    md_bg_color: app.theme_cls.bg_light
 
     prompt: send_field.text
 
-    MDFloatLayout:
+    MDRelativeLayout:
+        id: main_layout
 
         MDBoxLayout:
             orientation: 'vertical'
-            md_bg_color: '#71b4f2'
+            md_bg_color: root.md_bg_color
 
-            MDTopAppBar:
+            MyTopAppBar:
                 id: chat_gpt_top_bar
                 type_height: 'small'
                 title: 'chat gpt'
                 anchor_title: 'left'
-                md_bg_color: root.md_bg_color
+                md_bg_color: app.theme_cls.primary_color
                 left_action_items: [['arrow-left-bold', lambda x: app.back(screen='main_screen')]]
                 elevation: 0
 
@@ -40,10 +71,12 @@
                 orientation: 'horizontal'
                 adaptive_height: True
                 padding: dp(10), 0, 0, 0
-                md_bg_color: root.md_bg_color
+                md_bg_color: app.theme_cls.primary_color
 
                 TextInput:
                     id: send_field
+                    font_size: sp(18)
+                    unfocus_on_touch: False
                     multiline: True
                     auto_indent: True
                     size_hint_y: None
@@ -57,9 +90,9 @@
                     cursor_width: dp(2)
                     pos_hint: {'center_y': .5}
 
-                MDIconButton:
+                MyIconButton:
+                    id: send_button
                     icon: "send"
-                    size_hint_y: None
                     icon_size: dp(25)
 
                     on_release:

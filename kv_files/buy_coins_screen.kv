@@ -24,7 +24,6 @@
 
 <BuyCoinsScreen>
     name: 'buy_coins_screen'
-    md_bg_color: app.theme_cls.bg_light
 
     MDFloatLayout:
         md_bg_color: root.md_bg_color if bottom_sheet.state == 'close' else app.theme_cls.bg_dark
@@ -105,7 +104,10 @@
 
     MDBottomSheet:
         id: bottom_sheet
-        bg_color: app.theme_cls.primary_color
+        bg_color: root.md_bg_color
+        radius: [dp(25), dp(25), 0, 0]
+        elevation: dp(2) if self.state == 'open' else 0
+        shadow_color: app.theme_cls.primary_color
         max_opening_height: self.height
         default_opening_height: self.max_opening_height
         adaptive_height: True
@@ -123,18 +125,21 @@
                     size_hint_y: None
                     height: dp(40)
 
-                    Widget:
-                        size_hint_x: None
-                        width: dp(20)
-
                     MDLabel:
                         text: 'Select Payment Method'
-                        font_size: sp(14)
-                        bold: True
+                        font_size: sp(16)
+                        halign: 'center'
                         theme_text_color: 'Custom'
                         text_color: [0, 0, 0, .5] if app.theme_cls.theme_style == 'Light' else [1, 1, 1, 1]
 
-                ScrollView:
+                MDSeparator:
+                    size_hint_x: .7
+                    pos_hint: {'center_x': .5}
+                    md_bg_color: app.theme_cls.primary_color
+
+                MDScrollView:
+                    do_scroll_x: False
+                    effect_cls: ScrollEffect
 
                     MDGridLayout:
                         cols: 1

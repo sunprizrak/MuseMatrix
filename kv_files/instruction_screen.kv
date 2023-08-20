@@ -27,9 +27,8 @@
 
     MDBoxLayout:
         orientation: 'vertical'
-        md_bg_color: app.theme_cls.bg_light
 
-        MDTopAppBar:
+        MyTopAppBar:
             id: instruction_top_bar
             type_height: 'small'
             title: 'instruction'
@@ -242,14 +241,14 @@
                     InstBoxLayout:
 
                         MDLabel:
-                            text: "The chat gpt function gives you access to the chat gpt language model. New users receive 1000 chat tokens to use with chat gpt. The number of spent chat tokens is determined by the length of the message you entered. Chat Tokens can be obtained by converting coins into chat tokens.\n1 coin = 1000 chat tokens.\nThis can be done by pressing the add button, which is located to the right of the chat tokens in the drop-down menu of the application."
+                            text: "The chat gpt function gives you access to the chat gpt language model. New users receive 1000 chat tokens to use with chat gpt. The number of spent chat tokens is determined by the length of the message you entered. Chat Tokens can be obtained by converting coins into chat tokens.\n1 coin = 1000 chat tokens.\nThis can be done by pressing the transfer button, which is located to the right of the chat tokens in the drop-down menu of the application."
                             font_style: 'Instruction'
                             halign: 'left'
                             line_height: 1.5
                             adaptive_height: True
 
                         InstImage:
-                            source: 'assets/img/instruction_chat_tokens.png'
+                            source: 'assets/img/instruction_transfer_button.png'
 
             Tab:
                 title: 'Speech to text'

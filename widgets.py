@@ -1,18 +1,25 @@
+from kivy.core.clipboard import Clipboard
 from kivy.core.image import Image as CoreImage
 from kivy.core.window import Window
 from kivy.graphics import Color, Ellipse, Line
 from kivy.metrics import sp, dp
-from kivy.properties import ObjectProperty, ColorProperty, NumericProperty, ListProperty
+from kivy.properties import ObjectProperty, ColorProperty, NumericProperty, ListProperty, StringProperty
+from kivy.uix.behaviors import ButtonBehavior
+from kivymd.uix.behaviors import MagicBehavior, RectangularRippleBehavior
+from kivymd.uix.button import MDIconButton
 from kivymd.uix.floatlayout import MDFloatLayout
 from kivymd.uix.label import MDLabel
+from kivymd.uix.relativelayout import MDRelativeLayout
 from kivymd.uix.segmentedcontrol import MDSegmentedControl, MDSegmentedControlItem
 from kivy.uix.image import AsyncImage
 from kivy.uix.screenmanager import RiseInTransition
-from kivymd.uix.list import MDList, OneLineListItem, IRightBodyTouch
+from kivymd.uix.list import MDList, IRightBodyTouch
 from kivymd.uix.selection import MDSelectionList
 from kivymd.uix.selection.selection import SelectionItem, SelectionIconCheck
 from kivymd.uix.tab import MDTabsBase
 from kivymd.app import MDApp
+from kivymd.uix.toolbar import MDTopAppBar
+from kivymd.uix.tooltip import MDTooltip
 
 
 class MyImage(AsyncImage):
@@ -167,8 +174,8 @@ class MySelectionList(MDSelectionList):
     def set_selection_mode(self, instance_selection_list, mode):
         if mode:
             self.toolbar.left_action_items.remove(self.toolbar.left_action_items[0])
-            self.toolbar.left_action_items.append(["close", lambda x: self.unselected_all()])
-            self.toolbar.right_action_items.insert(0, ['trash-can', lambda x: self.screen.delete_images(widget_list=instance_selection_list.get_selected_list_items())])
+            self.toolbar.left_action_items.append(["close-thick", lambda x: self.unselected_all()])
+            self.toolbar.right_action_items.insert(0, ['delete', lambda x: self.screen.delete_images(widget_list=instance_selection_list.get_selected_list_items())])
         else:
             self.toolbar.left_action_items.remove(self.toolbar.left_action_items[0])
             self.toolbar.left_action_items.append(self.back_item)
@@ -183,17 +190,82 @@ class MySelectionList(MDSelectionList):
             self.toolbar.title = str(len(instance_selection_list.get_selected_list_items()))
 
 
-class Message(OneLineListItem):
-
-    def __init__(self, **kwargs):
-        super(Message, self).__init__(**kwargs)
-        self.ids._lbl_primary.shorten = False
-        self.ids._lbl_primary.size_hint_y = 1
-
-
 class RightLabel(IRightBodyTouch, MDLabel):
     pass
 
 
 class Tab(MDFloatLayout, MDTabsBase):
     '''Class implementing content for a tab.'''
+
+
+class MyIconButton(MagicBehavior, MDIconButton):
+
+    def __init__(self, **kwargs):
+        super(MyIconButton, self).__init__(**kwargs)
+        self._no_ripple_effect = True
+
+    def on_release(self):
+        self.grow()
+
+
+class ActionTopAppBarButton(MyIconButton, MDTooltip):
+    overflow_text = StringProperty()
+
+
+class MyTopAppBar(MDTopAppBar):
+
+    def __init__(self, **kwargs):
+        super(MyTopAppBar, self).__init__(**kwargs)
+
+    def update_action_bar(
+            self, instance_box_layout, action_bar_items: list
+    ) -> None:
+        instance_box_layout.clear_widgets()
+        new_width = 0
+
+        for item in action_bar_items:
+            new_width += dp(48)
+            if len(item) == 1:
+                item.append(lambda x: None)
+            if len(item) > 1 and not item[1]:
+                item[1] = lambda x: None
+            if len(item) == 2:
+                if isinstance(item[1], str) or isinstance(item[1], tuple):
+                    item.insert(1, lambda x: None)
+                else:
+                    item.append("")
+            if len(item) == 3:
+                if isinstance(item[2], tuple):
+                    item.insert(2, "")
+
+            instance_box_layout.add_widget(
+                ActionTopAppBarButton(
+                    icon=item[0],
+                    on_release=item[1],
+                    tooltip_text=item[2],
+                    overflow_text=item[3]
+                    if (len(item) == 4 and isinstance(item[3], str))
+                    else "",
+                    theme_text_color="Custom"
+                    if not self.opposite_colors
+                    else "Primary",
+                    text_color=self.specific_text_color
+                    if not (len(item) == 4 and isinstance(item[3], tuple))
+                    else item[3],
+                    opposite_colors=self.opposite_colors,
+                    md_bg_color=self.md_bg_color,
+                )
+            )
+
+        instance_box_layout.width = new_width
+
+
+class Message(RectangularRippleBehavior, ButtonBehavior, MDRelativeLayout):
+    message = StringProperty()
+    time = StringProperty()
+    image_path = StringProperty()
+    triangle_points = ListProperty()
+
+    def on_release(self):
+        Clipboard.copy(self.message)
+

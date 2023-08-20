@@ -13,7 +13,7 @@ package.domain = org.musematrix
 source.dir = .
 
 # (list) Source files to include (let empty to include all the files)
-source.include_exts = py,png,jpg,kv,atlas,ttf,java
+source.include_exts = py,png,jpg,kv,atlas,ttf,gif
 
 # (list) List of inclusions using pattern matching
 #source.include_patterns = assets/*,images/*.png
@@ -29,7 +29,7 @@ source.exclude_dirs = tests, bin, venv, .git, .idea
 #source.exclude_patterns = license,images/*/*.jpg
 
 # (str) Application versioning (method 1)
-version = 0.73
+version = 0.74
 
 # (str) Application versioning (method 2)
 # version.regex = __version__ = ['"](.*)['"]
