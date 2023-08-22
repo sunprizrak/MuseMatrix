@@ -75,6 +75,8 @@ class OpenAIController:
             url=self.path_chat_completion,
             method='GET',
             on_success=kwargs.get('on_success'),
+            on_error=kwargs.get('on_error'),
+            on_failure=kwargs.get('on_failure'),
             req_headers={
                 'Content-type': 'application/json',
                 'Authorization': f"Token {self.app.storage.get('auth_token').get('token')}",

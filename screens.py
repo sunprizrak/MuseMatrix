@@ -725,7 +725,11 @@ class ChatGptScreen(BaseScreen):
             label.texture_update()
             width, height = label.texture_size
 
-            max_width = dp(Window.width / 100 * 80)
+            if platform == 'android':
+                max_width = dp((Window.width * 0.3) / 100 * 80)
+            else:
+                max_width = dp(Window.width / 100 * 80)
+
             min_width = dp(60)
 
             if width > max_width:
@@ -773,6 +777,7 @@ class ChatGptScreen(BaseScreen):
         def _output_error(error):
             self.ids.chat_gpt.data.pop(-1)
             self.ids.send_button.disabled = False
+            print(error)
 
         def _on_error(request, error):
             _output_error(error)
@@ -810,6 +815,8 @@ class ChatGptScreen(BaseScreen):
             self.openai_controller.chat_completion(
                 prompt=self.prompt,
                 on_success=_on_success,
+                on_error=_on_error,
+                on_failure=_on_failure,
             )
 
 

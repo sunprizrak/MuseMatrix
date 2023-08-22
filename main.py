@@ -1,3 +1,5 @@
+__version__ = '0.75'
+
 import base64
 import io
 import os
@@ -23,7 +25,6 @@ from controller.user import UserController
 from settings import ID_REWARD_INTERSTITIAL
 
 os.environ["KIVY_AUDIO"] = "ffpyplayer"
-
 
 if platform == 'android':
     from android import api_version, loadingscreen
@@ -114,6 +115,10 @@ class MainApp(MDApp):
         if platform == 'android':
             self.load_ads_video()
         pass
+
+    @staticmethod
+    def get_version():
+        return __version__
 
     def change_android_color(self, *args, **kwargs):
         if platform == 'android':
