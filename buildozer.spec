@@ -37,7 +37,7 @@ version.filename = %(source.dir)s/main.py
 
 # (list) Application requirements
 # comma separated e.g. requirements = sqlite3,kivy
-requirements = python3, kivy==master, https://github.com/kivymd/KivyMD/archive/master.zip, pillow, pygments, sdl2_ttf, requests, urllib3, chardet, idna, certifi, androidstorage4kivy, iabwrapper, ffpyplayer, ffpyplayer_codecs
+requirements = python3, https://github.com/kivy/kivy/archive/stable.zip, https://github.com/kivymd/KivyMD/archive/master.zip, pillow, pygments, sdl2_ttf, requests, urllib3, chardet, idna, certifi, androidstorage4kivy, iabwrapper, ffpyplayer, ffpyplayer_codecs
 
 # (str) Custom source folders for requirements
 # Sets custom source for any requirements with recipes
@@ -68,7 +68,7 @@ orientation = portrait
 osx.python_version = 3
 
 # Kivy version to use
-osx.kivy_version = master
+osx.kivy_version = stable
 
 #
 # Android specific
