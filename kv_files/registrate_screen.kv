@@ -26,6 +26,8 @@
 
                 MDActionTopAppBarButton:
                     icon: 'arrow-left-bold'
+                    ripple_effect: False
+                    focus_behavior: False
                     on_release:
                         app.back(screen='start_screen')
 
@@ -66,10 +68,12 @@
                         theme_font_name: "Custom"
                         font_name: 'Hacked'
 
-                MyIconButton:
+                MDIconButton:
                     icon: "eye"
                     pos_hint: {"center_y": .45}
                     pos: password_field.width - self.width, 0
+                    ripple_effect: False
+                    focus_behavior: False
                     theme_text_color: "Custom"
                     text_color: password_field.text_color_focus if password_field.focus else 'white'
                     on_release:
@@ -91,10 +95,12 @@
                         theme_font_name: "Custom"
                         font_name: 'Hacked'
 
-                MyIconButton:
+                MDIconButton:
                     icon: "eye"
                     pos_hint: {"center_y": .45}
                     pos: re_password_field.width - self.width, 0
+                    ripple_effect: False
+                    focus_behavior: False
                     theme_text_color: "Custom"
                     text_color: re_password_field.text_color_focus if re_password_field.focus else 'white'
                     on_release:
@@ -120,5 +126,7 @@
                         pos_hint: {'center_x': .5}
                         theme_font_name: 'Custom'
                         font_name: 'Hacked'
+                        theme_text_color: 'Custom'
+                        text_color: 'white'
                         font_style: 'Display'
                         role: 'small'

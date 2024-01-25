@@ -15,7 +15,6 @@ from kivymd.uix.dialog import (
     MDDialogButtonContainer,
     MDDialogContentContainer,
 )
-from kivymd.uix.divider import MDDivider
 from kivymd.uix.filemanager import MDFileManager
 from kivymd.uix.transition import MDSlideTransition
 from kivy.utils import platform
@@ -85,7 +84,7 @@ class MainApp(MDApp):
         self.theme_initial()
 
         Window.softinput_mode = 'below_target'
-        # Window.bind(on_keyboard=self.key_input)
+        Window.bind(on_keyboard=self.key_input)
 
         # Loader.loading_image = 'assets/img/transparent.png'
 
@@ -94,7 +93,7 @@ class MainApp(MDApp):
 
     def on_start(self):
         super().on_start()
-    #     # self.check_user_authentication()
+        self.check_user_authentication()
 
     def on_resume(self):
         if platform == 'android':

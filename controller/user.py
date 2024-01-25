@@ -67,7 +67,7 @@ class UserController:
 
     def authorized(self):
         self._get_data_user()
-        self.image_controller.get_image_list()
+        # self.image_controller.get_image_list()
 
         if self.app.root.current == 'login_screen':
             self.app.root.transition = MDSwapTransition()

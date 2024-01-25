@@ -27,8 +27,8 @@ from os.path import join, exists
 from PIL import Image as PilImage
 from kivy.utils import platform
 from controller.user import UserController
-# from controller.openai import OpenAIController
-# from controller.image import ImageController
+from controller.openai import OpenAIController
+from controller.image import ImageController
 import logging
 from kivy.clock import Clock
 
@@ -43,28 +43,28 @@ class BaseScreen(MDScreen):
     def __init__(self, **kwargs):
         super(BaseScreen, self).__init__(**kwargs)
         self.app = MDApp.get_running_app()
-        self.md_bg_color = '#1F1F1F'
+        self.md_bg_color = '#131416' # self.app.theme_cls.backgroundColor
 
 
-# class ImageScreen(BaseScreen):
-#     image_count = BoundedNumericProperty(1, min=1, max=10, errorhandler=lambda x: 10 if x > 10 else 1)
-#     image_size = StringProperty('256x256')
-#     price = NumericProperty()
-#
-#     def __init__(self, **kwargs):
-#         super(ImageScreen, self).__init__(**kwargs)
-#         self.openai_controller = OpenAIController()
-#         self.user_controller = UserController()
-#
-#     def on_pre_enter(self, *args):
-#         if platform == 'android':
-#             color_nav = self.theme_cls.primary_color
-#             self.app.change_android_color(color_nav=color_nav)
-#
-#     def on_pre_leave(self, *args):
-#         if platform == 'android':
-#             self.app.change_android_color()
-#
+class ImageScreen(BaseScreen):
+    image_count = BoundedNumericProperty(1, min=1, max=10, errorhandler=lambda x: 10 if x > 10 else 1)
+    image_size = StringProperty('256x256')
+    price = NumericProperty()
+
+    def __init__(self, **kwargs):
+        super(ImageScreen, self).__init__(**kwargs)
+        self.openai_controller = OpenAIController()
+        self.user_controller = UserController()
+
+    def on_pre_enter(self, *args):
+        if platform == 'android':
+            color_nav = self.theme_cls.primary_color
+            self.app.change_android_color(color_nav=color_nav)
+
+    def on_pre_leave(self, *args):
+        if platform == 'android':
+            self.app.change_android_color()
+
 
 class StartScreen(BaseScreen):
     pass
@@ -325,150 +325,150 @@ class RegistrateScreen(BaseScreen):
 #         )
 #
 #
-# class MainScreen(BaseScreen):
-#     email = StringProperty('email')
-#     coin = NumericProperty()
-#     chat_token = NumericProperty()
-#     avatar = StringProperty('avatar')
-#
-#     def __init__(self, **kwargs):
-#         super(MainScreen, self).__init__(**kwargs)
-#         self.user_controller = UserController()
-#
-#     def add_chat_token(self):
-#         def _on_success(request, response):
-#             self.user_controller.user.update(data_user=response)
-#             self.coin = self.user_controller.user.coin
-#             self.chat_token = self.user_controller.user.chat_token
-#
-#         if self.coin > 0:
-#             data = {'coin': self.coin - 1, 'chat_token': self.chat_token + 1000}
-#             self.user_controller.update_user(fields=data, on_success=_on_success)
-#         else:
-#             self.app.show_dialog()
-#             self.app.dialog.title = 'Notice!'
-#             self.app.dialog.text = 'Not enough coins. Replenishment requires 1 coin(1 coin = 1000 chat tokens)'
-#
-#     def show_ads(self):
-#         if platform == 'android':
-#             self.app.reward_interstitial.show()
-#
-#     def open_settings(self):
-#         self.ids.nav_drawer.set_state("close")
-#         self.app.root.transition = MDSwapTransition()
-#         self.app.root.current = 'settings_screen'
-#
-#     def open_collection(self):
-#         screen = self.app.root.current
-#         self.app.root.ids.collection_screen.ids.selection_list.back_item = ['arrow-left-bold', lambda x: self.app.back(screen)]
-#         self.ids.nav_drawer.set_state("close")
-#         self.app.root.transition = MDSwapTransition()
-#         self.app.root.current = 'collection_screen'
-#
-#     def open_buy_credits(self):
-#         self.ids.nav_drawer.set_state('close')
-#         self.app.root.transition = MDSwapTransition()
-#         self.app.root.current = 'buy_coins_screen'
-#
-#     def exit(self):
-#         self.ids.nav_drawer.set_state("close")
-#         self.user_controller.un_login()
-#
-#
-# class CreateImageScreen(ImageScreen):
-#     prompt = StringProperty()
-#
-#     def generate(self):
-#
-#         def _on_success(request, response):
-#             self.ids.create_spin.active = False
-#
-#             if 'data' in response:
-#                 self.user_controller.user.coin = response.get('coin')
-#                 self.app.root.ids.main_screen.coin = self.user_controller.user.coin
-#
-#                 if len(response['data']) == 1:
-#                     url = response['data'][0].get('url')
-#
-#                     image = MyImage(
-#                         source=url,
-#                         fit_mode='contain',
-#                         mipmap=True,
-#                     )
-#
-#                     self.ids.image_section.add_widget(image)
-#                 elif len(response['data']) > 1:
-#                     swiper = MDSwiper(
-#                         size_hint_y=None,
-#                         pos_hint={'center_x': .5, 'center_y': .5},
-#                         height=self.ids.image_section.height,
-#                     )
-#
-#                     for index, el in enumerate(response['data']):
-#                         url = el.get('url')
-#
-#                         item = MDSwiperItem()
-#
-#                         image = MyImage(
-#                             source=url,
-#                             mipmap=True,
-#                             fit_mode='contain',
-#                             index=index,
-#                         )
-#
-#                         item.add_widget(image)
-#                         swiper.add_widget(item)
-#
-#                     self.ids.image_section.add_widget(swiper)
-#             elif 'notice' in response:
-#                 image = Image(
-#                     source='assets/img/default.png',
-#                     mipmap=True,
-#                 )
-#
-#                 self.ids.image_section.add_widget(image)
-#
-#                 self.app.show_dialog()
-#                 self.app.dialog.title = 'Notice!'
-#                 self.app.dialog.text = response['notice']
-#
-#         def _output_error(error):
-#             self.ids.create_spin.active = False
-#             if type(error) is dict:
-#                 if {'error'} & set(error):
-#                     self.app.show_dialog()
-#                     self.app.dialog.text = error.get('error')
-#
-#             image = Image(
-#                 source='assets/img/default.png',
-#                 mipmap=True,
-#             )
-#
-#             self.ids.image_section.add_widget(image)
-#
-#         def _on_failure(request, response):
-#             _output_error(response)
-#
-#         def _on_error(request, error):
-#             _output_error(error)
-#
-#         if all([self.prompt, self.image_count, self.image_size]):
-#             for widget in self.ids.image_section.children:
-#                 if isinstance(widget, MyImage) or isinstance(widget, MDSwiper) or isinstance(widget, Image):
-#                     self.ids.image_section.remove_widget(widget)
-#
-#             self.ids.create_spin.active = True
-#
-#             self.openai_controller.image_generation(
-#                 prompt=self.prompt,
-#                 image_count=self.image_count,
-#                 image_size=self.image_size,
-#                 on_success=_on_success,
-#                 on_error=_on_error,
-#                 on_failure=_on_failure,
-#             )
-#
-#
+class MainScreen(BaseScreen):
+    email = StringProperty('email')
+    coin = NumericProperty()
+    chat_token = NumericProperty()
+    avatar = StringProperty('avatar')
+
+    def __init__(self, **kwargs):
+        super(MainScreen, self).__init__(**kwargs)
+        self.user_controller = UserController()
+
+    def add_chat_token(self):
+        def _on_success(request, response):
+            self.user_controller.user.update(data_user=response)
+            self.coin = self.user_controller.user.coin
+            self.chat_token = self.user_controller.user.chat_token
+
+        if self.coin > 0:
+            data = {'coin': self.coin - 1, 'chat_token': self.chat_token + 1000}
+            self.user_controller.update_user(fields=data, on_success=_on_success)
+        else:
+            self.app.show_dialog()
+            self.app.dialog.title = 'Notice!'
+            self.app.dialog.text = 'Not enough coins. Replenishment requires 1 coin(1 coin = 1000 chat tokens)'
+
+    def show_ads(self):
+        if platform == 'android':
+            self.app.reward_interstitial.show()
+
+    def open_settings(self):
+        self.ids.nav_drawer.set_state("close")
+        self.app.root.transition = MDSwapTransition()
+        self.app.root.current = 'settings_screen'
+
+    def open_collection(self):
+        screen = self.app.root.current
+        self.app.root.ids.collection_screen.ids.selection_list.back_item = ['arrow-left-bold', lambda x: self.app.back(screen)]
+        self.ids.nav_drawer.set_state("close")
+        self.app.root.transition = MDSwapTransition()
+        self.app.root.current = 'collection_screen'
+
+    def open_buy_credits(self):
+        self.ids.nav_drawer.set_state('close')
+        self.app.root.transition = MDSwapTransition()
+        self.app.root.current = 'buy_coins_screen'
+
+    def exit(self):
+        self.ids.nav_drawer.set_state("close")
+        self.user_controller.un_login()
+
+
+class CreateImageScreen(ImageScreen):
+    prompt = StringProperty()
+
+    # def generate(self):
+    #
+    #     def _on_success(request, response):
+    #         self.ids.create_spin.active = False
+    #
+    #         if 'data' in response:
+    #             self.user_controller.user.coin = response.get('coin')
+    #             self.app.root.ids.main_screen.coin = self.user_controller.user.coin
+    #
+    #             if len(response['data']) == 1:
+    #                 url = response['data'][0].get('url')
+    #
+    #                 image = MyImage(
+    #                     source=url,
+    #                     fit_mode='contain',
+    #                     mipmap=True,
+    #                 )
+    #
+    #                 self.ids.image_section.add_widget(image)
+    #             elif len(response['data']) > 1:
+    #                 swiper = MDSwiper(
+    #                     size_hint_y=None,
+    #                     pos_hint={'center_x': .5, 'center_y': .5},
+    #                     height=self.ids.image_section.height,
+    #                 )
+    #
+    #                 for index, el in enumerate(response['data']):
+    #                     url = el.get('url')
+    #
+    #                     item = MDSwiperItem()
+    #
+    #                     image = MyImage(
+    #                         source=url,
+    #                         mipmap=True,
+    #                         fit_mode='contain',
+    #                         index=index,
+    #                     )
+    #
+    #                     item.add_widget(image)
+    #                     swiper.add_widget(item)
+    #
+    #                 self.ids.image_section.add_widget(swiper)
+    #         elif 'notice' in response:
+    #             image = Image(
+    #                 source='assets/img/default.png',
+    #                 mipmap=True,
+    #             )
+    #
+    #             self.ids.image_section.add_widget(image)
+    #
+    #             self.app.show_dialog()
+    #             self.app.dialog.title = 'Notice!'
+    #             self.app.dialog.text = response['notice']
+    #
+    #     def _output_error(error):
+    #         self.ids.create_spin.active = False
+    #         if type(error) is dict:
+    #             if {'error'} & set(error):
+    #                 self.app.show_dialog()
+    #                 self.app.dialog.text = error.get('error')
+    #
+    #         image = Image(
+    #             source='assets/img/default.png',
+    #             mipmap=True,
+    #         )
+    #
+    #         self.ids.image_section.add_widget(image)
+    #
+    #     def _on_failure(request, response):
+    #         _output_error(response)
+    #
+    #     def _on_error(request, error):
+    #         _output_error(error)
+    #
+    #     if all([self.prompt, self.image_count, self.image_size]):
+    #         for widget in self.ids.image_section.children:
+    #             if isinstance(widget, MyImage) or isinstance(widget, MDSwiper) or isinstance(widget, Image):
+    #                 self.ids.image_section.remove_widget(widget)
+    #
+    #         self.ids.create_spin.active = True
+    #
+    #         self.openai_controller.image_generation(
+    #             prompt=self.prompt,
+    #             image_count=self.image_count,
+    #             image_size=self.image_size,
+    #             on_success=_on_success,
+    #             on_error=_on_error,
+    #             on_failure=_on_failure,
+    #         )
+
+
 # class EditImageScreen(ImageScreen):
 #     prompt = StringProperty()
 #     image_original = io.BytesIO()

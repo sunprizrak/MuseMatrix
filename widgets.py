@@ -1,3 +1,4 @@
+from kivy.clock import Clock
 from kivy.core.clipboard import Clipboard
 from kivy.core.image import Image as CoreImage
 from kivy.core.window import Window
@@ -11,17 +12,17 @@ from kivymd.uix.button import MDIconButton
 from kivymd.uix.floatlayout import MDFloatLayout
 from kivymd.uix.label import MDLabel
 from kivymd.uix.relativelayout import MDRelativeLayout
-#from kivymd.uix.segmentedcontrol import MDSegmentedControl, MDSegmentedControlItem
+
 from kivy.uix.image import AsyncImage
 from kivy.uix.screenmanager import RiseInTransition
 # from kivymd.uix.list import MDList, IRightBodyTouch
-# from kivymd.uix.segmentedbutton import MDSegmentedButtonItem, MDSegmentedButton
+from kivymd.uix.segmentedbutton import MDSegmentedButtonItem, MDSegmentedButton
 # from kivymd.uix.selection import MDSelectionList
 # from kivymd.uix.selection.selection import SelectionItem, SelectionIconCheck
 # from kivymd.uix.tab import MDTabsBase
 from kivymd.app import MDApp
+from kivymd.uix.segmentedbutton.segmentedbutton import MDSegmentedButtonContainer
 from kivymd.uix.tooltip import MDTooltip
-
 
 # class MyImage(AsyncImage):
 #     img_id = NumericProperty()
@@ -126,19 +127,45 @@ from kivymd.uix.tooltip import MDTooltip
 #             for el in self.canvas.children:
 #                 if isinstance(el, Ellipse) or isinstance(el, Line):
 #                     self.canvas.children.remove(el)
+#
 
 
-# class MySegmentedControl(MDSegmentedButton):
-#
-#     def update_segment_panel_width(
-#         self, widget: MDSegmentedButtonItem
-#     ) -> None:
-#         widget.text_size = (None, None)
-#         widget.font_size = sp(16)
-#         widget.texture_update()
-#         self.ids.segment_panel.width = Window.width
-#
-#
+class MySegmentedButton(MDSegmentedButton):
+    def __init__(self, **kwargs):
+        super(MySegmentedButton, self).__init__(**kwargs)
+        self.theme_bg_color = 'Custom'
+        self.md_bg_color = 'red'
+        self.line_color = 'red'
+        print(self.radius)
+
+    def adjust_segment_radius(self, *args) -> None:
+        """Rounds off the first and last elements."""
+
+        if self.ids.container.children[0].radius == [0, 0, 0, 0]:
+            self.ids.container.children[0].radius = (
+                0,
+                self.height / 2,
+                0,
+                0,
+            )
+        if self.ids.container.children[-1].radius == [0, 0, 0, 0]:
+            self.ids.container.children[-1].radius = (
+                self.height / 2,
+                0,
+                0,
+                0,
+            )
+
+    def add_widget(self, widget, *args, **kwargs):
+        if isinstance(widget, MDSegmentedButtonItem):
+            widget._segmented_button = self
+            widget.bind(on_release=self.mark_item)
+            self.ids.container.add_widget(widget)
+            # Clock.schedule_once(self.adjust_segment_radius)
+        elif isinstance(widget, MDSegmentedButtonContainer):
+            return super(MySegmentedButton, self).add_widget(widget)
+
+
 # class MySelectionList(MDSelectionList):
 #     screen = ObjectProperty()
 #     toolbar = ObjectProperty()
@@ -198,20 +225,20 @@ from kivymd.uix.tooltip import MDTooltip
 # #     '''Class implementing content for a tab.'''
 # #
 #
-class MyIconButton(MagicBehavior, MDIconButton):
-
-    def __init__(self, **kwargs):
-        super(MyIconButton, self).__init__(**kwargs)
-        self._no_ripple_effect = True
-
-    def on_release(self):
-        self.grow()
+# class MyIconButton(MagicBehavior, MDIconButton):
+#
+#     def __init__(self, **kwargs):
+#         super(MyIconButton, self).__init__(**kwargs)
+#         self.ripple_effect = False
+#
+#     def on_release(self):
+#         self.grow()
 
 
 # class ActionTopAppBarButton(MyIconButton, MDTooltip):
 #     overflow_text = StringProperty()
-#
-#
+
+
 # class MyTopAppBar(MDTopAppBar):
 #
 #     def __init__(self, **kwargs):
