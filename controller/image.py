@@ -1,6 +1,6 @@
 from kivymd.app import MDApp
 from models import Image
-from widgets import MyImage
+# from widgets import MyImage
 from kivy.network.urlrequest import UrlRequest
 from settings import host_name
 import json

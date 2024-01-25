@@ -1,5 +1,4 @@
-Cython
-pygame
-Kivy @ https://github.com/kivy/kivy/archive/stable.zip
+# Cython==0.29.37
+Kivy[full] @ https://github.com/kivy/kivy/archive/stable.zip
 kivymd @ https://github.com/kivymd/KivyMD/archive/master.zip
 buildozer @ https://github.com/kivy/buildozer/archive/master.zip
