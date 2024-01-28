@@ -2,14 +2,16 @@ import time
 from kivy import Logger
 from kivy.core.clipboard import Clipboard
 from kivy.core.window import Window
+from kivy.graphics import Color, Rectangle
 from kivy.metrics import sp, dp
 from kivy.uix.image import Image
 from kivy.uix.label import Label
 from kivy.uix.screenmanager import FallOutTransition
 from kivy.properties import StringProperty, ObjectProperty, BoundedNumericProperty, NumericProperty
 from kivymd.app import MDApp
+from kivymd.uix.appbar import MDTopAppBar, MDTopAppBarLeadingButtonContainer, MDActionTopAppBarButton
 from kivymd.uix.boxlayout import MDBoxLayout
-from kivymd.uix.button import MDButton, MDButtonText
+from kivymd.uix.button import MDButton, MDButtonText, MDButtonIcon
 from kivymd.uix.divider import MDDivider
 from kivymd.uix.label import MDLabel
 from kivymd.uix.chip import MDChip, MDChipText
@@ -19,7 +21,7 @@ from kivymd.uix.swiper import MDSwiperItem, MDSwiper
 from kivy.core.image import Image as CoreImage
 from kivymd.uix.textfield import MDTextField, MDTextFieldHintText, MDTextFieldHelperText
 from kivymd.uix.transition import MDSwapTransition
-# from widgets import MyImage
+from widgets import MyImage
 import io
 import base64
 import uuid
@@ -31,6 +33,7 @@ from controller.openai import OpenAIController
 from controller.image import ImageController
 import logging
 from kivy.clock import Clock
+from kivy.uix.carousel import Carousel
 
 logging.getLogger('PIL').setLevel(logging.WARNING)
 
@@ -48,7 +51,7 @@ class BaseScreen(MDScreen):
 
 class ImageScreen(BaseScreen):
     image_count = BoundedNumericProperty(1, min=1, max=10, errorhandler=lambda x: 10 if x > 10 else 1)
-    image_size = StringProperty('256x256')
+    image_size = StringProperty()
     price = NumericProperty()
 
     def __init__(self, **kwargs):
@@ -377,96 +380,185 @@ class MainScreen(BaseScreen):
 
 class CreateImageScreen(ImageScreen):
     prompt = StringProperty()
+    dall_model = StringProperty()
+    section_option = ObjectProperty()
 
-    # def generate(self):
-    #
-    #     def _on_success(request, response):
-    #         self.ids.create_spin.active = False
-    #
-    #         if 'data' in response:
-    #             self.user_controller.user.coin = response.get('coin')
-    #             self.app.root.ids.main_screen.coin = self.user_controller.user.coin
-    #
-    #             if len(response['data']) == 1:
-    #                 url = response['data'][0].get('url')
-    #
-    #                 image = MyImage(
-    #                     source=url,
-    #                     fit_mode='contain',
-    #                     mipmap=True,
-    #                 )
-    #
-    #                 self.ids.image_section.add_widget(image)
-    #             elif len(response['data']) > 1:
-    #                 swiper = MDSwiper(
-    #                     size_hint_y=None,
-    #                     pos_hint={'center_x': .5, 'center_y': .5},
-    #                     height=self.ids.image_section.height,
-    #                 )
-    #
-    #                 for index, el in enumerate(response['data']):
-    #                     url = el.get('url')
-    #
-    #                     item = MDSwiperItem()
-    #
-    #                     image = MyImage(
-    #                         source=url,
-    #                         mipmap=True,
-    #                         fit_mode='contain',
-    #                         index=index,
-    #                     )
-    #
-    #                     item.add_widget(image)
-    #                     swiper.add_widget(item)
-    #
-    #                 self.ids.image_section.add_widget(swiper)
-    #         elif 'notice' in response:
-    #             image = Image(
-    #                 source='assets/img/default.png',
-    #                 mipmap=True,
-    #             )
-    #
-    #             self.ids.image_section.add_widget(image)
-    #
-    #             self.app.show_dialog()
-    #             self.app.dialog.title = 'Notice!'
-    #             self.app.dialog.text = response['notice']
-    #
-    #     def _output_error(error):
-    #         self.ids.create_spin.active = False
-    #         if type(error) is dict:
-    #             if {'error'} & set(error):
-    #                 self.app.show_dialog()
-    #                 self.app.dialog.text = error.get('error')
-    #
-    #         image = Image(
-    #             source='assets/img/default.png',
-    #             mipmap=True,
-    #         )
-    #
-    #         self.ids.image_section.add_widget(image)
-    #
-    #     def _on_failure(request, response):
-    #         _output_error(response)
-    #
-    #     def _on_error(request, error):
-    #         _output_error(error)
-    #
-    #     if all([self.prompt, self.image_count, self.image_size]):
-    #         for widget in self.ids.image_section.children:
-    #             if isinstance(widget, MyImage) or isinstance(widget, MDSwiper) or isinstance(widget, Image):
-    #                 self.ids.image_section.remove_widget(widget)
-    #
-    #         self.ids.create_spin.active = True
-    #
-    #         self.openai_controller.image_generation(
-    #             prompt=self.prompt,
-    #             image_count=self.image_count,
-    #             image_size=self.image_size,
-    #             on_success=_on_success,
-    #             on_error=_on_error,
-    #             on_failure=_on_failure,
-    #         )
+    def segment_dall_model(self):
+        self.image_size = ''
+        self.image_count = 1
+
+        for button in self.ids.seg_size.children[0].children:
+            button.active = False
+
+    def generate(self):
+        def _on_success(request, response):
+            if 'data' in response:
+                self.ids.create_spin.active = False
+                self.user_controller.user.coin = response.get('coin')
+                self.app.root.ids.main_screen.coin = self.user_controller.user.coin
+
+                section_image = MDBoxLayout(
+                    orientation='vertical',
+                )
+
+                self.ids.create_layout.add_widget(section_image)
+
+                create_new_wrap = MDBoxLayout(
+                    orientation='horizontal',
+                    adaptive_size=True,
+                    padding=[dp(0), dp(10), dp(0), dp(10)],
+                    pos_hint={'center_x': .75},
+                )
+
+                def _return_section_option():
+                    self.ids.create_layout.remove_widget(section_image)
+                    self.ids.create_layout.add_widget(self.section_option)
+
+                create_new_button = MDButton(
+                    MDButtonIcon(icon='plus'),
+                    MDButtonText(
+                        text='Create new',
+                        theme_font_name="Custom",
+                        font_name='Hacked',
+                    ),
+                    style='elevated',
+                    on_release=lambda x: _return_section_option(),
+                )
+
+                create_new_wrap.add_widget(create_new_button)
+
+                section_image.add_widget(create_new_wrap)
+
+                if len(response['data']) == 1:
+                    url = response['data'][0].get('url')
+
+                    image = MyImage(
+                        source=url,
+                        fit_mode='contain',
+                        mipmap=True,
+                    )
+
+                    section_image.add_widget(image)
+                elif len(response['data']) > 1:
+                    carousel = Carousel()
+
+                    for index, el in enumerate(response['data']):
+                        url = el.get('url')
+
+                        image = MyImage(
+                            source=url,
+                            mipmap=True,
+                            fit_mode='contain',
+                            index=index,
+                        )
+
+                        carousel.add_widget(image)
+
+                    section_image.add_widget(carousel)
+
+                save_image_wrap = MDBoxLayout(
+                    orientation='horizontal',
+                    adaptive_size=True,
+                    padding=[dp(30), dp(10), dp(30), dp(30)],
+                    pos_hint={'center_x': .5},
+                )
+
+                save_image_button = MDButton(
+                    MDButtonIcon(icon='content-save'),
+                    MDButtonText(
+                        text='Save image',
+                        theme_font_name="Custom",
+                        font_name='Hacked',
+                    ),
+                    style='elevated',
+                )
+
+                save_image_wrap.add_widget(save_image_button)
+
+                section_image.add_widget(save_image_wrap)
+
+            elif 'notice' in response:
+                def _callback_one():
+                    self.ids.create_spin.active = False
+
+                    content = MDBoxLayout(
+                        MDLabel(
+                            text=response['notice'],
+                            padding=[0, dp(10), 0, 0],
+                        ),
+                    )
+
+                    self.app.show_dialog(
+                        title='Oops!',
+                        content=content,
+                    )
+
+                Clock.schedule_once(lambda dt: _callback_one(), 1)
+
+                def _callback_two():
+                    self.ids.create_layout.add_widget(self.section_option)
+
+                Clock.schedule_once(lambda dt: _callback_two(), timeout=2)
+
+        def _output_error(error):
+            def _callback_one():
+                self.ids.create_spin.active = False
+
+                error_text = 'error'
+
+                if type(error) is dict:
+                    if {'error'} & set(error):
+                        error_text = error.get['error']
+                elif type(error) is ConnectionRefusedError:
+                    error_text = error.strerror
+
+                content = MDBoxLayout(
+                    MDLabel(
+                        text=error_text,
+                        padding=[0, dp(10), 0, 0],
+                    ),
+                )
+
+                self.app.show_dialog(
+                    title='Oops!',
+                    content=content,
+                )
+
+            Clock.schedule_once(lambda dt: _callback_one(), 1)
+
+            def _callback_two():
+                self.ids.create_layout.add_widget(self.section_option)
+
+            Clock.schedule_once(lambda dt: _callback_two(), timeout=2)
+
+        def _on_failure(request, response):
+            _output_error(response)
+
+        def _on_error(request, error):
+            _output_error(error)
+
+        print(self.dall_model)
+        print(self.prompt)
+        print(self.image_count)
+        print(self.image_size)
+
+        if all([self.dall_model, self.prompt, self.image_count, self.image_size]):
+
+            self.ids.create_spin.active = True
+
+            self.section_option = self.ids.section_option
+
+            self.ids.create_layout.remove_widget(self.ids.section_option)
+
+            self.openai_controller.image_generation(
+                dall_model=self.dall_model,
+                prompt=self.prompt,
+                image_count=self.image_count,
+                image_size=self.image_size,
+                on_success=_on_success,
+                on_error=_on_error,
+                on_failure=_on_failure,
+            )
 
 
 # class EditImageScreen(ImageScreen):

@@ -27,6 +27,7 @@ class OpenAIController:
                 'Authorization': f"Token {self.app.storage.get('auth_token').get('token')}",
             },
             req_body=json.dumps({
+                'dall_model': kwargs.get('dall_model'),
                 'prompt': kwargs.get('prompt'),
                 'image_count': kwargs.get('image_count'),
                 'image_size': kwargs.get('image_size'),
