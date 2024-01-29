@@ -1,10 +1,9 @@
-#:import StartScreen screens
+#:import StartScreen screens.start
 #:import MDSwapTransition kivymd.uix.transition.transition.MDSwapTransition
 #:import MDSlideTransition kivymd.uix.transition.transition.MDSlideTransition
 #:import get_hex_from_color kivy.utils.get_hex_from_color
 
 <LogoBox@CommonElevationBehavior+MDBoxLayout>:
-
 
 
 <StartScreen>:
@@ -29,7 +28,7 @@
                 source: 'assets/img/logo_app.png'
                 fit_mode: 'contain'
                 mipmap: True
-#
+
         MDLabel:
             text: 'MuseMatrix'
             font_style: 'Display'
@@ -93,4 +92,3 @@
                         text_color: '#131416'
                         font_style: 'Display'
                         role: 'small'
-

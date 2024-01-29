@@ -1,4 +1,4 @@
-#:import CreateImageScreen screens
+#:import CreateImageScreen screens.create_image
 
 <CreateImageScreen>
     name: 'create_image_screen'
@@ -16,7 +16,7 @@
                 id: create_top_bar
                 type: 'small'
                 theme_bg_color: 'Custom'
-                md_bg_color: root.md_bg_color
+                md_bg_color: self.theme_cls.backgroundColor
 
                 MDTopAppBarLeadingButtonContainer:
 

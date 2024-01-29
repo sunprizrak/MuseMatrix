@@ -1,3 +1,4 @@
+import logging
 from kivy.core.image import Image as CoreImage
 from kivy.core.audio import SoundLoader
 from kivy.core.text import LabelBase
@@ -16,7 +17,6 @@ from kivymd.uix.dialog import (
     MDDialogContentContainer,
 )
 from kivymd.uix.filemanager import MDFileManager
-from kivymd.uix.menu import MDDropdownMenu
 from kivymd.uix.transition import MDSlideTransition
 from kivy.utils import platform
 from kivy.clock import mainthread
@@ -31,14 +31,14 @@ import os
 
 __version__ = '0.76'
 
-
+logging.getLogger('PIL').setLevel(logging.WARNING)
 os.environ["KIVY_AUDIO"] = "ffpyplayer"
 
 if platform == 'android':
     from android import api_version, loadingscreen
     from android.permissions import request_permissions, check_permission, Permission
     from androidstorage4kivy import SharedStorage, Chooser
-    from utility.kivads import KivAds, RewardedInterstitial
+    from kivads import KivAds, RewardedInterstitial
 elif platform == 'linux':
     Window.size = (360, 600)
 
@@ -75,14 +75,13 @@ class MainApp(MDApp):
             self.storage = JsonStore('storage.json')
 
     def build(self):
+        self.theme_initial()
 
         if platform == 'android':
             loadingscreen.hide_loading_screen()
 
             if not self.check_android_permissions:
                 self.req_android_permissions()
-
-        self.theme_initial()
 
         Window.softinput_mode = 'below_target'
         Window.bind(on_keyboard=self.key_input)
@@ -102,8 +101,8 @@ class MainApp(MDApp):
         pass
 
     def theme_initial(self):
-        self.theme_cls.theme_style = 'Dark'
-        self.theme_cls.primary_palette = 'Teal'
+        self.theme_cls.theme_style = "Dark"
+        self.theme_cls.primary_palette = "Purple"
         LabelBase.register(name='Hacked', fn_regular='assets/font/hacked.ttf')
 
     @staticmethod

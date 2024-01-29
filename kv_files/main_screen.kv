@@ -1,4 +1,4 @@
-#:import MainScreen screens
+#:import MainScreen screens.main
 #:import ScrollEffect kivy.effects.scroll.ScrollEffect
 
 <ContentNavigationDrawer@MDBoxLayout>:
@@ -59,19 +59,19 @@
 
                 MDBoxLayout:
                     orientation: 'vertical'
-                    md_bg_color: root.md_bg_color
 
                     MDTopAppBar:
                         id: main_top_bar
                         type: 'small'
                         theme_bg_color: 'Custom'
-                        md_bg_color: self.parent.md_bg_color
+                        md_bg_color: self.theme_cls.backgroundColor
 
                         MDTopAppBarLeadingButtonContainer:
 
                             MDActionTopAppBarButton:
                                 icon: 'menu'
                                 ripple_effect: False
+                                focus_behavior: False
                                 on_release:
                                     nav_drawer.set_state("open")
 

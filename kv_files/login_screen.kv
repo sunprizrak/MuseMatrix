@@ -1,4 +1,4 @@
-#:import LoginScreen screens
+#:import LoginScreen screens.login
 #:import MDSlideTransition kivymd.uix.transition.transition.MDSlideTransition
 #:import platform kivy.utils
 #:import MyIconButton widgets
@@ -11,7 +11,6 @@
     text_color_focus: 'white'
 
 
-
 <LoginScreen>
     name: 'login_screen'
 
@@ -21,7 +20,7 @@
             pos_hint: {'top': 1}
             type: 'small'
             theme_bg_color: 'Custom'
-            md_bg_color: root.md_bg_color
+            md_bg_color: self.theme_cls.backgroundColor
 
             MDTopAppBarLeadingButtonContainer:
 

@@ -1,4 +1,4 @@
-#:import CollectionScreen screens
+#:import CollectionScreen screens.collection
 
 <CollectionScreen>
     name: 'collection_screen'
@@ -6,32 +6,268 @@
     MDBoxLayout:
         orientation: 'vertical'
 
-        MyTopAppBar:
+        MDTopAppBar:
             id: collection_app_bar
-            type_height: 'small'
-            md_bg_color: root.md_bg_color
-            left_action_items: [selection_list.back_item]
-            right_action_items: [['dots-vertical', lambda x: root.menu_callback(x)]]
-            elevation: 0
+            type: 'small'
+            theme_bg_color: 'Custom'
+            md_bg_color: self.theme_cls.backgroundColor
+
+            MDTopAppBarLeadingButtonContainer:
+
+                MDActionTopAppBarButton:
+                    icon: 'arrow-left-bold'
+                    ripple_effect: False
+                    focus_behavior: False
+                    on_release:
+                        app.back(screen='main_screen')
+
+            MDTopAppBarTitle:
+                text: " "
+
+            MDTopAppBarTrailingButtonContainer:
+
+                MDActionTopAppBarButton:
+                    icon: "dots-vertical"
+                    ripple_effect: False
+                    focus_behavior: False
+                    on_release:
+                        root.menu_callback(self)
 
         MDScrollView:
             effect_cls: ScrollEffect
+            do_scroll_x: False
+            do_scroll_y: True
 
-            MySelectionList:
-                screen: root
-                toolbar: collection_app_bar
-
-                id: selection_list
+            MDGridLayout:
                 cols: 4
                 padding: dp(2)
                 spacing: dp(2)
-                icon: 'assets/img/check_true.png'
-                icon_bg_color: 1, 1, 1, 0
-                progress_round_color: app.theme_cls.primary_color
                 row_default_height: (self.width - self.cols * self.spacing[0]) / self.cols
                 row_force_default: True
                 col_default_width: (self.width - (self.cols * self.spacing[0] + self.padding[0])) / self.cols
                 col_force_default: True
-                on_selected: self.selected(*args)
-                on_unselected: self.unselected(*args)
-                on_selected_mode: self.set_selection_mode(*args)
+                adaptive_height: True
+
+                MDSmartTile:
+                    # id: test_tile
+
+                    MySmartTileImage:
+                        # id: test_image
+                        source: 'https://doodleipsum.com/1024x1792/flat?bg=C863D9&i=3758fd27c3704f08f828d043203dd96f'
+
+
+                    MDSmartTileOverlayContainer:
+                        # size: test_tile.size
+                        # md_bg_color: 0, 0, 0, .2
+
+#                        MDCheckbox:
+#                            id: test_check
+#                            checkbox_icon_normal: 'checkbox-blank-circle-outline'
+#                            checkbox_icon_down: 'checkbox-marked-circle'
+#                            size_hint: None, None
+#                            size: "48dp", "48dp"
+#                            pos_hint: {'y': .7}
+#                            on_active:
+#                                test_image.size_hint = None, None
+#                                test_image.size = [67.5, 68.0] if self.active else test_tile.size
+#                                test_image.pos_hint = {'center_x': .5, 'center_y': .5}
+
+                MDSmartTile:
+
+                    MDSmartTileImage:
+                        source: 'https://doodleipsum.com/1024x1792/flat?bg=C863D9&i=3758fd27c3704f08f828d043203dd96f'
+
+                MDSmartTile:
+
+                    MDSmartTileImage:
+                        source: 'https://doodleipsum.com/1024x1792/flat?bg=C863D9&i=3758fd27c3704f08f828d043203dd96f'
+
+                MDSmartTile:
+
+                    MDSmartTileImage:
+                        source: 'https://doodleipsum.com/1024x1792/flat?bg=C863D9&i=3758fd27c3704f08f828d043203dd96f'
+
+                MDSmartTile:
+
+                    MDSmartTileImage:
+                        source: 'https://doodleipsum.com/1024x1792/flat?bg=C863D9&i=3758fd27c3704f08f828d043203dd96f'
+
+                MDSmartTile:
+
+                    MDSmartTileImage:
+                        source: 'https://doodleipsum.com/1024x1792/flat?bg=C863D9&i=3758fd27c3704f08f828d043203dd96f'
+
+
+                MDSmartTile:
+
+                    MDSmartTileImage:
+                        source: 'https://doodleipsum.com/1024x1792/flat?bg=C863D9&i=3758fd27c3704f08f828d043203dd96f'
+
+                MDSmartTile:
+
+                    MDSmartTileImage:
+                        source: 'https://doodleipsum.com/1024x1792/flat?bg=C863D9&i=3758fd27c3704f08f828d043203dd96f'
+
+                MDSmartTile:
+
+                    MDSmartTileImage:
+                        source: 'https://doodleipsum.com/1024x1792/flat?bg=C863D9&i=3758fd27c3704f08f828d043203dd96f'
+
+                MDSmartTile:
+
+                    MDSmartTileImage:
+                        source: 'https://doodleipsum.com/1024x1792/flat?bg=C863D9&i=3758fd27c3704f08f828d043203dd96f'
+
+                MDSmartTile:
+
+                    MDSmartTileImage:
+                        source: 'https://doodleipsum.com/1024x1792/flat?bg=C863D9&i=3758fd27c3704f08f828d043203dd96f'
+
+                MDSmartTile:
+
+                    MDSmartTileImage:
+                        source: 'https://doodleipsum.com/1024x1792/flat?bg=C863D9&i=3758fd27c3704f08f828d043203dd96f'
+
+                MDSmartTile:
+
+                    MDSmartTileImage:
+                        source: 'https://doodleipsum.com/1024x1792/flat?bg=C863D9&i=3758fd27c3704f08f828d043203dd96f'
+
+                MDSmartTile:
+
+                    MDSmartTileImage:
+                        source: 'https://doodleipsum.com/1024x1792/flat?bg=C863D9&i=3758fd27c3704f08f828d043203dd96f'
+
+                MDSmartTile:
+
+                    MDSmartTileImage:
+                        source: 'https://doodleipsum.com/1024x1792/flat?bg=C863D9&i=3758fd27c3704f08f828d043203dd96f'
+
+                MDSmartTile:
+
+                    MDSmartTileImage:
+                        source: 'https://doodleipsum.com/1024x1792/flat?bg=C863D9&i=3758fd27c3704f08f828d043203dd96f'
+
+                MDSmartTile:
+
+                    MDSmartTileImage:
+                        source: 'https://doodleipsum.com/1024x1792/flat?bg=C863D9&i=3758fd27c3704f08f828d043203dd96f'
+
+                MDSmartTile:
+
+                    MDSmartTileImage:
+                        source: 'https://doodleipsum.com/1024x1792/flat?bg=C863D9&i=3758fd27c3704f08f828d043203dd96f'
+
+
+                MDSmartTile:
+
+                    MDSmartTileImage:
+                        source: 'https://doodleipsum.com/1024x1792/flat?bg=C863D9&i=3758fd27c3704f08f828d043203dd96f'
+
+                MDSmartTile:
+
+                    MDSmartTileImage:
+                        source: 'https://doodleipsum.com/1024x1792/flat?bg=C863D9&i=3758fd27c3704f08f828d043203dd96f'
+
+                MDSmartTile:
+
+                    MDSmartTileImage:
+                        source: 'https://doodleipsum.com/1024x1792/flat?bg=C863D9&i=3758fd27c3704f08f828d043203dd96f'
+
+                MDSmartTile:
+
+                    MDSmartTileImage:
+                        source: 'https://doodleipsum.com/1024x1792/flat?bg=C863D9&i=3758fd27c3704f08f828d043203dd96f'
+
+                MDSmartTile:
+
+                    MDSmartTileImage:
+                        source: 'https://doodleipsum.com/1024x1792/flat?bg=C863D9&i=3758fd27c3704f08f828d043203dd96f'
+
+                MDSmartTile:
+
+                    MDSmartTileImage:
+                        source: 'https://doodleipsum.com/1024x1792/flat?bg=C863D9&i=3758fd27c3704f08f828d043203dd96f'
+
+                MDSmartTile:
+
+                    MDSmartTileImage:
+                        source: 'https://doodleipsum.com/1024x1792/flat?bg=C863D9&i=3758fd27c3704f08f828d043203dd96f'
+
+                MDSmartTile:
+
+                    MDSmartTileImage:
+                        source: 'https://doodleipsum.com/1024x1792/flat?bg=C863D9&i=3758fd27c3704f08f828d043203dd96f'
+
+                MDSmartTile:
+
+                    MDSmartTileImage:
+                        source: 'https://doodleipsum.com/1024x1792/flat?bg=C863D9&i=3758fd27c3704f08f828d043203dd96f'
+
+                MDSmartTile:
+
+                    MDSmartTileImage:
+                        source: 'https://doodleipsum.com/1024x1792/flat?bg=C863D9&i=3758fd27c3704f08f828d043203dd96f'
+
+                MDSmartTile:
+
+                    MDSmartTileImage:
+                        source: 'https://doodleipsum.com/1024x1792/flat?bg=C863D9&i=3758fd27c3704f08f828d043203dd96f'
+
+                MDSmartTile:
+
+                    MDSmartTileImage:
+                        source: 'https://doodleipsum.com/1024x1792/flat?bg=C863D9&i=3758fd27c3704f08f828d043203dd96f'
+
+
+                MDSmartTile:
+
+                    MDSmartTileImage:
+                        source: 'https://doodleipsum.com/1024x1792/flat?bg=C863D9&i=3758fd27c3704f08f828d043203dd96f'
+
+                MDSmartTile:
+
+                    MDSmartTileImage:
+                        source: 'https://doodleipsum.com/1024x1792/flat?bg=C863D9&i=3758fd27c3704f08f828d043203dd96f'
+
+                MDSmartTile:
+
+                    MDSmartTileImage:
+                        source: 'https://doodleipsum.com/1024x1792/flat?bg=C863D9&i=3758fd27c3704f08f828d043203dd96f'
+
+                MDSmartTile:
+
+                    MDSmartTileImage:
+                        source: 'https://doodleipsum.com/1024x1792/flat?bg=C863D9&i=3758fd27c3704f08f828d043203dd96f'
+
+                MDSmartTile:
+
+                    MDSmartTileImage:
+                        source: 'https://doodleipsum.com/1024x1792/flat?bg=C863D9&i=3758fd27c3704f08f828d043203dd96f'
+
+                MDSmartTile:
+
+                    MDSmartTileImage:
+                        source: 'https://doodleipsum.com/1024x1792/flat?bg=C863D9&i=3758fd27c3704f08f828d043203dd96f'
+
+#        MDScrollView:
+#            effect_cls: ScrollEffect
+#
+#            MySelectionList:
+#                screen: root
+#                toolbar: collection_app_bar
+#
+#                id: selection_list
+#                cols: 4
+#                padding: dp(2)
+#                spacing: dp(2)
+#                icon: 'assets/img/check_true.png'
+#                icon_bg_color: 1, 1, 1, 0
+#                progress_round_color: app.theme_cls.primary_color
+#                row_default_height: (self.width - self.cols * self.spacing[0]) / self.cols
+#                row_force_default: True
+#                col_default_width: (self.width - (self.cols * self.spacing[0] + self.padding[0])) / self.cols
+#                col_force_default: True
+#                on_selected: self.selected(*args)
+#                on_unselected: self.unselected(*args)
+#                on_selected_mode: self.set_selection_mode(*args)

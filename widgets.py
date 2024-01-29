@@ -1,4 +1,4 @@
-from kivy.clock import Clock
+from kivy.clock import Clock, mainthread
 from kivy.core.clipboard import Clipboard
 from kivy.core.image import Image as CoreImage
 from kivy.core.window import Window
@@ -7,9 +7,10 @@ from kivy.metrics import sp, dp
 from kivy.properties import ObjectProperty, ColorProperty, NumericProperty, ListProperty, StringProperty
 # from kivy.uix.behaviors import ButtonBehavior
 from kivymd.uix.appbar import MDTopAppBar
-from kivymd.uix.behaviors import MagicBehavior, RectangularRippleBehavior
+from kivymd.uix.behaviors import MagicBehavior, RectangularRippleBehavior, TouchBehavior
 from kivymd.uix.button import MDIconButton
 from kivymd.uix.floatlayout import MDFloatLayout
+from kivymd.uix.imagelist import MDSmartTileImage, MDSmartTileOverlayContainer
 from kivymd.uix.label import MDLabel
 from kivymd.uix.relativelayout import MDRelativeLayout
 
@@ -22,6 +23,7 @@ from kivymd.uix.segmentedbutton import MDSegmentedButtonItem, MDSegmentedButton
 # from kivymd.uix.tab import MDTabsBase
 from kivymd.app import MDApp
 from kivymd.uix.segmentedbutton.segmentedbutton import MDSegmentedButtonContainer
+from kivymd.uix.selectioncontrol import MDCheckbox
 from kivymd.uix.tooltip import MDTooltip
 
 
@@ -128,6 +130,47 @@ class MyImage(AsyncImage):
             for el in self.canvas.children:
                 if isinstance(el, Ellipse) or isinstance(el, Line):
                     self.canvas.children.remove(el)
+
+
+class MySmartTileImage(TouchBehavior, MDSmartTileImage):
+    container = ObjectProperty()
+    check_box = ObjectProperty()
+
+    def __init__(self, **kwargs):
+        super(MySmartTileImage, self).__init__(**kwargs)
+
+    def on_long_touch(self, *args):
+        if not self.check_box:
+            self.__add_check_box()
+
+    def __add_check_box(self):
+        for widget in self.parent.children:
+            if isinstance(widget, MDSmartTileOverlayContainer):
+                self.container = widget
+                self.container.size = self.parent.size
+                break
+
+        def _on_active_checkbox(obj, value):
+            print('hello')
+            # self.size_hint = (None, None)
+            # self.size = [self.size[0] - 20, self.size[1] - 20] if self.check_box.active else self.parent.size
+            # self.pos_hint = {'center_x': .5, 'center_y': .5}
+
+        check_box = MDCheckbox(
+            checkbox_icon_normal='checkbox-blank-circle-outline',
+            checkbox_icon_down='checkbox-marked-circle',
+            size_hint=(None, None),
+            size=(dp(48), dp(48)),
+            pos_hint={'y': .7},
+        )
+        check_box.bind(on_active=_on_active_checkbox)
+
+        self.container.add_widget(check_box)
+
+        for widget in self.container.children:
+            if isinstance(widget, MDCheckbox):
+                self.check_box = widget
+                break
 
 
 # class MySelectionList(MDSelectionList):

@@ -1,4 +1,4 @@
-#:import RegistrateScreen screens
+#:import RegistrateScreen screens.registrate
 #:import SlideTransition kivymd.uix.transition.transition.MDSlideTransition
 #:import platform kivy.utils
 #:import MyIconButton widgets
@@ -20,7 +20,7 @@
             pos_hint: {'top': 1}
             type: 'small'
             theme_bg_color: 'Custom'
-            md_bg_color: root.md_bg_color
+            md_bg_color: self.theme_cls.backgroundColor
 
             MDTopAppBarLeadingButtonContainer:
 
