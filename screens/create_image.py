@@ -6,7 +6,7 @@ from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.button import MDButton, MDButtonIcon, MDButtonText
 from kivymd.uix.label import MDLabel
 
-from widgets import MyImage
+from widget import MyImage
 from .layout import ImageScreen
 
 

@@ -21,7 +21,7 @@ from kivymd.uix.swiper import MDSwiperItem, MDSwiper
 from kivy.core.image import Image as CoreImage
 from kivymd.uix.textfield import MDTextField, MDTextFieldHintText, MDTextFieldHelperText
 from kivymd.uix.transition import MDSwapTransition
-from widgets import MyImage
+from widget import MyImage
 import io
 import base64
 import uuid
