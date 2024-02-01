@@ -1,6 +1,10 @@
+from copy import copy
 from kivy.clock import Clock
 from kivy.metrics import dp
 from kivy.properties import ObjectProperty, ListProperty
+from kivy.uix.screenmanager import RiseInTransition
+from kivymd.app import MDApp
+from kivymd.uix.appbar import MDActionTopAppBarButton
 from kivymd.uix.behaviors import TouchBehavior, RectangularRippleBehavior
 from kivymd.uix.gridlayout import MDGridLayout
 from kivymd.uix.imagelist import MDSmartTile, MDSmartTileImage, MDSmartTileOverlayContainer
@@ -26,6 +30,13 @@ class MySmartTileOverlayContainer(MDSmartTileOverlayContainer):
         else:
             return
 
+    def on_touch_down(self, touch):
+        if self.check_box and self.check_box.collide_point(*touch.pos):
+            self.check_box.active = False if self.check_box.active else True
+            return True
+
+        return super(MySmartTileOverlayContainer, self).on_touch_down(touch)
+
     def add_check_box(self):
         def _on_active_checkbox(obj, value):
             image = self.parent.image
@@ -33,12 +44,34 @@ class MySmartTileOverlayContainer(MDSmartTileOverlayContainer):
             image.size = [image.size[0] - 20, image.size[1] - 20] if self.check_box.active else self.parent.size
             image.pos_hint = {'center_x': .5, 'center_y': .5}
 
+            app = MDApp.get_running_app()
+            screen = app.root.get_screen(app.root.current)
+
             if self.check_box.active:
                 if self.parent not in self.parent.parent.selected_items:
                     self.parent.parent.selected_items.append(self.parent)
             else:
                 if self.parent in self.parent.parent.selected_items:
                     self.parent.parent.selected_items.remove(self.parent)
+
+            if len(self.parent.parent.selected_items) == 0:
+                for widget in self.parent.parent.children:
+                    widget.container.delete_check_box()
+
+                for button in copy(screen.ids.left_button.children):
+                    if isinstance(button, MDActionTopAppBarButton):
+                        screen.ids.left_button.remove_widget(button)
+
+                if self.parent.parent.back_button:
+                    screen.ids.left_button.add_widget(self.parent.parent.back_button)
+
+                screen.ids.button_delete.disabled = True
+                screen.ids.button_delete.theme_icon_color = 'Custom'
+                screen.ids.button_delete.icon_color = screen.md_bg_color
+
+            screen.ids.collection_app_bar_title.text = str(len(self.parent.parent.selected_items)) if len(self.parent.parent.selected_items) > 0 else ' '
+
+            print(self.parent.parent.selected_items)
 
         check_box = MDCheckbox(
             checkbox_icon_normal='checkbox-blank-circle-outline',
@@ -63,8 +96,9 @@ class MySmartTileOverlayContainer(MDSmartTileOverlayContainer):
 class MySmartTile(TouchBehavior, RectangularRippleBehavior, MDSmartTile):
     def __init__(self, **kwargs):
         super(MySmartTile, self).__init__(**kwargs)
-        self.md_bg_color = 'gray'
-        self.long_touch_event = True
+        self.md_bg_color = '#47cdf0'
+        self.__long_touch_event = True
+        self.__open_image = True
 
     @property
     def image(self):
@@ -96,48 +130,96 @@ class MySmartTile(TouchBehavior, RectangularRippleBehavior, MDSmartTile):
                 if widget is self:
                     widget.container.check_box.active = True
 
+            app = MDApp.get_running_app()
+            screen = app.root.get_screen(app.root.current)
+
+            for button in screen.ids.left_button.children:
+                if isinstance(button, MDActionTopAppBarButton):
+                    self.parent.back_button = button
+                    screen.ids.left_button.remove_widget(button)
+
+            un_button = MDActionTopAppBarButton(
+                icon='close-thick',
+                ripple_effect=False,
+                focus_behavior=False,
+                on_release=lambda x: self.parent.unselected_all()
+            )
+
+            screen.ids.left_button.add_widget(un_button)
+
+            screen.ids.button_delete.disabled = False
+            screen.ids.button_delete.theme_icon_color = 'Primary'
+
             return
 
         if self.container.check_box.active:
             self.container.check_box.active = False
-
-            if len(self.parent.selected_items) == 0:
-                for widget in self.parent.children:
-                    widget.container.delete_check_box()
         else:
             self.container.check_box.active = True
 
-        print(self.parent.selected_items)
-
     def on_long_touch(self, *args):
-        if self.long_touch_event:
+        if self.__long_touch_event:
             self.select_image()
 
     def on_press(self, *args):
         if self.parent.selected_items:
             self.select_image()
 
-            self.long_touch_event = False
+            self.__long_touch_event = False
 
             def _callback(dt):
-                self.long_touch_event = True
+                self.__long_touch_event = True
 
             Clock.schedule_once(callback=_callback, timeout=0.7)
+
+    def on_release(self, *args):
+        if self.__open_image:
+            def _open_img_screen():
+                app = MDApp.get_running_app()
+                screen = app.root.get_screen('open_img_screen')
+                screen.back_screen = app.root.current
+                app.root.transition = RiseInTransition()
+                app.root.current = 'open_img_screen'
+                # screen.ids.carousel.index = self.index
+                # screen.ids.app_bar.title = 'x'.join(str(self.texture_size).split(', '))
+
+            try:
+                if not self.parent.selected_items and not self.container.check_box:
+                    _open_img_screen()
+            except AttributeError as e:
+                _open_img_screen()
 
 
 class MySelectionList(MDGridLayout):
     selected_items = ListProperty()
+    back_button = ObjectProperty()
 
     def __init__(self, **kwargs):
         super(MySelectionList, self).__init__(**kwargs)
 
-    # def select_all(self):
-    #     for smart_tile in self.children:
-    #         image = smart_tile.get_image()
-    #
-    #         if not image.check_box:
-    #             image.add_check_box()
+    def selected_all(self):
+        for smart_tile in self.children:
+            if smart_tile not in self.selected_items:
+                smart_tile.select_image()
 
+    def unselected_all(self):
+        for smart_tile in copy(self.selected_items):
+            smart_tile.container.check_box.active = False
+
+        app = MDApp.get_running_app()
+        screen = app.root.get_screen('collection_screen')
+
+        for button in copy(screen.ids.left_button.children):
+            if isinstance(button, MDActionTopAppBarButton):
+                self.parent.back_button = button
+                screen.ids.left_button.remove_widget(button)
+
+        if self.back_button:
+            screen.ids.left_button.add_widget(self.back_button)
+
+        screen.ids.button_delete.disabled = True
+        screen.ids.button_delete.theme_icon_color = 'Custom'
+        screen.ids.button_delete.icon_color = screen.md_bg_color
 
 
 

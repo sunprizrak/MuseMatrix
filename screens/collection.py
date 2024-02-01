@@ -13,7 +13,7 @@ class CollectionScreen(BaseScreen):
         menu_items = [
             {
                 'text': 'Choose all',
-                'on_release': lambda: self.menu.dismiss(),
+                'on_release': lambda: (self.ids.selection_list.selected_all(), self.menu.dismiss()),
             }
         ]
 

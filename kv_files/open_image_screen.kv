@@ -1,4 +1,4 @@
-#:import OpenImageScreen screens
+#:import OpenImageScreen screens.open_image
 
 
 <OpenImageScreen>
@@ -7,19 +7,29 @@
     MDBoxLayout:
         orientation: 'vertical'
 
-        MyTopAppBar:
+        MDTopAppBar:
             id: app_bar
-            type_height: 'small'
-            md_bg_color: root.md_bg_color
-            left_action_items: [['arrow-left-bold', lambda x: root.back(root.back_screen)]]
-            right_action_items: [['delete', lambda x: root.delete(img_id=carousel.current_slide.img_id, widget_selection=carousel.current_slide.pre_parent)], ['download', lambda x: root.download(carousel.current_slide)]] if root.back_screen == 'collection_screen' else [['download', lambda x: root.download(carousel.current_slide)]]
-            elevation: 0
+            type: 'small'
+            theme_bg_color: 'Custom'
+            md_bg_color: self.theme_cls.backgroundColor
+            # left_action_items: [['arrow-left-bold', lambda x: root.back(root.back_screen)]]
+            # right_action_items: [['delete', lambda x: root.delete(img_id=carousel.current_slide.img_id, widget_selection=carousel.current_slide.pre_parent)], ['download', lambda x: root.download(carousel.current_slide)]] if root.back_screen == 'collection_screen' else [['download', lambda x: root.download(carousel.current_slide)]]
+            MDTopAppBarLeadingButtonContainer:
+                id: left_button
 
-        MDCarousel:
+                MDActionTopAppBarButton:
+                    icon: 'arrow-left-bold'
+                    ripple_effect: False
+                    focus_behavior: False
+                    on_release:
+                        root.back(screen=root.back_screen)
+
+
+        Carousel:
             id: carousel
 
-            on_slide_complete:
-                app_bar.title = 'x'.join(str(carousel.current_slide.texture_size).split(', '))
+#            on_slide_complete:
+#                app_bar.title = 'x'.join(str(carousel.current_slide.texture_size).split(', '))
 
 
 

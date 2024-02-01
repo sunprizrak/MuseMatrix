@@ -5,6 +5,8 @@ from kivy.network.urlrequest import UrlRequest
 from settings import host_name
 import json
 
+from widgets.MySelectionList import MySmartTile, MySmartTileImage
+
 
 class ImageController:
     path_image = host_name + 'image/'
@@ -58,15 +60,24 @@ class ImageController:
 
             for index, image in enumerate(self.object.images):
 
-                img = MyImage(
-                    source=image.source,
-                    fit_mode='contain',
-                    mipmap=True,
-                    img_id=image.id,
-                    index=index,
-                )
+                smart_tile = MySmartTile()
 
-                screen.ids.selection_list.add_widget(img)
+                smart_tile_image = MySmartTileImage(
+                    source=image.source,
+                )
+                smart_tile.add_widget(smart_tile_image)
+
+                screen.ids.selection_list.add_widget(smart_tile)
+
+                # img = MyImage(
+                #     source=image.source,
+                #     fit_mode='contain',
+                #     mipmap=True,
+                #     img_id=image.id,
+                #     index=index,
+                # )
+
+                # screen.ids.selection_list.add_widget(img)
 
         UrlRequest(
             url=self.path_image,
