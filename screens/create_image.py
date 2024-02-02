@@ -1,12 +1,11 @@
 from kivy.clock import Clock
 from kivy.metrics import dp
 from kivy.properties import StringProperty, ObjectProperty
-from kivy.uix.carousel import Carousel
 from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.button import MDButton, MDButtonIcon, MDButtonText
+from kivymd.uix.fitimage import FitImage
 from kivymd.uix.label import MDLabel
-
-from widget import MyImage
+from widgets.MyCarousel import MyCarousel
 from .layout import ImageScreen
 
 
@@ -64,32 +63,20 @@ class CreateImageScreen(ImageScreen):
 
                 section_image.add_widget(create_new_wrap)
 
-                if len(response['data']) == 1:
-                    url = response['data'][0].get('url')
+                self.carousel = MyCarousel()
 
-                    image = MyImage(
+                for answer in response['data']:
+                    url = answer.get('url')
+
+                    image = FitImage(
                         source=url,
-                        fit_mode='contain',
                         mipmap=True,
+                        fit_mode='contain',
                     )
 
-                    section_image.add_widget(image)
-                elif len(response['data']) > 1:
-                    carousel = Carousel()
+                    self.carousel.add_widget(image)
 
-                    for index, el in enumerate(response['data']):
-                        url = el.get('url')
-
-                        image = MyImage(
-                            source=url,
-                            mipmap=True,
-                            fit_mode='contain',
-                            index=index,
-                        )
-
-                        carousel.add_widget(image)
-
-                    section_image.add_widget(carousel)
+                section_image.add_widget(self.carousel)
 
                 save_image_wrap = MDBoxLayout(
                     orientation='horizontal',
@@ -99,18 +86,41 @@ class CreateImageScreen(ImageScreen):
                 )
 
                 save_image_button = MDButton(
-                    MDButtonIcon(icon='content-save'),
+                    MDButtonIcon(
+                        icon='content-save',
+                        icon_color_disabled='green',
+                    ),
                     MDButtonText(
-                        text='Save image',
+                        text='save image',
                         theme_font_name="Custom",
                         font_name='Hacked',
+                        theme_text_color='Primary',
+
                     ),
+                    pos_hint={'center_x': .5},
                     style='elevated',
+                    on_release=lambda x: self.save_image(widget=self.carousel.current_slide),
                 )
 
                 save_image_wrap.add_widget(save_image_button)
-
                 section_image.add_widget(save_image_wrap)
+
+                def _check_save(instance, value):
+                    button = save_image_button
+                    icon_obj = [widget for widget in button.children][1]
+                    text_obj = [widget for widget in button.children][0]
+                    if self.carousel.current_slide in self.carousel.saved_images:
+                        button.disabled = True
+                        icon_obj.icon = 'check-circle'
+                        text_obj.text = 'saved'
+
+                    else:
+                        icon_obj.icon = 'content-save'
+                        text_obj.text = 'save image'
+                        button.disabled = False
+
+                self.carousel.bind(saved_images=_check_save)
+                self.carousel.bind(current_slide=_check_save)
 
             elif 'notice' in response:
                 def _callback_one():

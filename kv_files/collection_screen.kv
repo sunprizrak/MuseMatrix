@@ -41,8 +41,7 @@
                     theme_icon_color: 'Custom'
                     icon_color: root.md_bg_color
                     on_release:
-                        print(self.icon_color)
-                        print(self.theme_icon_color)
+                        root.delete_images(selection_list.selected_items)
 
                 MDActionTopAppBarButton:
                     icon: "dots-vertical"
@@ -66,9 +65,3 @@
                 col_default_width: (self.width - (self.cols * self.spacing[0] + self.padding[0])) / self.cols
                 col_force_default: True
                 adaptive_height: True
-
-                MySmartTile:
-
-                    MySmartTileImage:
-                        source: 'https://doodleipsum.com/1024x1792/flat?bg=C863D9&i=3758fd27c3704f08f828d043203dd96f'
-

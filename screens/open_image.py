@@ -1,9 +1,22 @@
+import os
+import uuid
+
+from kivy.core.image import Image as CoreImage
+from kivy.metrics import dp
 from kivy.properties import StringProperty
 from kivy.uix.screenmanager import FallOutTransition
-
+from kivymd.uix.appbar import MDActionBottomAppBarButton
+from kivymd.uix.boxlayout import MDBoxLayout
+from kivymd.uix.button import MDButton, MDButtonText
+from kivymd.uix.fitimage import FitImage
+from kivymd.uix.label import MDLabel
+from kivy.utils import platform
 from controller.image import ImageController
 from controller.user import UserController
 from .layout import BaseScreen
+
+if platform == 'android':
+    from kivymd.toast.androidtoast import toast
 
 
 class OpenImageScreen(BaseScreen):
@@ -13,99 +26,152 @@ class OpenImageScreen(BaseScreen):
         super(OpenImageScreen, self).__init__(**kwargs)
         self.user_controller = UserController()
         self.image_controller = ImageController()
-#
-#     def on_pre_enter(self, *args):
-#         screen = self.app.root.get_screen(self.back_screen)
-#
-#         if self.back_screen == 'collection_screen':
-#             images = [el.instance_item for el in screen.ids.selection_list.children]
-#         else:
-#             for widget in screen.ids.image_section.children:
-#                 if isinstance(widget, MyImage):
-#                     images = [widget]
-#                 elif isinstance(widget, MDSwiper):
-#                     images = [el.children[0].children[0] for el in widget.children[0].children]
-#
-#         images.reverse()
-#
-#         for obj in images:
-#
-#             image = Image(
-#                 mipmap=True,
-#                 texture=obj.texture,
-#                 fit_mode='contain',
-#                 pos_hint={'center_y': .5}
-#             )
-#
-#             if self.back_screen == 'collection_screen':
-#                 image.img_id = obj.img_id
-#                 image.pre_parent = obj.parent
-#
-#             self.ids.carousel.add_widget(image)
-#
-#     def on_leave(self, *args):
-#         self.ids.carousel.clear_widgets()
-#
+
+    def on_pre_enter(self, *args):
+        screen = self.app.root.get_screen(self.back_screen)
+        images = []
+
+        if self.back_screen == 'collection_screen':
+            images = [smart_tile.image for smart_tile in screen.ids.selection_list.children]
+
+        images.reverse()
+
+        for obj in images:
+
+            image = FitImage(
+                texture=obj.texture,
+                fit_mode='contain',
+                mipmap=True,
+                pos_hint={'center_y': .5}
+            )
+
+            if self.back_screen == 'collection_screen':
+                image.img_id = obj.img_id
+                image.pre_parent = obj.parent
+
+            self.ids.carousel.add_widget(image)
+
+        self.ids.bottom_bar.action_items = [
+            MDActionBottomAppBarButton(
+                icon="download",
+                on_release=lambda x: self.download(img=self.ids.carousel.current_slide),
+            ),
+
+            MDActionBottomAppBarButton(
+                icon='delete',
+                on_release=lambda x: self.delete(
+                    img_id=self.ids.carousel.current_slide.img_id,
+                    widget_selection=self.ids.carousel.current_slide.pre_parent,
+                ),
+            ),
+        ]
+
+    def on_enter(self, *args):
+        app_bar = self.ids.app_bar_title
+        carousel = self.ids.carousel
+
+        app_bar.text = 'x'.join(str(carousel.current_slide.texture_size).split(', '))
+
+        def _change_appbar_title(instance, value):
+            if value:
+                app_bar.text = 'x'.join(str(value.texture_size).split(', '))
+
+        carousel.bind(current_slide=_change_appbar_title)
+
+    def on_leave(self, *args):
+        self.ids.carousel.clear_widgets()
+
     def back(self, screen):
-        # if len(self.ids.app_bar.right_action_items) > 1:
-        #     self.ids.app_bar.right_action_items.remove(self.ids.app_bar.right_action_items[0])
         self.app.root.transition = FallOutTransition()
         self.app.root.current = screen
-#
-#     def download(self, img):
-#
-#         def save_image():
-#             image = CoreImage(img.texture)
-#
-#             if platform == 'android':
-#                 private_path = join(self.app.ss.get_cache_dir(), f'{str(uuid.uuid4())}.png')
-#
-#                 image.save(private_path)
-#
-#                 if exists(private_path):
-#                     self.app.ss.copy_to_shared(private_path)
-#
-#             if self.back_screen in ('create_image_screen', 'edit_image_screen', 'variable_image_screen'):
-#                 data = io.BytesIO()
-#                 image.save(data, fmt='png')
-#                 png_bytes = data.read()
-#                 im_b64 = base64.b64encode(png_bytes).decode('utf-8')
-#
-#                 data_image = {
-#                     'user': self.user_controller.user.id,
-#                     'source': im_b64,
-#                 }
-#
-#                 screen = self.app.root.get_screen(self.back_screen)
-#
-#                 if screen.name != 'variable_image_screen':
-#                     data_image['description'] = screen.prompt
-#
-#                 self.image_controller.save_image(data_image=data_image)
-#
-#             toast(text='image saved')
-#             self.app.dialog.dismiss()
-#
-#         button = MDFillRoundFlatButton(
-#             text="Save",
-#             on_release=lambda x: save_image(),
-#         )
-#
-#         self.app.show_dialog(button=button)
-#         self.app.dialog.title = 'Save image'
-#         self.app.dialog.text = 'Do you want to save the picture?'
-#
-#     def delete(self, img_id, widget_selection):
-#
-#         def del_image():
-#             self.image_controller.del_image(image_id=img_id, widget_selection=widget_selection, widget_carousel=self.ids.carousel.current_slide)
-#             self.app.dialog.dismiss()
-#
-#         button = MDFillRoundFlatButton(
-#             text="Delete",
-#             on_release=lambda x: del_image(),
-#         )
-#
-#         self.app.show_dialog(button=button)
-#         self.app.dialog.title = 'Delete'
-#         self.app.dialog.text = 'Are you sure you want to delete??'
+
+    def download(self, img):
+        def _save_image():
+            image = CoreImage(img.texture)
+
+            if platform == 'android':
+                private_path = os.path.join(self.app.ss.get_cache_dir(), f'{str(uuid.uuid4())}.png')
+
+                image.save(private_path)
+
+                if os.path.exists(private_path):
+                    self.app.ss.copy_to_shared(private_path)
+
+            self.app.dialog.dismiss()
+            toast(text='image saved')
+
+        button = MDButton(
+            MDButtonText(
+                text='download',
+                theme_text_color="Custom",
+                text_color='white',
+                theme_font_name="Custom",
+                font_name='Hacked',
+            ),
+            style='filled',
+            theme_bg_color='Custom',
+            md_bg_color='green',
+            on_release=lambda x: _save_image(),
+        )
+
+        content = MDBoxLayout(
+            MDLabel(
+                text='Do you want to download the picture?',
+                padding=[0, dp(10), 0, 0],
+            ),
+        )
+
+        self.app.show_dialog(
+            title='Download image',
+            button=button,
+            content=content,
+        )
+
+    def delete(self, img_id, widget_selection):
+        def _del_image():
+            def _on_success(request, response):
+                screen = self.app.root.get_screen('collection_screen')
+
+                self.image_controller.object.delete_image(image_id=img_id)
+                screen.ids.selection_list.remove_widget(widget_selection)
+                self.ids.carousel.remove_widget(self.ids.carousel.current_slide)
+
+                for index, smart_tile in enumerate(reversed(screen.ids.selection_list.children)):
+                    smart_tile.image.index = index
+
+            def _on_failure(request, response):
+                print(response)
+
+            self.image_controller.del_image(
+                image_id=img_id,
+                on_success=_on_success,
+                on_failure=_on_failure)
+
+            self.app.dialog.dismiss()
+
+        button = MDButton(
+            MDButtonText(
+                text='delete',
+                theme_text_color="Custom",
+                text_color='white',
+                theme_font_name="Custom",
+                font_name='Hacked',
+            ),
+            style='filled',
+            theme_bg_color='Custom',
+            md_bg_color='red',
+            on_release=lambda x: _del_image(),
+        )
+
+        content = MDBoxLayout(
+            MDLabel(
+                text='Are you sure you want to delete?',
+                padding=[0, dp(10), 0, 0],
+            ),
+        )
+
+        self.app.show_dialog(
+            title='Delete',
+            button=button,
+            content=content,
+        )

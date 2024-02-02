@@ -1,7 +1,7 @@
 from copy import copy
 from kivy.clock import Clock
 from kivy.metrics import dp
-from kivy.properties import ObjectProperty, ListProperty
+from kivy.properties import ObjectProperty, ListProperty, NumericProperty
 from kivy.uix.screenmanager import RiseInTransition
 from kivymd.app import MDApp
 from kivymd.uix.appbar import MDActionTopAppBarButton
@@ -12,6 +12,9 @@ from kivymd.uix.selectioncontrol import MDCheckbox
 
 
 class MySmartTileImage(MDSmartTileImage):
+    img_id = NumericProperty()
+    index = NumericProperty()
+
     def __init__(self, **kwargs):
         super(MySmartTileImage, self).__init__(**kwargs)
         self.ripple_effect = False
@@ -71,8 +74,6 @@ class MySmartTileOverlayContainer(MDSmartTileOverlayContainer):
 
             screen.ids.collection_app_bar_title.text = str(len(self.parent.parent.selected_items)) if len(self.parent.parent.selected_items) > 0 else ' '
 
-            print(self.parent.parent.selected_items)
-
         check_box = MDCheckbox(
             checkbox_icon_normal='checkbox-blank-circle-outline',
             checkbox_icon_down='checkbox-marked-circle',
@@ -96,7 +97,7 @@ class MySmartTileOverlayContainer(MDSmartTileOverlayContainer):
 class MySmartTile(TouchBehavior, RectangularRippleBehavior, MDSmartTile):
     def __init__(self, **kwargs):
         super(MySmartTile, self).__init__(**kwargs)
-        self.md_bg_color = '#47cdf0'
+        self.md_bg_color = self.theme_cls.tertiaryColor
         self.__long_touch_event = True
         self.__open_image = True
 
@@ -161,6 +162,13 @@ class MySmartTile(TouchBehavior, RectangularRippleBehavior, MDSmartTile):
         if self.__long_touch_event:
             self.select_image()
 
+        self.__open_image = False
+
+        def _callback(dt):
+            self.__open_image = True
+
+        Clock.schedule_once(callback=_callback, timeout=2)
+
     def on_press(self, *args):
         if self.parent.selected_items:
             self.select_image()
@@ -180,9 +188,7 @@ class MySmartTile(TouchBehavior, RectangularRippleBehavior, MDSmartTile):
                 screen.back_screen = app.root.current
                 app.root.transition = RiseInTransition()
                 app.root.current = 'open_img_screen'
-                # screen.ids.carousel.index = self.index
-                # screen.ids.app_bar.title = 'x'.join(str(self.texture_size).split(', '))
-
+                screen.ids.carousel.index = self.image.index
             try:
                 if not self.parent.selected_items and not self.container.check_box:
                     _open_img_screen()
