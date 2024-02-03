@@ -234,7 +234,7 @@ class MainApp(MDApp):
             image.save(data, fmt=fmt)
             png_bytes = data.read()
 
-            im_b64 = base64.b64encode(png_bytes).decode('utf-8')
+            im_b64 = base64.b64encode(png_bytes).decode('UTF-8')
 
             user_controller.update_user(fields={'avatar': im_b64}, on_success=_on_success)
         else:

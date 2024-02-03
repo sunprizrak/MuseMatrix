@@ -26,7 +26,7 @@
 
             MDTopAppBarTitle:
                 id: app_bar_title
-                text: ''
+                text: ' '
                 theme_font_name: "Custom"
                 font_name: 'Hacked'
 
@@ -34,7 +34,21 @@
             id: carousel
 
 
-        MDBottomAppBar:
-            id: bottom_bar
-            theme_bg_color: 'Custom'
-            md_bg_color: self.theme_cls.backgroundColor
+        MDFloatLayout:
+            size_hint_y: None
+            height: self.children[0].height
+
+            MDFabButton:
+                icon: 'download'
+                style: 'small'
+                pos_hint: {'center_x': .1, 'center_y': .5}
+                on_release:
+                    root.download(carousel.current_slide)
+
+
+            MDFabButton:
+                icon: 'delete'
+                style: 'small'
+                pos_hint: {'center_x': .9, 'center_y': .5}
+                on_release:
+                    root.delete(carousel.current_slide.img_id, carousel.current_slide.pre_parent)

@@ -51,30 +51,15 @@ class OpenImageScreen(BaseScreen):
 
             self.ids.carousel.add_widget(image)
 
-        self.ids.bottom_bar.action_items = [
-            MDActionBottomAppBarButton(
-                icon="download",
-                on_release=lambda x: self.download(img=self.ids.carousel.current_slide),
-            ),
-
-            MDActionBottomAppBarButton(
-                icon='delete',
-                on_release=lambda x: self.delete(
-                    img_id=self.ids.carousel.current_slide.img_id,
-                    widget_selection=self.ids.carousel.current_slide.pre_parent,
-                ),
-            ),
-        ]
-
     def on_enter(self, *args):
         app_bar = self.ids.app_bar_title
         carousel = self.ids.carousel
 
-        app_bar.text = 'x'.join(str(carousel.current_slide.texture_size).split(', '))
+        app_bar.text = ' x '.join(str(carousel.current_slide.texture_size).split(', '))
 
         def _change_appbar_title(instance, value):
             if value:
-                app_bar.text = 'x'.join(str(value.texture_size).split(', '))
+                app_bar.text = ' x '.join(str(value.texture_size).split(', '))
 
         carousel.bind(current_slide=_change_appbar_title)
 

@@ -5,6 +5,8 @@ from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.button import MDButton, MDButtonIcon, MDButtonText
 from kivymd.uix.fitimage import FitImage
 from kivymd.uix.label import MDLabel
+from kivymd.uix.transition import MDSwapTransition
+
 from widgets.MyCarousel import MyCarousel
 from .layout import ImageScreen
 
@@ -37,12 +39,31 @@ class CreateImageScreen(ImageScreen):
 
                 self.ids.create_layout.add_widget(section_image)
 
-                create_new_wrap = MDBoxLayout(
+                top_button_wrap = MDBoxLayout(
                     orientation='horizontal',
                     adaptive_size=True,
                     padding=[dp(0), dp(10), dp(0), dp(10)],
-                    pos_hint={'center_x': .75},
+                    spacing=dp(50),
+                    pos_hint={'center_x': .5},
                 )
+
+                def _open_collection():
+                    self.app.root.transition = MDSwapTransition()
+                    self.app.root.current = 'collection_screen'
+
+                collection_button = MDButton(
+                    MDButtonIcon(icon='image-album'),
+                    MDButtonText(
+                        text='gallery',
+                        theme_font_name="Custom",
+                        font_name='Hacked',
+                    ),
+                    style='elevated',
+                    radius=dp(10),
+                    on_release=lambda x: _open_collection(),
+                )
+
+                top_button_wrap.add_widget(collection_button)
 
                 def _return_section_option():
                     self.ids.create_layout.remove_widget(section_image)
@@ -56,12 +77,13 @@ class CreateImageScreen(ImageScreen):
                         font_name='Hacked',
                     ),
                     style='elevated',
+                    radius=dp(10),
                     on_release=lambda x: _return_section_option(),
                 )
 
-                create_new_wrap.add_widget(create_new_button)
+                top_button_wrap.add_widget(create_new_button)
 
-                section_image.add_widget(create_new_wrap)
+                section_image.add_widget(top_button_wrap)
 
                 self.carousel = MyCarousel()
 
@@ -99,6 +121,7 @@ class CreateImageScreen(ImageScreen):
                     ),
                     pos_hint={'center_x': .5},
                     style='elevated',
+                    radius=dp(10),
                     on_release=lambda x: self.save_image(widget=self.carousel.current_slide),
                 )
 
