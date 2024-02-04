@@ -6,16 +6,21 @@ from kivy.graphics import Color, Ellipse, Line, Rectangle, StencilPush, StencilU
     PushMatrix, MatrixInstruction, PopMatrix
 from kivy.graphics.shader import Shader
 from kivy.graphics.texture import Texture
+from kivy.graphics.transformation import Matrix
 from kivy.metrics import dp
 from kivy.properties import NumericProperty, StringProperty, ObjectProperty
-from kivy.uix.image import AsyncImage, Image
+from kivy.uix.image import Image
 from kivy.uix.stencilview import StencilView
 from PIL import Image as PILImage, ImageDraw
 from kivymd.app import MDApp
+import numpy as np
 
-class EditImage(AsyncImage):
+
+class EditImage(Image):
     def __init__(self, **kwargs):
         super(EditImage, self).__init__(**kwargs)
+        self.initial_texture = self.texture
+        self.updated_texture = None
 
     def on_parent(self, widget, parent):
         if parent is not None:
@@ -25,7 +30,6 @@ class EditImage(AsyncImage):
 
             Clock.schedule_once(callback=_callback, timeout=2)
 
-    @mainthread
     def __update_before_canvas(self):
         self.canvas.before.clear()
 
@@ -53,85 +57,64 @@ class EditImage(AsyncImage):
 
                     Rectangle(pos=(x, y), size=(square_size, square_size))
 
+    def eraser_texture(self, touch):
+        bottom = (self.height - self.norm_image_size[1]) / 2 + self.y
+
+        if self.texture_size == self.norm_image_size:
+            left = self.x + (self.width - self.texture_size[0]) / 2
+            tex_x = round(touch.x - left)
+            tex_y = round(touch.y - bottom)
+        else:
+            tex_x = round((touch.x - self.x) / self.norm_image_size[0] * self.texture_size[0])
+            tex_y = round((touch.y - bottom) / self.norm_image_size[1] * self.texture_size[1])
+
+        # Создаем новый массив, который можно изменять
+        pixels = np.array(np.frombuffer(self.texture.pixels, dtype=np.uint8))
+        pixels = pixels.reshape((self.texture_size[1], self.texture_size[0], 4))
+
+        erase_radius = 10
+
+        min_x = max(0, tex_x - erase_radius)
+        max_x = min(self.texture_size[0], tex_x + erase_radius + 1)
+        min_y = max(0, tex_y - erase_radius)
+        max_y = min(self.texture_size[1], tex_y + erase_radius + 1)
+
+        for i in range(min_x, max_x):
+            for j in range(min_y, max_y):
+                distance = np.linalg.norm(np.array([i - tex_x, j - tex_y]))
+
+                if distance <= erase_radius:
+                    pixels[j, i, 3] = 0
+
+        # Создаем объект Texture с обновленными пикселями
+        self.updated_texture = Texture.create(
+            size=self.texture_size,
+            colorfmt='rgba',
+            bufferfmt='ubyte',
+            mipmap=True,
+        )
+
+        self.updated_texture.blit_buffer(bytes(pixels), colorfmt='rgba', bufferfmt='ubyte')
+        self.texture = self.updated_texture
+
+
+
     def on_touch_down(self, touch):
         if self.collide_point(*touch.pos):
             if self.texture:
+                self.eraser_texture(touch=touch)
 
-                bottom = (self.height - self.norm_image_size[1]) / 2 + self.y
-
-                tex_x = round((touch.x - self.x) / self.norm_image_size[0] * self.texture_size[0])
-                tex_y = round((touch.y - bottom) / self.norm_image_size[1] * self.texture_size[1])
-
-                # Преобразование байтов в bytearray
-                pixels = bytearray(self.texture.pixels)
-
-                # Радиус стирания
-                erase_radius = 10  # Измените на необходимое значение
-
-                # Определяем границы области стирания
-                min_x = max(0, tex_x - erase_radius)
-                max_x = min(self.texture_size[0], tex_x + erase_radius + 1)
-                min_y = max(0, tex_y - erase_radius)
-                max_y = min(self.texture_size[1], tex_y + erase_radius + 1)
-
-                # Итерируем по окрестности точки касания
-                for i in range(min_x, max_x):
-                    for j in range(min_y, max_y):
-                        # Вычисляем расстояние до точки касания
-                        distance = ((i - tex_x) ** 2 + (j - tex_y) ** 2) ** 0.5
-
-                        # Если расстояние меньше радиуса стирания, устанавливаем альфа-канал в 0
-                        if distance <= erase_radius:
-                            # Получаем абсолютные координаты в текстуре
-                            abs_x = i
-                            abs_y = j
-
-                            # Устанавливаем альфа-канал в 0
-                            pixels[abs_y * self.texture_size[0] * 4 + abs_x * 4 + 3] = 0
-
-                # Создаем объект Texture с обновленными пикселями
-                new_texture = self.texture.create(size=self.texture_size, colorfmt='rgba', bufferfmt='ubyte')
-                new_texture.blit_buffer(bytes(pixels), colorfmt='rgba', bufferfmt='ubyte')
-                # new_texture.flip_vertical()
-                self.texture = new_texture
-
-                # Обновляем виджет
-                with self.canvas:
-                    self.canvas.clear()
-                    pos_x = self.center_x - self.norm_image_size[0] / 2
-                    pos_y = self.center_y - self.norm_image_size[1] / 2
-                    Rectangle(texture=self.texture, pos=(pos_x, pos_y), size=self.norm_image_size)
-
-
-
-            # setattr(self, 'rad', dp(32))
-            # with self.canvas:
-            #     # Color(1, 1, 1, 1)
-            #     # setattr(self, 'rad', dp(32))
-            #     # Ellipse(pos=(touch.x - self.rad/2, touch.y - self.rad/2), size=(self.rad, self.rad))
-            #     # touch.ud['line'] = Line(points=(touch.x, touch.y), width=self.rad/2)
-            #     #
-            #     Color(0, 0, 0, 0)
-            #     Ellipse(pos=(touch.x - self.rad/2, touch.y - self.rad/2), size=(self.rad, self.rad))
-            #
             return True
         for child in self.children[:]:
             if child.dispatch('on_touch_down', touch):
                 return True
 
-    # def on_touch_move(self, touch):
-    #     if self.collide_point(*touch.pos):
-    #         if touch.ud.get('line'):
-    #             touch.ud['line'].points += (touch.x, touch.y)
-    #         return True
-    #     for child in self.children[:]:
-    #         if child.dispatch('on_touch_move', touch):
-    #             return True
-
-    def on_touch_up(self, touch):
-
+    def on_touch_move(self, touch):
+        if self.collide_point(*touch.pos):
+            self.eraser_texture(touch=touch)
+            return True
         for child in self.children[:]:
-            if child.dispatch('on_touch_up', touch):
+            if child.dispatch('on_touch_move', touch):
                 return True
 
     def collide_point(self, x, y):
