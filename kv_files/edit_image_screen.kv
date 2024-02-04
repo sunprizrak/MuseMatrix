@@ -76,17 +76,20 @@
 
 
 
+            MDBoxLayout:
+                orientation: 'horizontal'
+                adaptive_height: True
 
-            MDButton:
-                style: 'elevated'
-                radius: dp(10)
-                on_release:
-                    root.test_edit()
+                MDButton:
+                    style: 'elevated'
+                    radius: dp(10)
+                    on_release:
+                        root.test_edit()
 
-                MDButtonText:
-                    text: 'next'
-                    theme_font_name: 'Custom'
-                    font_name: 'Hacked'
+                    MDButtonText:
+                        text: 'next'
+                        theme_font_name: 'Custom'
+                        font_name: 'Hacked'
 
 
 

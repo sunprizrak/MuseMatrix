@@ -1,4 +1,5 @@
-from kivy.clock import Clock
+import io
+from kivy.clock import Clock, mainthread
 from kivy.core.image import Image as CoreImage
 from kivy.event import EventDispatcher
 from kivy.graphics import Color, Ellipse, Line, Rectangle, StencilPush, StencilUse, StencilPop, ClearBuffers, \
@@ -9,24 +10,22 @@ from kivy.metrics import dp
 from kivy.properties import NumericProperty, StringProperty, ObjectProperty
 from kivy.uix.image import AsyncImage, Image
 from kivy.uix.stencilview import StencilView
-from PIL import Image as PilImage, ImageDraw
+from PIL import Image as PILImage, ImageDraw
 from kivymd.app import MDApp
 
-
 class EditImage(AsyncImage):
-    texture_loaded = ObjectProperty()
-
     def __init__(self, **kwargs):
         super(EditImage, self).__init__(**kwargs)
-        print(dir(self.canvas))
 
     def on_parent(self, widget, parent):
         if parent is not None:
             def _callback(dt):
                 self.__update_before_canvas()
+                self.bind(norm_image_size=lambda x, y: self.__update_before_canvas())
 
             Clock.schedule_once(callback=_callback, timeout=2)
 
+    @mainthread
     def __update_before_canvas(self):
         self.canvas.before.clear()
 
@@ -55,32 +54,56 @@ class EditImage(AsyncImage):
                     Rectangle(pos=(x, y), size=(square_size, square_size))
 
     def on_touch_down(self, touch):
-
         if self.collide_point(*touch.pos):
-            if self.collide_point(*touch.pos):
-                texture = self.texture
-                if texture:
-                    # Получаем координаты касания относительно изображения
-                    x, y = self.to_local(*touch.pos)
+            if self.texture:
 
-                    # Преобразуем координаты в координаты текстуры
-                    tex_x = int((x / self.width) * texture.width)
-                    tex_y = int((y / self.height) * texture.height)
+                bottom = (self.height - self.norm_image_size[1]) / 2 + self.y
 
-                    # Преобразование байтов в bytearray
-                    pixels = bytearray(texture.pixels)
+                tex_x = round((touch.x - self.x) / self.norm_image_size[0] * self.texture_size[0])
+                tex_y = round((touch.y - bottom) / self.norm_image_size[1] * self.texture_size[1])
 
-                    # Устанавливаем альфа-канал в 0 (прозрачность) для выбранной области
-                    pixels[tex_y * texture.width * 4 + tex_x * 4 + 3] = 0
+                # Преобразование байтов в bytearray
+                pixels = bytearray(self.texture.pixels)
 
-                    # Преобразование bytearray обратно в байты
-                    texture.pixels = bytes(pixels)
+                # Радиус стирания
+                erase_radius = 10  # Измените на необходимое значение
 
-                    # Обновляем текстуру
-                    texture.blit_buffer(bytes(pixels), colorfmt='rgba', bufferfmt='ubyte')
+                # Определяем границы области стирания
+                min_x = max(0, tex_x - erase_radius)
+                max_x = min(self.texture_size[0], tex_x + erase_radius + 1)
+                min_y = max(0, tex_y - erase_radius)
+                max_y = min(self.texture_size[1], tex_y + erase_radius + 1)
 
-                    # Сбросим буфер, чтобы изменения вступили в силу
-                    texture.ask_update()
+                # Итерируем по окрестности точки касания
+                for i in range(min_x, max_x):
+                    for j in range(min_y, max_y):
+                        # Вычисляем расстояние до точки касания
+                        distance = ((i - tex_x) ** 2 + (j - tex_y) ** 2) ** 0.5
+
+                        # Если расстояние меньше радиуса стирания, устанавливаем альфа-канал в 0
+                        if distance <= erase_radius:
+                            # Получаем абсолютные координаты в текстуре
+                            abs_x = i
+                            abs_y = j
+
+                            # Устанавливаем альфа-канал в 0
+                            pixels[abs_y * self.texture_size[0] * 4 + abs_x * 4 + 3] = 0
+
+                # Создаем объект Texture с обновленными пикселями
+                new_texture = self.texture.create(size=self.texture_size, colorfmt='rgba', bufferfmt='ubyte')
+                new_texture.blit_buffer(bytes(pixels), colorfmt='rgba', bufferfmt='ubyte')
+                # new_texture.flip_vertical()
+                self.texture = new_texture
+
+                # Обновляем виджет
+                with self.canvas:
+                    self.canvas.clear()
+                    pos_x = self.center_x - self.norm_image_size[0] / 2
+                    pos_y = self.center_y - self.norm_image_size[1] / 2
+                    Rectangle(texture=self.texture, pos=(pos_x, pos_y), size=self.norm_image_size)
+
+
+
             # setattr(self, 'rad', dp(32))
             # with self.canvas:
             #     # Color(1, 1, 1, 1)
@@ -112,32 +135,19 @@ class EditImage(AsyncImage):
                 return True
 
     def collide_point(self, x, y):
-        # if self.size != self.texture_size:
-        #     width, height = self.norm_image_size
-        #     left = self.x + (self.width - width) / 2
-        #     right = self.right - (self.right - (left + width))
-        #     return left <= x <= right and self.y <= y <= self.top
-        # return super(EditImage, self).collide_point(x, y)
+        if self.size != self.norm_image_size:
+            width, height = self.norm_image_size
+            left = self.x + (self.width - width) / 2
+            right = self.right - (self.right - (left + width))
+            top = self.top - (self.height - height) / 2
+            bottom = (self.height - height) / 2 + self.y
+            return left <= x <= right and bottom <= y <= top
+        return super(EditImage, self).collide_point(x, y)
 
-        # Преобразуем координаты из глобальной системы координат в систему координат виджета
-        local_x, local_y = self.to_widget(x, y)
-
-        # Получаем размеры текстуры
-        texture_width = 330
-        texture_height = 330
-
-        # Получаем границы текстуры изображения
-        texture_left = self.center_x - texture_width / 2
-        texture_right = self.center_x + texture_width / 2
-        texture_bottom = self.center_y - texture_height / 2
-        texture_top = self.center_y + texture_height / 2
-
-        # Проверяем, находится ли точка в пределах текстуры
-        return texture_left <= local_x <= texture_right and texture_bottom <= local_y <= texture_top
 
     def get_mask_image(self):
         texture = self.texture.create(size=self.texture_size, colorfmt='rgba')
-        image = PilImage.new('RGBA', self.texture_size, 'white')
+        image = PILImage.new('RGBA', self.texture_size, 'white')
 
         # Создаем объект ImageDraw для рисования на изображении
         draw = ImageDraw.Draw(image)
