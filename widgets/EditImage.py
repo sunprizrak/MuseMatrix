@@ -13,7 +13,6 @@ from kivy.uix.image import Image
 from kivy.uix.stencilview import StencilView
 from PIL import Image as PILImage, ImageDraw
 from kivymd.app import MDApp
-import numpy as np
 
 
 class EditImage(Image):
@@ -68,9 +67,7 @@ class EditImage(Image):
             tex_x = round((touch.x - self.x) / self.norm_image_size[0] * self.texture_size[0])
             tex_y = round((touch.y - bottom) / self.norm_image_size[1] * self.texture_size[1])
 
-        # Создаем новый массив, который можно изменять
-        pixels = np.array(np.frombuffer(self.texture.pixels, dtype=np.uint8))
-        pixels = pixels.reshape((self.texture_size[1], self.texture_size[0], 4))
+        pixels = bytearray(self.texture.pixels)
 
         erase_radius = 10
 
@@ -81,10 +78,18 @@ class EditImage(Image):
 
         for i in range(min_x, max_x):
             for j in range(min_y, max_y):
-                distance = np.linalg.norm(np.array([i - tex_x, j - tex_y]))
+                distance = ((i - tex_x) ** 2 + (j - tex_y) ** 2) ** 0.5
 
                 if distance <= erase_radius:
-                    pixels[j, i, 3] = 0
+                    abs_x = i
+                    abs_y = j
+
+                    # Расчет одномерного индекса для изменения альфа-канала
+                    index = abs_y * self.texture_size[0] * 4 + abs_x * 4 + 3
+
+                    # Установка альфа-канала в 0
+                    pixels[index] = 0
+
 
         # Создаем объект Texture с обновленными пикселями
         self.updated_texture = Texture.create(
@@ -94,7 +99,7 @@ class EditImage(Image):
             mipmap=True,
         )
 
-        self.updated_texture.blit_buffer(bytes(pixels), colorfmt='rgba', bufferfmt='ubyte')
+        self.updated_texture.blit_buffer(bytes(pixels), size=self.texture_size, colorfmt='rgba', bufferfmt='ubyte')
         self.texture = self.updated_texture
 
 
