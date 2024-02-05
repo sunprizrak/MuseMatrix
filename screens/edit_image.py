@@ -1,7 +1,5 @@
 import base64
 import io
-
-from kivy.graphics import Color, Line, StencilPush, StencilUse, Rectangle, StencilPop, StencilUnUse
 from kivy.properties import StringProperty
 from kivy.uix.image import AsyncImage, Image
 from kivy.uix.stencilview import StencilView
@@ -38,14 +36,13 @@ class EditImageScreen(ImageScreen):
         #     new.save(self.image_original, format='png')
 
     def test_edit(self):
-        # mask = self.ids.test.get_mask_image()
-        # mask_data = io.BytesIO()
-        # mask.save(mask_data, flipped=True, fmt='png')
+        mask = self.ids.test.get_mask_image()
+        mask_data = io.BytesIO()
+        mask.save(mask_data, flipped=True, fmt='png')
+        mask.save('test_edit_image/mask_test.png')
         # with PilImage.open(mask_data) as img:
         #     new = img.resize(size=(256, 256))
         #     new.save('test_edit_image/test.png')
-        self.ids.test.get_mask_image()
-
 #
     def edit_image(self):
 

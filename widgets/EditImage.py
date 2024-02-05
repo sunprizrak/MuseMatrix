@@ -1,18 +1,9 @@
-import io
-from kivy.clock import Clock, mainthread
 from kivy.core.image import Image as CoreImage
-from kivy.event import EventDispatcher
-from kivy.graphics import Color, Ellipse, Line, Rectangle, StencilPush, StencilUse, StencilPop, ClearBuffers, \
-    PushMatrix, MatrixInstruction, PopMatrix
-from kivy.graphics.shader import Shader
+from kivy.clock import Clock
+from kivy.graphics import Color, Ellipse, Line, Rectangle
 from kivy.graphics.texture import Texture
-from kivy.graphics.transformation import Matrix
 from kivy.metrics import dp
-from kivy.properties import NumericProperty, StringProperty, ObjectProperty
 from kivy.uix.image import Image
-from kivy.uix.stencilview import StencilView
-from PIL import Image as PILImage, ImageDraw
-from kivymd.app import MDApp
 
 
 class EditImage(Image):
@@ -67,6 +58,10 @@ class EditImage(Image):
             tex_x = round((touch.x - self.x) / self.norm_image_size[0] * self.texture_size[0])
             tex_y = round((touch.y - bottom) / self.norm_image_size[1] * self.texture_size[1])
 
+        # Проверяем ориентацию изображения и корректируем координаты при необходимости
+        if self.texture.flip_vertical:
+            tex_y = self.texture_size[1] - tex_y
+
         pixels = bytearray(self.texture.pixels)
 
         erase_radius = 10
@@ -100,15 +95,13 @@ class EditImage(Image):
         )
 
         self.updated_texture.blit_buffer(bytes(pixels), size=self.texture_size, colorfmt='rgba', bufferfmt='ubyte')
+        self.updated_texture.flip_vertical()
         self.texture = self.updated_texture
-
-
 
     def on_touch_down(self, touch):
         if self.collide_point(*touch.pos):
             if self.texture:
                 self.eraser_texture(touch=touch)
-
             return True
         for child in self.children[:]:
             if child.dispatch('on_touch_down', touch):
@@ -132,68 +125,6 @@ class EditImage(Image):
             return left <= x <= right and bottom <= y <= top
         return super(EditImage, self).collide_point(x, y)
 
-
     def get_mask_image(self):
-        texture = self.texture.create(size=self.texture_size, colorfmt='rgba')
-        image = PILImage.new('RGBA', self.texture_size, 'white')
-
-        # Создаем объект ImageDraw для рисования на изображении
-        draw = ImageDraw.Draw(image)
-        width, height = self.texture_size
-        # Определяем размеры и положение прозрачной области (например, квадрата) в центре
-        transparent_size = 50
-        left = (width - transparent_size) // 2
-        top = (height - transparent_size) // 2
-        right = left + transparent_size
-        bottom = top + transparent_size
-
-        # Заполняем прозрачную область в альфа-канале нулевыми значениями
-        draw.rectangle([left, top, right, bottom], fill=(0, 0, 0, 0))
-        image.save('test_edit_image/test.png')
-        # Get the pixel data from the texture
-        # pixels = bytearray(change_texture.pixels)
-        #
-        # # Modify the pixel data to set every pixel to red
-        # for i in range(0, len(pixels), 4):
-        #     pixels[i] = 255  # red channel
-        #     pixels[i + 1] = 0  # green channel
-        #     pixels[i + 2] = 0  # blue channel
-        #     pixels[i + 3] = 255  # alpha channel
-        #
-        # # Write the modified pixel data back to the texture
-        # change_texture.blit_buffer(pixels, colorfmt='rgba')
-        #
-        # self.texture = change_texture
-        #
-        # transparent_texture = self.texture.create(colorfmt='rgba')
-        # transparent_texture.mag_filter = 'linear'
-        # transparent_texture.min_filter = 'linear_mipmap_linear'
-        #
-        # cords = []
-        #
-        # width, height = self.norm_image_size
-        # left = self.x + (self.width - width) / 2
-        #
-        # for elem in self.canvas.children:
-        #     if isinstance(elem, Line):
-        #         for point in elem.points:
-        #             if len(cords) < 1:
-        #                 cords.append([point - left - self.rad/2])
-        #             else:
-        #                 if len(cords[-1]) < 2:
-        #                     cords[-1].append(point - self.y - self.rad/2)
-        #                 else:
-        #                     cords.append([point - left - self.rad/2])
-        #
-        # # Cut out the part of the texture
-        # for cord in cords:
-        #     self.texture.blit_buffer(transparent_texture.pixels, size=(self.rad, self.rad), pos=cord, colorfmt='rgba', bufferfmt='ubyte')
-        #
-        # mask_img = CoreImage(self.texture)
-        #
-        # return mask_img
-
-    def clear_selection(self):
-        for el in self.canvas.children:
-            if isinstance(el, Ellipse) or isinstance(el, Line):
-                self.canvas.children.remove(el)
+        mask_img = CoreImage(self.texture)
+        return mask_img
