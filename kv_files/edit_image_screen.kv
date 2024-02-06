@@ -8,6 +8,7 @@
     prompt: input_prompt.text
 
     MDFloatLayout:
+        id: edit_layout
 
         MDBoxLayout:
             id: layout
@@ -46,49 +47,70 @@
                         app.file_manager_open()
 
                 MDBoxLayout:
-                    id: bottom_buttons
-                    orientation: 'horizontal'
-                    padding: dp(10)
-                    spacing: dp(100)
-                    pos_hint: {'center_x': .5}
-                    buttons_disabled: True
-                    adaptive_size: True
+                    orientation: 'vertical'
 
                     MDBoxLayout:
+                        id: image_box
+
+                    MDBoxLayout:
+                        id: bottom_buttons
                         orientation: 'horizontal'
+                        padding: dp(10)
                         spacing: dp(20)
-                        adaptive_size: True
+                        pos_hint: {'center_x': .5}
+                        buttons_disabled: True
+                        adaptive_height: True
 
-                        MDFabButton:
-                            icon: 'broom'
-                            style: 'small'
+                        MDBoxLayout:
+                            orientation: 'horizontal'
+                            spacing: dp(10)
+                            adaptive_height: True
+
+                            MDFabButton:
+                                icon: 'broom'
+                                style: 'small'
+                                disabled: bottom_buttons.buttons_disabled
+                                opacity: 0 if self.disabled else 1
+                                on_release:
+                                    root.clear_selection()
+
+                            MDFabButton:
+                                icon: 'image-sync'
+                                style: 'small'
+                                disabled: bottom_buttons.buttons_disabled
+                                opacity: 0 if self.disabled else 1
+                                on_release:
+                                    root.reload_image()
+
+                            MDSlider:
+                                id: erase_percent
+                                min: 0
+                                max: 10
+                                step: 1
+                                value: 4
+
+                                size_hint: None, None
+                                width: dp(150)
+                                height: dp(40)
+                                disabled: bottom_buttons.buttons_disabled
+                                opacity: 0 if self.disabled else 1
+
+                                MDSliderHandle:
+
+                                MDSliderValueLabel:
+
+                        MDButton:
+                            style: 'elevated'
+                            radius: dp(10)
                             disabled: bottom_buttons.buttons_disabled
                             opacity: 0 if self.disabled else 1
-                            on_release:
-                                root.clear_selection()
+                            pos_hint: {'center_x': .8}
+                            on_release: root.next_section() if not self.disabled else None
 
-                        MDFabButton:
-                            icon: 'image-sync'
-                            style: 'small'
-                            disabled: bottom_buttons.buttons_disabled
-                            opacity: 0 if self.disabled else 1
-                            on_release:
-                                root.reload_image()
-
-                    MDButton:
-                        style: 'elevated'
-                        radius: dp(10)
-                        disabled: bottom_buttons.buttons_disabled
-                        opacity: 0 if self.disabled else 1
-                        pos_hint: {'center_x': .8}
-                        on_release: root.next_section() if not self.disabled else None
-
-                        MDButtonText:
-                            text: 'next'
-                            theme_font_name: 'Custom'
-                            font_name: 'Hacked'
-
-
+                            MDButtonText:
+                                text: 'next'
+                                theme_font_name: 'Custom'
+                                font_name: 'Hacked'
             MDBoxLayout:
                 id: option_section
                 orientation: 'vertical'

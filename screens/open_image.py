@@ -102,8 +102,8 @@ class OpenImageScreen(BaseScreen):
         content = MDBoxLayout(
             MDLabel(
                 text='Do you want to download the picture?',
-                padding=[0, dp(10), 0, 0],
             ),
+            padding=[0, dp(10), 0, dp(10)],
         )
 
         self.app.show_dialog(
@@ -151,8 +151,8 @@ class OpenImageScreen(BaseScreen):
         content = MDBoxLayout(
             MDLabel(
                 text='Are you sure you want to delete?',
-                padding=[0, dp(10), 0, 0],
             ),
+            padding=[0, dp(10), 0, dp(10)],
         )
 
         self.app.show_dialog(

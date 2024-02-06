@@ -48,7 +48,6 @@ class ImageScreen(BaseScreen):
             data_image['description'] = self.prompt
 
         def _on_success(request, response):
-
             self.carousel.saved_images.append(widget)
 
             image = self.image_controller.object(data_image=response)

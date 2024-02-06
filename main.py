@@ -7,7 +7,7 @@ from kivy.uix.widget import Widget
 from kivymd.app import MDApp
 from kivy.lang import Builder
 from kivy.core.window import Window
-from kivymd.uix.button import MDButton, MDButtonText
+from kivymd.uix.button import MDButton, MDButtonText, MDFabButton
 from kivymd.uix.chip import MDChip, MDChipText
 from kivymd.uix.dialog import (
     MDDialog,
@@ -251,25 +251,16 @@ class MainApp(MDApp):
             MDDialogButtonContainer(
                 Widget(),
                 button,
-                MDButton(
-                    MDButtonText(
-                        text='Close',
-                        halign='right',
-                        theme_text_color='Custom',
-                        text_color='white',
-                        theme_font_name="Custom",
-                        font_name='Hacked',
-                    ),
-                    style='text',
-                    theme_bg_color='Custom',
-                    md_bg_color='gray',
+                MDFabButton(
+                    icon='close-thick',
+                    style='small',
                     on_release=self.close_dialog,
                 ),
                 spacing='8dp',
             ),
             size_hint_x=.9,
             theme_bg_color='Custom',
-            md_bg_color='#1F1F1F',
+            md_bg_color=self.theme_cls.backgroundColor,
             radius=dp(25),
         )
 

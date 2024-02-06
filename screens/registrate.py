@@ -48,9 +48,9 @@ class RegistrateScreen(BaseScreen):
                                 MDLabel(
                                     text=error_text,
                                     markup=True,
-                                    padding=[0, dp(10), 0, 0],
                                     on_ref_press=_callback,
                                 ),
+                                padding=[0, dp(10), 0, dp(10)],
                             )
                             return self.app.show_dialog(title='Notice!', sup_text=helper_text, content=content)
                         else:
@@ -70,8 +70,8 @@ class RegistrateScreen(BaseScreen):
             content = MDBoxLayout(
                 MDLabel(
                     text=error_text,
-                    padding=[0, dp(10), 0, 0],
                 ),
+                padding=[0, dp(10), 0, dp(10)],
             )
 
             self.app.show_dialog(title='Oops!', content=content)
@@ -85,8 +85,8 @@ class RegistrateScreen(BaseScreen):
             content = MDBoxLayout(
                 MDLabel(
                     text=text,
-                    padding=[0, dp(10), 0, 0],
                 ),
+                padding=[0, dp(10), 0, dp(10)],
             )
 
             self.app.show_dialog(title=title, content=content)

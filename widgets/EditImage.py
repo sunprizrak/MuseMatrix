@@ -3,6 +3,7 @@ from kivy.clock import Clock
 from kivy.graphics import Color, Ellipse, Line, Rectangle
 from kivy.graphics.texture import Texture
 from kivy.metrics import dp
+from kivy.properties import NumericProperty
 from kivy.uix.image import Image
 
 
@@ -11,6 +12,7 @@ class EditImage(Image):
         super(EditImage, self).__init__(**kwargs)
         self.initial_texture = None
         self.updated_texture = None
+        self.erase_percent = 4
 
     def on_parent(self, widget, parent):
         if parent is not None:
@@ -18,7 +20,7 @@ class EditImage(Image):
                 self.__update_before_canvas()
                 self.bind(norm_image_size=lambda x, y: self.__update_before_canvas())
 
-            Clock.schedule_once(callback=_callback, timeout=1)
+            Clock.schedule_once(callback=_callback, timeout=0.1)
 
     def __update_before_canvas(self):
         self.canvas.before.clear()
@@ -50,13 +52,20 @@ class EditImage(Image):
     def eraser_texture(self, touch):
         bottom = (self.height - self.norm_image_size[1]) / 2 + self.y
 
-        if self.texture_size == self.norm_image_size:
+        if self.norm_image_size[0] != self.width:
             left = self.x + (self.width - self.texture_size[0]) / 2
-            tex_x = round(touch.x - left)
-            tex_y = round(touch.y - bottom)
+
+            if self.texture_size[0] == self.texture_size[1]:
+                tex_x = round(touch.x - left)
+                tex_y = round(touch.y - bottom)
+            else:
+                left = self.x + (self.width - self.norm_image_size[0]) / 2
+                tex_x = round((touch.x - left) / self.norm_image_size[0] * self.texture_size[0])
+                tex_y = round((touch.y - bottom) / self.norm_image_size[1] * self.texture_size[1])
         else:
             tex_x = round((touch.x - self.x) / self.norm_image_size[0] * self.texture_size[0])
             tex_y = round((touch.y - bottom) / self.norm_image_size[1] * self.texture_size[1])
+
 
         # Проверяем ориентацию изображения и корректируем координаты при необходимости
         if self.texture.flip_vertical:
@@ -64,7 +73,7 @@ class EditImage(Image):
 
         pixels = bytearray(self.texture.pixels)
 
-        erase_radius = 10
+        erase_radius = round(self.erase_percent * self.texture_size[0] / 100)  # %percent of texture_size
 
         min_x = max(0, tex_x - erase_radius)
         max_x = min(self.texture_size[0], tex_x + erase_radius + 1)

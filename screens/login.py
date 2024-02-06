@@ -39,8 +39,8 @@ class LoginScreen(BaseScreen):
             content = MDBoxLayout(
                 MDLabel(
                     text=error_text,
-                    padding=[0, dp(10), 0, 0],
                 ),
+                padding=[0, dp(10), 0, 0],
             )
 
             self.app.show_dialog(title='Oops!', content=content)
@@ -94,9 +94,10 @@ class LoginScreen(BaseScreen):
                 theme_font_name="Custom",
                 font_name='Hacked',
             ),
-            style='filled',
+            style='elevated',
             theme_bg_color='Custom',
             md_bg_color='green',
+            radius=dp(10),
             on_release=lambda x: self.user_controller.reset_password(email_field.text),
         )
 

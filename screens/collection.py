@@ -71,8 +71,8 @@ class CollectionScreen(BaseScreen):
         content = MDBoxLayout(
             MDLabel(
                 text='Are you sure you want to delete?',
-                padding=[0, dp(10), 0, 0],
             ),
+            padding=[0, dp(10), 0, dp(10)],
         )
 
         self.app.show_dialog(
