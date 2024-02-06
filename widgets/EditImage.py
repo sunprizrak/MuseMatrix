@@ -9,7 +9,7 @@ from kivy.uix.image import Image
 class EditImage(Image):
     def __init__(self, **kwargs):
         super(EditImage, self).__init__(**kwargs)
-        self.initial_texture = self.texture
+        self.initial_texture = None
         self.updated_texture = None
 
     def on_parent(self, widget, parent):
@@ -18,7 +18,7 @@ class EditImage(Image):
                 self.__update_before_canvas()
                 self.bind(norm_image_size=lambda x, y: self.__update_before_canvas())
 
-            Clock.schedule_once(callback=_callback, timeout=2)
+            Clock.schedule_once(callback=_callback, timeout=1)
 
     def __update_before_canvas(self):
         self.canvas.before.clear()
@@ -101,6 +101,8 @@ class EditImage(Image):
     def on_touch_down(self, touch):
         if self.collide_point(*touch.pos):
             if self.texture:
+                if not self.initial_texture:
+                    self.initial_texture = self.texture
                 self.eraser_texture(touch=touch)
             return True
         for child in self.children[:]:
@@ -128,3 +130,8 @@ class EditImage(Image):
     def get_mask_image(self):
         mask_img = CoreImage(self.texture)
         return mask_img
+
+    def clear_eraser(self):
+        if self.initial_texture:
+            self.texture = self.initial_texture
+            self.updated_texture = None

@@ -1,10 +1,7 @@
 import base64
 import io
-from kivy.properties import StringProperty
-from kivy.uix.image import AsyncImage, Image
-from kivy.uix.stencilview import StencilView
+from kivy.properties import StringProperty, ObjectProperty
 from kivymd.uix.swiper import MDSwiper
-
 from widgets.EditImage import EditImage
 from .layout import ImageScreen
 from PIL import Image as PilImage
@@ -12,38 +9,52 @@ from PIL import Image as PilImage
 
 class EditImageScreen(ImageScreen):
     prompt = StringProperty()
-    image_original = io.BytesIO()
-    image_mask = io.BytesIO()
+    image_edit_section = ObjectProperty()
+    option_section = ObjectProperty()
+    image = ObjectProperty()
+
+    def __init__(self, **kwargs):
+        super(EditImageScreen, self).__init__(**kwargs)
+        self.image_original = io.BytesIO()
+        self.image_mask = io.BytesIO()
+        self.flag_section = False
+
+    def on_pre_enter(self, *args):
+        self.option_section = self.ids.option_section
+        self.ids.layout.remove_widget(self.ids.option_section)
 
     def add_image(self, path):
+        self.image = EditImage(
+            source=path,
+            fit_mode='contain',
+            mipmap=True,
+            pos_hint={'center_x': .5, 'center_y': .5},
+        )
+
         self.ids.add_image_button.disabled = True
         self.ids.add_image_button.opacity = 0
 
-        # image = EditImage(
-        #     source=path,
-        #     fit_mode='contain',
-        #     mipmap=True,
-        #     pos_hint={'center_x': .5, 'center_y': .5},
-        # )
-        #
-        # self.ids.image_section.add_widget(image)
-        # if len(self.ids.edit_top_bar.right_action_items) == 0:
-        #     self.ids.edit_top_bar.right_action_items.append(["autorenew", lambda x: self.reload_image()])
-        #     self.ids.edit_top_bar.right_action_items.append(["broom", lambda x: self.clear_selection()])
-        #
-        # with PilImage.open(path) as img:
-        #     new = img.resize(size=(256, 256))
-        #     new.save(self.image_original, format='png')
+        self.ids.bottom_buttons.buttons_disabled = False
 
-    def test_edit(self):
-        mask = self.ids.test.get_mask_image()
-        mask_data = io.BytesIO()
-        mask.save(mask_data, flipped=True, fmt='png')
-        mask.save('test_edit_image/mask_test.png')
-        # with PilImage.open(mask_data) as img:
-        #     new = img.resize(size=(256, 256))
-        #     new.save('test_edit_image/test.png')
-#
+        self.ids.image_edit_section.add_widget(self.image, index=1)
+
+        with PilImage.open(path) as img:
+            new = img.resize(size=(256, 256))
+            new.save(self.image_original, format='png')
+
+    def next_section(self):
+        if self.image.updated_texture:
+            self.image_edit_section = self.ids.image_edit_section
+            self.ids.layout.remove_widget(self.image_edit_section)
+            self.ids.layout.add_widget(self.option_section)
+            self.flag_section = True
+        else:
+            print('выделите область')
+
+    def back_section(self):
+        self.ids.layout.remove_widget(self.option_section)
+        self.ids.layout.add_widget(self.image_edit_section)
+
     def edit_image(self):
 
         # def _on_success(request, response):
@@ -143,21 +154,16 @@ class EditImageScreen(ImageScreen):
                 #     on_error=_on_error,
                 #     on_failure=_on_failure,
                 # )
-#
-#     def clear_selection(self):
-#         for widget in self.ids.image_section.children:
-#             if isinstance(widget, MyImage):
-#                 widget.clear_selection()
-#
-#     def reload_image(self):
-#         for widget in self.ids.image_section.children:
-#             if isinstance(widget, MyImage) or isinstance(widget, MDSwiper):
-#                 self.ids.image_section.remove_widget(widget)
-#
-#         self.image_original.truncate(0)
-#         self.image_mask.truncate(0)
-#         self.ids.add_image_button.disabled = False
-#         self.ids.add_image_button.opacity = 1
-#
-#         while len(self.ids.edit_top_bar.right_action_items) != 0:
-#             self.ids.edit_top_bar.right_action_items.remove(self.ids.edit_top_bar.right_action_items[-1])
+    def clear_selection(self):
+        for widget in self.ids.image_edit_section.children:
+            if isinstance(widget, EditImage):
+                widget.clear_eraser()
+
+    def reload_image(self):
+        self.ids.image_edit_section.remove_widget(self.image)
+        self.image_original.truncate(0)
+        self.image_mask.truncate(0)
+        self.ids.add_image_button.disabled = False
+        self.ids.bottom_buttons.buttons_disabled = True
+        self.image_count = 1
+        self.ids.input_prompt.text = ''
