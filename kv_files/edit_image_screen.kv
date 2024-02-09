@@ -1,39 +1,41 @@
 #:import EditImageScreen screens.edit_image
 #:import EditImage widgets.EditImage
 #:import DrawWidget widgets.EditImage
+#:import MyCarousel widgets.MyCarousel
+
+
+<Navbar@MDTopAppBar>
+    type: 'small'
+    md_bg_color: self.theme_cls.backgroundColor
+
+    MDTopAppBarLeadingButtonContainer:
+
+        MDActionTopAppBarButton:
+            icon: 'arrow-left-bold'
+            ripple_effect: False
+            focus_behavior: False
+            on_release:
+                screen = app.root.get_screen(app.root.current)
+                screen.change_section(self)
+
+    MDTopAppBarTitle:
+        text: 'edit image'
+        theme_font_name: "Custom"
+        font_name: 'Hacked'
+
 
 <EditImageScreen>
     name: 'edit_image_screen'
 
     prompt: input_prompt.text
 
-    MDFloatLayout:
-        id: edit_layout
+    MDScreenManager:
+        id: screen_manager
 
-        MDBoxLayout:
-            id: layout
-            orientation: 'vertical'
-
-            MDTopAppBar:
-                id: edit_top_bar
-                type: 'small'
-                md_bg_color: self.theme_cls.backgroundColor
-
-                MDTopAppBarLeadingButtonContainer:
-
-                    MDActionTopAppBarButton:
-                        icon: 'arrow-left-bold'
-                        ripple_effect: False
-                        focus_behavior: False
-                        on_release: app.back(screen='main_screen') if not root.flag_section else root.back_section()
-
-                MDTopAppBarTitle:
-                    text: 'edit image'
-                    theme_font_name: "Custom"
-                    font_name: 'Hacked'
+        MDScreen:
+            name: 'edit_section'
 
             MDFloatLayout:
-                id: image_edit_section
 
                 MDFabButton:
                     id: add_image_button
@@ -48,6 +50,8 @@
 
                 MDBoxLayout:
                     orientation: 'vertical'
+
+                    Navbar:
 
                     MDBoxLayout:
                         id: image_box
@@ -105,16 +109,22 @@
                             disabled: bottom_buttons.buttons_disabled
                             opacity: 0 if self.disabled else 1
                             pos_hint: {'center_x': .8}
-                            on_release: root.next_section() if not self.disabled else None
+                            on_release: root.change_section(self) if not self.disabled else None
 
                             MDButtonText:
                                 text: 'next'
                                 theme_font_name: 'Custom'
                                 font_name: 'Hacked'
+
+        MDScreen:
+            name: 'option_section'
+
             MDBoxLayout:
                 id: option_section
                 orientation: 'vertical'
                 spacing: dp(10)
+
+                Navbar:
 
                 MDBoxLayout:
                     orientation: 'horizontal'
@@ -194,7 +204,7 @@
                         size_hint_x: 1
                         radius: dp(0)
                         on_release:
-                            root.edit_image()
+                            root.edit_image(self)
 
                         MDButtonText:
                             text: 'Generate'
@@ -206,9 +216,81 @@
                             font_style: 'Display'
                             role: 'small'
 
-        MDCircularProgressIndicator:
-            id: edit_spin
-            size_hint: None, None
-            size: dp(38), dp(38)
-            pos_hint: {'center_x': .5, 'center_y': .5}
-            active: False
+        MDScreen:
+            name: 'completed_section'
+
+            MDFloatLayout:
+
+                MDBoxLayout:
+                    orientation: 'vertical'
+
+                    MDBoxLayout:
+                        orientation: 'horizontal'
+                        padding: [dp(0), dp(10), dp(0), dp(10)]
+                        spacing: dp(50)
+                        pos_hint: {'center_x': .5}
+                        adaptive_size: True
+
+                        MDButton:
+                            style: 'elevated'
+                            radius: dp(10)
+                            on_release:
+                                app.root.transition = MDSwapTransition()
+                                app.root.current = 'collection_screen'
+
+                            MDButtonIcon:
+                                icon: 'image-album'
+
+                            MDButtonText:
+                                text: 'gallery'
+                                theme_font_name: 'Custom'
+                                font_name: 'Hacked'
+
+                        MDButton:
+                            style: 'elevated'
+                            radius: dp(10)
+                            on_release:
+                                root.change_section(self)
+
+                            MDButtonIcon:
+                                icon: 'plus'
+
+                            MDButtonText:
+                                text: 'Edit new'
+                                theme_font_name: 'Custom'
+                                font_name: 'Hacked'
+
+                    MyCarousel:
+                        id: carousel
+
+                    MDBoxLayout:
+                        orientation: 'horizontal'
+                        padding: [dp(30), dp(10), dp(30), dp(30)]
+                        pos_hint: {'center_x': .5}
+                        adaptive_size: True
+
+                        MDButton:
+                            id: save_button
+                            style: 'elevated'
+                            radius: dp(10)
+                            disabled: True if carousel.current_slide in carousel.saved_images else False
+                            pos_hint: {'center_x': .5}
+                            on_release:
+                                root.save_image(carousel.current_slide)
+
+                            MDButtonIcon:
+                                icon: 'check-circle' if carousel.current_slide in carousel.saved_images else 'content-save'
+                                icon_color_disabled: 'green'
+
+                            MDButtonText:
+                                text: 'saved' if carousel.current_slide in carousel.saved_images else 'save image'
+                                theme_font_name: 'Custom'
+                                font_name: 'Hacked'
+                                theme_text_color: 'Primary'
+
+                MDCircularProgressIndicator:
+                    id: edit_spin
+                    size_hint: None, None
+                    size: dp(38), dp(38)
+                    pos_hint: {'center_x': .5, 'center_y': .5}
+                    active: False

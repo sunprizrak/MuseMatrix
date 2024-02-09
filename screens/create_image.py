@@ -28,7 +28,7 @@ class CreateImageScreen(ImageScreen):
 
     def generate(self):
         def _on_success(request, response):
-            if 'data' in response:
+            if 'urls' in response:
                 self.ids.create_spin.active = False
                 self.user_controller.user.coin = response.get('coin')
                 self.app.root.ids.main_screen.coin = self.user_controller.user.coin
@@ -87,8 +87,8 @@ class CreateImageScreen(ImageScreen):
 
                 self.carousel = MyCarousel()
 
-                for answer in response['data']:
-                    url = answer.get('url')
+                for image_url in response['urls']:
+                    url = image_url
 
                     image = FitImage(
                         source=url,
@@ -176,7 +176,7 @@ class CreateImageScreen(ImageScreen):
 
                 if type(error) is dict:
                     if {'error'} & set(error):
-                        error_text = error.get['error']
+                        error_text = error.get('error')
                 elif type(error) is ConnectionRefusedError:
                     error_text = error.strerror
 

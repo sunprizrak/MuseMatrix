@@ -23,7 +23,6 @@ class ImageScreen(BaseScreen):
     image_count = BoundedNumericProperty(1, min=1, max=10, errorhandler=lambda x: 10 if x > 10 else 1)
     image_size = StringProperty()
     price = NumericProperty()
-    carousel = ObjectProperty()
 
     def __init__(self, **kwargs):
         super(ImageScreen, self).__init__(**kwargs)
@@ -48,7 +47,7 @@ class ImageScreen(BaseScreen):
             data_image['description'] = self.prompt
 
         def _on_success(request, response):
-            self.carousel.saved_images.append(widget)
+            self.ids.carousel.saved_images.append(widget)
 
             image = self.image_controller.object(data_image=response)
 
