@@ -1,14 +1,12 @@
 import logging
 from kivy.core.image import Image as CoreImage
-from kivy.core.audio import SoundLoader
 from kivy.core.text import LabelBase
-from kivy.metrics import dp, sp
+from kivy.metrics import dp
 from kivy.uix.widget import Widget
 from kivymd.app import MDApp
 from kivy.lang import Builder
 from kivy.core.window import Window
-from kivymd.uix.button import MDButton, MDButtonText, MDFabButton
-from kivymd.uix.chip import MDChip, MDChipText
+from kivymd.uix.button import MDFabButton
 from kivymd.uix.dialog import (
     MDDialog,
     MDDialogHeadlineText,
@@ -192,33 +190,7 @@ class MainApp(MDApp):
                 else:
                     sound_name = path.split('/')[-1]
 
-                screen.ids.add_sound_button.disabled = True
-                screen.sound = SoundLoader.load(path)
-                screen.ids.sound.text = sound_name
-
-                button = MDButton(
-                    text='transcript',
-                    pos_hint={'center_x': .5, 'center_y': .5},
-                    font_size=sp(25),
-                    # md_bg_color=self.theme_cls.primary_color,
-                    on_release=lambda
-                        x: screen.transcript(),
-                )
-
-                text_button = MDChipText(text='translate to english')
-
-                chip = MDChip(
-                    pos_hint={'center_x': .5, 'center_y': .6},
-                    md_bg_color='grey',
-                    line_color="black",
-                    type='filter',
-                    selected_color='green',
-                )
-
-                chip.add_widget(text_button)
-
-                screen.ids.speech_layout.add_widget(button)
-                screen.ids.speech_layout.add_widget(chip)
+                screen.add_sound(path=path, sound_name=sound_name)
         elif screen.name == 'main_screen':
             user_controller = UserController()
 
