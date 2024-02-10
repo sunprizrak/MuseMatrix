@@ -1,6 +1,5 @@
 import base64
 import io
-from kivy.clock import Clock
 from kivy.metrics import dp
 from kivy.properties import StringProperty, ObjectProperty
 from kivy.uix.screenmanager import NoTransition
@@ -59,7 +58,16 @@ class EditImageScreen(ImageScreen):
 
             self.app.show_dialog(title='Oops!', content=content)
 
-    def change_section(self, button):
+    def edit_new_button(self, button):
+        self.ids.input_prompt.text = ''
+        self.image_count = 1
+        self.ids.image_box.remove_widget(self.image)
+        self.ids.add_image_button.disabled = False
+        self.ids.bottom_buttons.buttons_disabled = True
+        self.ids.carousel.clear_widgets()
+        self.change_section(button=button)
+
+    def change_section(self, button=None):
         if self.ids.screen_manager.current == 'edit_section':
             if isinstance(button, MDButton):
                 if self.image.updated_texture:
@@ -88,18 +96,17 @@ class EditImageScreen(ImageScreen):
                 self.ids.screen_manager.transition.direction = 'right'
                 self.ids.screen_manager.current = 'edit_section'
         elif self.ids.screen_manager.current == 'completed_section':
-            self.ids.input_prompt.text = ''
-            self.image_count = 1
-            self.ids.image_box.remove_widget(self.image)
-            self.ids.add_image_button.disabled = False
-            self.ids.bottom_buttons.buttons_disabled = True
-            self.ids.screen_manager.transition = NoTransition()
-            self.ids.screen_manager.current = 'edit_section'
+            if isinstance(button, MDButton):
+                self.ids.screen_manager.transition = NoTransition()
+                self.ids.screen_manager.current = 'edit_section'
 
     def edit_image(self, button):
         def _on_success(request, response):
             if 'urls' in response:
                 self.ids.edit_spin.active = False
+                self.ids.option_section.disabled = False
+                self.ids.screen_manager.transition = NoTransition()
+                self.ids.screen_manager.current = 'completed_section'
                 self.user_controller.user.coin = response.get('coin')
                 self.app.root.ids.main_screen.coin = self.user_controller.user.coin
 
@@ -115,44 +122,12 @@ class EditImageScreen(ImageScreen):
                     self.ids.carousel.add_widget(image)
 
             elif 'notice' in response:
-                def _callback_one():
-                    self.ids.edit_spin.active = False
-
-                    content = MDBoxLayout(
-                        MDLabel(
-                            text=response['notice'],
-                        ),
-                        padding=[0, dp(10), 0, dp(10)],
-                    )
-
-                    self.app.show_dialog(
-                        title='Oops!',
-                        content=content,
-                    )
-
-                Clock.schedule_once(lambda dt: _callback_one(), 1)
-
-                def _callback_two():
-                    self.ids.edit_layout.add_widget(self.layout)
-
-                Clock.schedule_once(lambda dt: _callback_two(), timeout=2)
-
-        def _output_error(error):
-            def _callback_one():
                 self.ids.edit_spin.active = False
-                self.ids.add_image_button.disabled = False
-
-                error_text = 'error'
-
-                if type(error) is dict:
-                    if {'error'} & set(error):
-                        error_text = error.get('error')
-                elif type(error) is ConnectionRefusedError:
-                    error_text = error.strerror
+                self.ids.option_section.disabled = False
 
                 content = MDBoxLayout(
                     MDLabel(
-                        text=error_text,
+                        text=response['notice'],
                     ),
                     padding=[0, dp(10), 0, dp(10)],
                 )
@@ -162,12 +137,29 @@ class EditImageScreen(ImageScreen):
                     content=content,
                 )
 
-            Clock.schedule_once(lambda dt: _callback_one(), 1)
+        def _output_error(error):
+            self.ids.edit_spin.active = False
+            self.ids.option_section.disabled = False
 
-            def _callback_two():
-                self.ids.edit_layout.add_widget(self.layout)
+            error_text = 'error'
 
-            Clock.schedule_once(lambda dt: _callback_two(), timeout=2)
+            if type(error) is dict:
+                if {'error'} & set(error):
+                    error_text = error.get('error')
+            elif type(error) is ConnectionRefusedError:
+                error_text = error.strerror
+
+            content = MDBoxLayout(
+                MDLabel(
+                    text=error_text,
+                ),
+                padding=[0, dp(10), 0, dp(10)],
+            )
+
+            self.app.show_dialog(
+                title='Oops!',
+                content=content,
+            )
 
         def _on_error(request, error):
             _output_error(error)
@@ -178,8 +170,8 @@ class EditImageScreen(ImageScreen):
         self.image_original.seek(0)
 
         if len(self.image_original.getvalue()) > 0:
-            if all([self.prompt, self.image_count]):  # self.image_size
-                self.change_section(button=button)
+            if all([self.prompt, self.image_count, self.image_size]):
+                self.ids.option_section.disabled = True
                 self.ids.edit_spin.active = True
 
                 mask_img = self.image.get_mask_image()
@@ -193,16 +185,12 @@ class EditImageScreen(ImageScreen):
                 png_image_mask = self.image_mask.getvalue()
                 im_b64_image_mask = base64.b64encode(png_image_mask).decode('UTF-8')
 
-                print(self.image.texture_size)
-                image_size = 'x'.join(list(map(str, self.image.texture_size)))
-                print(image_size)
-
                 self.openai_controller.image_edit(
                     image=im_b64_image_original,
                     mask=im_b64_image_mask,
                     prompt=self.prompt,
                     image_count=self.image_count,
-                    image_size=image_size,
+                    image_size=self.image_size,
                     on_success=_on_success,
                     on_error=_on_error,
                     on_failure=_on_failure,

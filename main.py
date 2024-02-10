@@ -102,7 +102,7 @@ class MainApp(MDApp):
 
     def theme_initial(self):
         self.theme_cls.theme_style = "Dark"
-        self.theme_cls.primary_palette = "Purple"
+        self.theme_cls.primary_palette = "Ghostwhite"
         LabelBase.register(name='Hacked', fn_regular='assets/font/hacked.ttf')
 
     @staticmethod

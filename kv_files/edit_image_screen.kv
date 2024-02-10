@@ -119,174 +119,143 @@
         MDScreen:
             name: 'option_section'
 
-            MDBoxLayout:
-                id: option_section
-                orientation: 'vertical'
-                spacing: dp(10)
-
-                Navbar:
-
-                MDBoxLayout:
-                    orientation: 'horizontal'
-                    adaptive_height: True
-                    size_hint_x: .9
-                    pos_hint: {'center_x': .5}
-                    spacing: dp(40)
-
-                    MDLabel:
-                        text: 'quantity:'
-                        theme_font_size: 'Custom'
-                        font_size: sp(35)
-                        theme_font_name: "Custom"
-                        font_name: 'Hacked'
-                        valign: 'center'
-                        adaptive_size: True
-
-                    MDBoxLayout:
-                        orientation: 'horizontal'
-                        pos_hint: {'center_x': .5}
-                        size_hint_x: None
-                        width: dp(140)
-                        adaptive_height: True
-
-                        MDIconButton:
-                            icon: 'minus-box-outline'
-                            theme_font_size: "Custom"
-                            font_size: sp(30)
-                            ripple_effect: False
-                            focus_behavior: False
-                            theme_icon_color: "Custom"
-                            icon_color: app.theme_cls.secondaryContainerColor
-                            on_release:
-                                root.image_count -= 1
-
-                        MDLabel:
-                            id: img_count
-                            text: str(root.image_count)
-                            theme_font_name: "Custom"
-                            font_name: 'Hacked'
-                            theme_font_size: 'Custom'
-                            font_size: sp(30)
-                            halign: 'center'
-
-
-                        MDIconButton:
-                            icon: 'plus-box-outline'
-                            theme_font_size: "Custom"
-                            font_size: sp(30)
-                            ripple_effect: False
-                            focus_behavior: False
-                            theme_icon_color: "Custom"
-                            icon_color: app.theme_cls.secondaryContainerColor
-                            on_release:
-                                root.image_count += 1
-
-                MDBoxLayout:
-
-                    TextInput:
-                        id: input_prompt
-                        multiline: True
-                        auto_indent: True
-                        padding: dp(10)
-                        border: [2, 2, 2, 2]
-                        cursor_color: app.theme_cls.secondaryContainerColor
-                        cursor_width: sp(3)
-                        font_size: sp(17)
-                        hint_text: 'Enter the prompt'
-                        pos_hint: {'center_x': .5}
-
-                MDBoxLayout:
-                    adaptive_height: True
-
-                    MDButton:
-                        style: 'elevated'
-                        theme_width: 'Custom'
-                        size_hint_x: 1
-                        radius: dp(0)
-                        on_release:
-                            root.edit_image(self)
-
-                        MDButtonText:
-                            text: 'Generate'
-                            pos_hint: {'center_x': .5}
-                            theme_text_color: 'Custom'
-                            text_color: 'white'
-                            theme_font_name: 'Custom'
-                            font_name: 'Hacked'
-                            font_style: 'Display'
-                            role: 'small'
-
-        MDScreen:
-            name: 'completed_section'
-
             MDFloatLayout:
 
                 MDBoxLayout:
+                    id: option_section
                     orientation: 'vertical'
+                    spacing: dp(10)
+
+                    Navbar:
+
+                    MDSegmentedButton:
+                        id: seg_size
+                        type: 'medium'
+                        selected_icon_color: 'green'
+                        size_hint_x: .95
+                        pos_hint: {'center_x': .5}
+                        orientation: 'vertical'
+
+
+                        MDSegmentedButtonItem:
+                            on_active:
+                                root.image_size = seg_size_one.text if self.active else root.image_size
+
+                            MDSegmentButtonLabel:
+                                id: seg_size_one
+                                text: '256x256'
+                                theme_font_name: "Custom"
+                                font_name: 'Hacked'
+
+                        MDSegmentedButtonItem:
+                            on_active:
+                                root.image_size = seg_size_two.text if self.active else root.image_size
+
+                            MDSegmentButtonLabel:
+                                id: seg_size_two
+                                text: '512x512'
+                                theme_font_name: "Custom"
+                                font_name: 'Hacked'
+
+                        MDSegmentedButtonItem:
+                            on_active:
+                                root.image_size = seg_size_three.text if self.active else root.image_size
+
+                            MDSegmentButtonLabel:
+                                id: seg_size_three
+                                text: '1024x1024'
+                                theme_font_name: "Custom"
+                                font_name: 'Hacked'
 
                     MDBoxLayout:
                         orientation: 'horizontal'
-                        padding: [dp(0), dp(10), dp(0), dp(10)]
-                        spacing: dp(50)
+                        adaptive_height: True
+                        size_hint_x: .9
                         pos_hint: {'center_x': .5}
-                        adaptive_size: True
+                        spacing: dp(40)
 
-                        MDButton:
-                            style: 'elevated'
-                            radius: dp(10)
-                            on_release:
-                                app.root.transition = MDSwapTransition()
-                                app.root.current = 'collection_screen'
+                        MDLabel:
+                            text: 'quantity:'
+                            theme_font_size: 'Custom'
+                            font_size: sp(35)
+                            theme_font_name: "Custom"
+                            font_name: 'Hacked'
+                            valign: 'center'
+                            adaptive_size: True
 
-                            MDButtonIcon:
-                                icon: 'image-album'
-
-                            MDButtonText:
-                                text: 'gallery'
-                                theme_font_name: 'Custom'
-                                font_name: 'Hacked'
-
-                        MDButton:
-                            style: 'elevated'
-                            radius: dp(10)
-                            on_release:
-                                root.change_section(self)
-
-                            MDButtonIcon:
-                                icon: 'plus'
-
-                            MDButtonText:
-                                text: 'Edit new'
-                                theme_font_name: 'Custom'
-                                font_name: 'Hacked'
-
-                    MyCarousel:
-                        id: carousel
-
-                    MDBoxLayout:
-                        orientation: 'horizontal'
-                        padding: [dp(30), dp(10), dp(30), dp(30)]
-                        pos_hint: {'center_x': .5}
-                        adaptive_size: True
-
-                        MDButton:
-                            id: save_button
-                            style: 'elevated'
-                            radius: dp(10)
-                            disabled: True if carousel.current_slide in carousel.saved_images else False
+                        MDBoxLayout:
+                            orientation: 'horizontal'
                             pos_hint: {'center_x': .5}
-                            on_release:
-                                root.save_image(carousel.current_slide)
+                            size_hint_x: None
+                            width: dp(140)
+                            adaptive_height: True
 
-                            MDButtonIcon:
-                                icon: 'check-circle' if carousel.current_slide in carousel.saved_images else 'content-save'
-                                icon_color_disabled: 'green'
+                            MDIconButton:
+                                icon: 'minus-box-outline'
+                                theme_font_size: "Custom"
+                                font_size: sp(30)
+                                ripple_effect: False
+                                focus_behavior: False
+                                theme_icon_color: "Custom"
+                                icon_color: app.theme_cls.secondaryContainerColor
+                                on_release:
+                                    root.image_count -= 1
+
+                            MDLabel:
+                                id: img_count
+                                text: str(root.image_count)
+                                theme_font_name: "Custom"
+                                font_name: 'Hacked'
+                                theme_font_size: 'Custom'
+                                font_size: sp(30)
+                                halign: 'center'
+
+
+                            MDIconButton:
+                                icon: 'plus-box-outline'
+                                theme_font_size: "Custom"
+                                font_size: sp(30)
+                                ripple_effect: False
+                                focus_behavior: False
+                                theme_icon_color: "Custom"
+                                icon_color: app.theme_cls.secondaryContainerColor
+                                on_release:
+                                    root.image_count += 1
+
+                    MDBoxLayout:
+
+                        TextInput:
+                            id: input_prompt
+                            multiline: True
+                            auto_indent: True
+                            padding: dp(10)
+                            border: [2, 2, 2, 2]
+                            cursor_color: app.theme_cls.secondaryContainerColor
+                            cursor_width: sp(3)
+                            font_size: sp(17)
+                            hint_text: 'Enter the prompt'
+                            pos_hint: {'center_x': .5}
+
+                    MDBoxLayout:
+                        adaptive_height: True
+
+                        MDButton:
+                            style: 'elevated'
+                            theme_width: 'Custom'
+                            size_hint_x: 1
+                            radius: dp(0)
+                            on_release:
+                                root.edit_image(self)
 
                             MDButtonText:
-                                text: 'saved' if carousel.current_slide in carousel.saved_images else 'save image'
+                                text: 'Generate'
+                                pos_hint: {'center_x': .5}
+                                theme_text_color: 'Custom'
+                                text_color: 'white'
                                 theme_font_name: 'Custom'
                                 font_name: 'Hacked'
-                                theme_text_color: 'Primary'
+                                font_style: 'Display'
+                                role: 'small'
 
                 MDCircularProgressIndicator:
                     id: edit_spin
@@ -294,3 +263,74 @@
                     size: dp(38), dp(38)
                     pos_hint: {'center_x': .5, 'center_y': .5}
                     active: False
+
+        MDScreen:
+            name: 'completed_section'
+
+            MDBoxLayout:
+                orientation: 'vertical'
+
+                MDBoxLayout:
+                    orientation: 'horizontal'
+                    padding: [dp(0), dp(10), dp(0), dp(10)]
+                    spacing: dp(50)
+                    pos_hint: {'center_x': .5}
+                    adaptive_size: True
+
+                    MDButton:
+                        style: 'elevated'
+                        radius: dp(10)
+                        on_release:
+                            app.root.transition = MDSwapTransition()
+                            app.root.current = 'collection_screen'
+
+                        MDButtonIcon:
+                            icon: 'image-album'
+
+                        MDButtonText:
+                            text: 'gallery'
+                            theme_font_name: 'Custom'
+                            font_name: 'Hacked'
+
+                    MDButton:
+                        style: 'elevated'
+                        radius: dp(10)
+                        on_release:
+                            root.edit_new_button(self)
+
+                        MDButtonIcon:
+                            icon: 'plus'
+
+                        MDButtonText:
+                            text: 'Edit new'
+                            theme_font_name: 'Custom'
+                            font_name: 'Hacked'
+
+                MyCarousel:
+                    id: carousel
+
+                MDBoxLayout:
+                    orientation: 'horizontal'
+                    padding: [dp(30), dp(10), dp(30), dp(30)]
+                    pos_hint: {'center_x': .5}
+                    adaptive_size: True
+
+                    MDButton:
+                        id: save_button
+                        style: 'elevated'
+                        radius: dp(10)
+                        disabled: True if carousel.current_slide in carousel.saved_images else False
+                        pos_hint: {'center_x': .5}
+                        on_release:
+                            root.save_image(carousel.current_slide)
+
+                        MDButtonIcon:
+                            icon: 'check-circle' if carousel.current_slide in carousel.saved_images else 'content-save'
+                            icon_color_disabled: 'green'
+
+                        MDButtonText:
+                            text: 'saved' if carousel.current_slide in carousel.saved_images else 'save image'
+                            theme_font_name: 'Custom'
+                            font_name: 'Hacked'
+                            theme_text_color: 'Primary'
+
