@@ -16,6 +16,8 @@
 
     MDNavigationDrawerItemLeadingIcon:
         icon: root.item_icon
+        theme_icon_color: 'Custom'
+        icon_color: self.theme_cls.primaryColor
 
     MDNavigationDrawerItemText:
         text: root.item_text
@@ -70,6 +72,8 @@
 
                             MDActionTopAppBarButton:
                                 icon: 'menu'
+                                theme_icon_color: 'Custom'
+                                icon_color: self.theme_cls.primaryColor
                                 ripple_effect: False
                                 focus_behavior: False
                                 on_release:

@@ -12,6 +12,8 @@
 
         MDActionTopAppBarButton:
             icon: 'arrow-left-bold'
+            theme_icon_color: 'Custom'
+            icon_color: self.theme_cls.primaryColor
             ripple_effect: False
             focus_behavior: False
             on_release:
@@ -37,16 +39,23 @@
 
             MDFloatLayout:
 
-                MDFabButton:
+                MDButton:
                     id: add_image_button
-                    icon: 'image-plus'
-                    style: 'large'
-                    theme_font_size: "Custom"
-                    font_size: sp(58)
+                    theme_width: 'Custom'
+                    width: dp(84)
+                    theme_height: 'Custom'
+                    height: dp(84)
+                    style: 'elevated'
                     opacity: 0 if self.disabled else 1
                     pos_hint: {"center_x": .5, 'center_y': .55}
                     on_release:
                         app.file_manager_open()
+
+                    MDButtonIcon:
+                        icon: 'image-plus'
+                        theme_font_size: "Custom"
+                        font_size: sp(58)
+                        pos_hint: {'center_x': .5, 'center_y': .5}
 
                 MDBoxLayout:
                     orientation: 'vertical'
@@ -99,6 +108,7 @@
                                 disabled: bottom_buttons.buttons_disabled
                                 opacity: 0 if self.disabled else 1
 
+
                                 MDSliderHandle:
 
                                 MDSliderValueLabel:
@@ -128,99 +138,105 @@
 
                     Navbar:
 
-                    MDSegmentedButton:
-                        id: seg_size
-                        type: 'medium'
-                        selected_icon_color: 'green'
-                        size_hint_x: .95
+                    MySegmentedButton:
+                        orientation: 'horizontal'
+                        adaptive_size: True
                         pos_hint: {'center_x': .5}
-                        orientation: 'vertical'
 
+                        MDButton:
+                            style: 'elevated'
+                            theme_width: 'Custom'
+                            width: dp(100)
+                            radius: [dp(25), 0, 0, dp(25)]
+                            on_release:
+                                self.parent.current = self
+                                root.image_size = self.children[0].text
 
-                        MDSegmentedButtonItem:
-                            on_active:
-                                root.image_size = seg_size_one.text if self.active else root.image_size
-
-                            MDSegmentButtonLabel:
-                                id: seg_size_one
+                            MDButtonText:
                                 text: '256x256'
-                                theme_font_name: "Custom"
+                                pos_hint: {'center_x': .5}
+                                theme_font_name: 'Custom'
                                 font_name: 'Hacked'
+                                theme_font_size: 'Custom'
+                                font_size: sp(16)
+                                pos_hint: {'center_x': .5, 'center_y': .5}
 
-                        MDSegmentedButtonItem:
-                            on_active:
-                                root.image_size = seg_size_two.text if self.active else root.image_size
+                        MDButton:
+                            style: 'elevated'
+                            theme_width: 'Custom'
+                            width: dp(100)
+                            radius: [0, 0, 0, 0]
+                            on_release:
+                                self.parent.current = self
+                                root.image_size = self.children[0].text
 
-                            MDSegmentButtonLabel:
-                                id: seg_size_two
+                            MDButtonText:
                                 text: '512x512'
-                                theme_font_name: "Custom"
+                                pos_hint: {'center_x': .5}
+                                theme_font_name: 'Custom'
                                 font_name: 'Hacked'
+                                theme_font_size: 'Custom'
+                                font_size: sp(16)
+                                pos_hint: {'center_x': .5, 'center_y': .5}
 
-                        MDSegmentedButtonItem:
-                            on_active:
-                                root.image_size = seg_size_three.text if self.active else root.image_size
+                        MDButton:
+                            style: 'elevated'
+                            theme_width: 'Custom'
+                            width: dp(100)
+                            radius: [0, dp(25), dp(25), 0]
+                            on_release:
+                                self.parent.current = self
+                                root.image_size = self.children[0].text
 
-                            MDSegmentButtonLabel:
-                                id: seg_size_three
+                            MDButtonText:
                                 text: '1024x1024'
-                                theme_font_name: "Custom"
+                                pos_hint: {'center_x': .5}
+                                theme_font_name: 'Custom'
                                 font_name: 'Hacked'
+                                theme_font_size: 'Custom'
+                                font_size: sp(16)
+                                pos_hint: {'center_x': .5, 'center_y': .5}
 
                     MDBoxLayout:
                         orientation: 'horizontal'
-                        adaptive_height: True
-                        size_hint_x: .9
                         pos_hint: {'center_x': .5}
-                        spacing: dp(40)
+                        size_hint_x: None
+                        width: dp(140)
+                        adaptive_height: True
+
+                        MDButton:
+                            style: 'elevated'
+                            size_hint: None, None
+                            size: dp(30), dp(30)
+                            radius: dp(15)
+                            on_release:
+                                root.image_count -= 1
+
+                            MDButtonIcon:
+                                icon: 'minus'
+                                pos_hint: {'center_x': .5, 'center_y': .5}
+
 
                         MDLabel:
-                            text: 'quantity:'
-                            theme_font_size: 'Custom'
-                            font_size: sp(35)
+                            id: img_count
+                            text: str(root.image_count)
                             theme_font_name: "Custom"
                             font_name: 'Hacked'
-                            valign: 'center'
-                            adaptive_size: True
+                            theme_font_size: 'Custom'
+                            font_size: sp(30)
+                            halign: 'center'
 
-                        MDBoxLayout:
-                            orientation: 'horizontal'
-                            pos_hint: {'center_x': .5}
-                            size_hint_x: None
-                            width: dp(140)
-                            adaptive_height: True
+                        MDButton:
+                            style: 'elevated'
+                            size_hint: None, None
+                            size: dp(30), dp(30)
+                            radius: dp(15)
+                            on_release:
+                                root.image_count += 1
 
-                            MDIconButton:
-                                icon: 'minus-box-outline'
-                                theme_font_size: "Custom"
-                                font_size: sp(30)
-                                ripple_effect: False
-                                focus_behavior: False
-                                theme_icon_color: "Custom"
-                                icon_color: app.theme_cls.secondaryContainerColor
-                                on_release:
-                                    root.image_count -= 1
-
-                            MDLabel:
-                                id: img_count
-                                text: str(root.image_count)
-                                theme_font_name: "Custom"
-                                font_name: 'Hacked'
-                                theme_font_size: 'Custom'
-                                font_size: sp(30)
-                                halign: 'center'
-
-
-                            MDIconButton:
-                                icon: 'plus-box-outline'
-                                theme_font_size: "Custom"
-                                font_size: sp(30)
-                                ripple_effect: False
-                                focus_behavior: False
-                                theme_icon_color: "Custom"
-                                icon_color: app.theme_cls.secondaryContainerColor
-                                on_release:
-                                    root.image_count += 1
+                            MDButtonIcon:
+                                icon: 'plus'
+                                pos_hint: {'center_x': .5, 'center_y': .5}
 
                     MDBoxLayout:
 
@@ -250,8 +266,6 @@
                             MDButtonText:
                                 text: 'Generate'
                                 pos_hint: {'center_x': .5}
-                                theme_text_color: 'Custom'
-                                text_color: 'white'
                                 theme_font_name: 'Custom'
                                 font_name: 'Hacked'
                                 font_style: 'Display'

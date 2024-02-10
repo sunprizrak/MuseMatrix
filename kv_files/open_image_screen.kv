@@ -19,6 +19,8 @@
 
                 MDActionTopAppBarButton:
                     icon: 'arrow-left-bold'
+                    theme_icon_color: 'Custom'
+                    icon_color: self.theme_cls.primaryColor
                     ripple_effect: False
                     focus_behavior: False
                     on_release:
@@ -49,6 +51,8 @@
             MDFabButton:
                 icon: 'delete'
                 style: 'small'
+                theme_icon_color: 'Custom'
+                icon_color: self.theme_cls.primaryColor
                 pos_hint: {'center_x': .9, 'center_y': .5}
                 on_release:
                     root.delete(carousel.current_slide.img_id, carousel.current_slide.pre_parent)

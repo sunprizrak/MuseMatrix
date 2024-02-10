@@ -1,7 +1,6 @@
 #:import LoginScreen screens.login
 #:import MDSlideTransition kivymd.uix.transition.transition.MDSlideTransition
 #:import platform kivy.utils
-#:import MyIconButton widgets
 
 
 <LogTextField@MDTextField>
@@ -26,6 +25,8 @@
 
                 MDActionTopAppBarButton:
                     icon: 'arrow-left-bold'
+                    theme_icon_color: 'Custom'
+                    icon_color: self.theme_cls.primaryColor
                     ripple_effect: False
                     focus_behavior: False
                     on_release:

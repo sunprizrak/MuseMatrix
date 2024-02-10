@@ -2,6 +2,7 @@ from kivy.clock import Clock
 from kivy.metrics import dp
 from kivy.properties import StringProperty, ObjectProperty
 from kivy.uix.screenmanager import NoTransition
+from kivy.uix.widget import Widget
 from kivymd.uix.appbar import MDActionTopAppBarButton
 from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.button import MDButton, MDButtonIcon, MDButtonText
@@ -20,12 +21,17 @@ class CreateImageScreen(ImageScreen):
     def __init__(self, **kwargs):
         super(CreateImageScreen, self).__init__(**kwargs)
 
-    def segment_dall_model(self):
-        self.image_size = ''
-        self.image_count = 1
+    def segment_dall_model(self, model):
+        if self.dall_model != model:
+            self.image_size = ''
+            self.image_count = 1
+            self.dall_model = model
 
-        for button in self.ids.seg_size.children[0].children:
-            button.active = False
+            for button in self.ids.seg_size.children:
+                if isinstance(button, MDButton):
+                    button.theme_bg_color = 'Primary'
+                    button.children[0].theme_text_color = 'Primary'
+                    button.parent.current = Widget()
 
     def edit_new_button(self):
         self.ids.input_prompt.text = ''

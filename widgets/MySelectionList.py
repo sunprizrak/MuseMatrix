@@ -141,6 +141,8 @@ class MySmartTile(TouchBehavior, RectangularRippleBehavior, MDSmartTile):
 
             un_button = MDActionTopAppBarButton(
                 icon='close-thick',
+                theme_icon_color='Custom',
+                icon_color=self.theme_cls.primaryColor,
                 ripple_effect=False,
                 focus_behavior=False,
                 on_release=lambda x: self.parent.unselected_all()
@@ -149,7 +151,7 @@ class MySmartTile(TouchBehavior, RectangularRippleBehavior, MDSmartTile):
             screen.ids.left_button.add_widget(un_button)
 
             screen.ids.button_delete.disabled = False
-            screen.ids.button_delete.theme_icon_color = 'Primary'
+            screen.ids.button_delete.icon_color = self.theme_cls.primaryColor
 
             return
 

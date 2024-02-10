@@ -26,7 +26,7 @@ class LoginScreen(BaseScreen):
             if type(error) is str:
                 error_text += error
             elif type(error) is dict:
-                if len({'password', 'email'} & set(error)) > 0:
+                if {'password', 'email'} & set(error):
                     for el in {'password', 'email'} & set(error):
                         text = error.get(el)[0]
                         error_text += f'{el}: {text}\n'

@@ -1,4 +1,4 @@
-#:import SettingsScreen screens
+#:import SettingsScreen screens.settings
 
 <SettingsScreen>
     name: 'settings_screen'
@@ -6,13 +6,26 @@
     MDBoxLayout:
         orientation: 'vertical'
 
-        MyTopAppBar:
-            id: settings_top_bar
-            title: 'Settings'
-            anchor_title: 'left'
-            md_bg_color: root.md_bg_color
-            left_action_items: [['arrow-left-bold', lambda x: app.back(screen='main_screen')]]
-            elevation: 0
+        MDTopAppBar:
+            type: 'small'
+            theme_bg_color: 'Custom'
+            md_bg_color: self.theme_cls.backgroundColor
+
+            MDTopAppBarLeadingButtonContainer:
+
+                MDActionTopAppBarButton:
+                    icon: 'arrow-left-bold'
+                    theme_icon_color: 'Custom'
+                    icon_color: self.theme_cls.primaryColor
+                    ripple_effect: False
+                    focus_behavior: False
+                    on_release:
+                        app.back(screen='main_screen')
+
+            MDTopAppBarTitle:
+                text: 'Settings'
+                theme_font_name: "Custom"
+                font_name: 'Hacked'
 
         MDBoxLayout:
             orientation: 'vertical'
@@ -21,19 +34,21 @@
 
             MDLabel:
                 text: 'Account'
-                color: 'green'
+                text_color: 'green'
                 bold: True
                 adaptive_height: True
                 padding_x: dp(16)
 
-            OneLineListItem:
-                text: 'Change password'
+            MDListItem:
                 on_release:
                     app.root.transition = MDSlideTransition()
                     app.root.transition.direction = 'left'
                     app.root.current = 'change_password_screen'
 
-            MDSeparator:
+                MDListItemHeadlineText:
+                    text: "Change password"
+
+            MDDivider:
 
 
         MDWidget:
@@ -41,8 +56,9 @@
 
     MDIcon:
         icon: 'cog'
+        theme_font_size: 'Custom'
         font_size: sp(200)
-        theme_text_color: 'Custom'
-        text_color: '#60675B'
+        theme_icon_color: 'Custom'
+        icon_color: '#60675B'
         pos_hint: {'center_x': .5, 'center_y': .5}
         opacity: .4
