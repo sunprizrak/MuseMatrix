@@ -137,7 +137,7 @@ class EditImageScreen(ImageScreen):
                     content=content,
                 )
 
-        def _output_error(error):
+        def __output_error(error):
             self.ids.edit_spin.active = False
             self.ids.option_section.disabled = False
 
@@ -162,10 +162,10 @@ class EditImageScreen(ImageScreen):
             )
 
         def _on_error(request, error):
-            _output_error(error)
+            __output_error(error)
 
         def _on_failure(request, response):
-            _output_error(response)
+            __output_error(response)
 
         self.image_original.seek(0)
 

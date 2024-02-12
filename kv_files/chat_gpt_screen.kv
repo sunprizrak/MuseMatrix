@@ -1,23 +1,23 @@
-#:import ChatGptScreen screens
+#:import ChatGptScreen screens.chat_gpt
+#:import Message widgets.Message
 
 
 <Message>:
     canvas:
         Color:
-            rgba: self.md_bg_color
+            rgba: root.md_bg_color
         Triangle:
             points: root.triangle_points
 
     MDLabel:
         text: root.message
         padding: [dp(10), dp(10), dp(5), dp(10)]
-        font_style: 'Message'
 
     MDLabel:
         text: root.time
+        theme_font_size: 'Custom'
         font_size: sp(10)
         bold: True
-        font_style: 'Message'
         padding: [0, 0, dp(10), dp(5)]
         adaptive_size: True
         pos_hint: {'bottom': 1, 'right': 1}
@@ -40,16 +40,27 @@
 
         MDBoxLayout:
             orientation: 'vertical'
-            md_bg_color: root.md_bg_color
+            md_bg_color: app.theme_cls.secondaryColor
 
-            MyTopAppBar:
-                id: chat_gpt_top_bar
-                type_height: 'small'
-                title: 'chat gpt'
-                anchor_title: 'left'
-                md_bg_color: app.theme_cls.primary_color
-                left_action_items: [['arrow-left-bold', lambda x: app.back(screen='main_screen')]]
-                elevation: 0
+            MDTopAppBar:
+                type: 'small'
+                theme_bg_color: 'Primary'
+
+                MDTopAppBarLeadingButtonContainer:
+
+                    MDActionTopAppBarButton:
+                        icon: 'arrow-left-bold'
+                        theme_icon_color: 'Custom'
+                        icon_color: self.theme_cls.primaryColor
+                        ripple_effect: False
+                        focus_behavior: False
+                        on_release:
+                            app.back(screen='main_screen')
+
+                MDTopAppBarTitle:
+                    text: 'chat gpt'
+                    theme_font_name: "Custom"
+                    font_name: 'Hacked'
 
             MDRecycleView:
                 id: chat_gpt
@@ -70,7 +81,7 @@
                 orientation: 'horizontal'
                 adaptive_height: True
                 padding: dp(10), 0, 0, 0
-                md_bg_color: app.theme_cls.primary_color
+                md_bg_color: app.theme_cls.backgroundColor
 
                 TextInput:
                     id: send_field
@@ -84,16 +95,19 @@
                     foreground_color: 'white'
                     disabled_foreground_color: 'white'
                     hint_text: 'message'
-                    hint_text_color: 'white'
-                    cursor_color: 'white'
+                    hint_text_color: 'gray'
+                    cursor_color: app.theme_cls.primaryColor
                     cursor_width: dp(2)
                     pos_hint: {'center_y': .5}
 
-                MyIconButton:
+                MDIconButton:
                     id: send_button
-                    icon: "send"
+                    icon: 'send'
+                    style: 'standard'
+                    theme_icon_size: 'Custom'
                     icon_size: dp(25)
-
+                    ripple_effect: False
+                    focus_behavior: False
                     on_release:
                         root.send()
                         send_field.text = ''

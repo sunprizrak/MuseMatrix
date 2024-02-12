@@ -118,7 +118,7 @@
                     do_scroll_x: False
                     scroll_y: 1
                     effect_cls: ScrollEffect
-                    padding: dp(5)
+                    padding: dp(10)
 
                     MDLabel:
                         id: audio_text
@@ -126,23 +126,43 @@
                         padding: dp(10), dp(10)
                         adaptive_height: True
 
-        MDButton:
-            id: add_sound_button
-            theme_width: 'Custom'
-            width: dp(84)
-            theme_height: 'Custom'
-            height: dp(84)
-            style: 'elevated'
-            opacity: 0 if self.disabled else 1
-            pos_hint: {"center_x": .5, 'center_y': .55}
-            on_release:
-                app.file_manager_open()
+            MDBoxLayout:
+                id: bottom_buttons
+                padding: dp(10)
+                adaptive_height: True
+                disabled: True
 
-            MDButtonIcon:
-                icon: 'music-note-plus'
-                theme_font_size: "Custom"
-                font_size: sp(58)
-                pos_hint: {'center_x': .5, 'center_y': .5}
+                MDButton:
+                    style: 'elevated'
+                    radius: dp(10)
+                    opacity: 0 if self.disabled else 1
+                    on_release:
+                        root.copy_to_buffer()
+
+                    MDButtonIcon:
+                        icon: 'content-copy'
+                        pos_hint: {'center_x': .5, 'center_y': .5}
+
+        MDBoxLayout:
+            id: add_sound_button
+            pos_hint: {"center_x": .5, 'center_y': .55}
+            adaptive_size: True
+
+            MDButton:
+                theme_width: 'Custom'
+                width: dp(84)
+                theme_height: 'Custom'
+                height: dp(84)
+                style: 'elevated'
+                opacity: 0 if self.disabled else 1
+                on_release:
+                    app.file_manager_open()
+
+                MDButtonIcon:
+                    icon: 'music-note-plus'
+                    theme_font_size: "Custom"
+                    font_size: sp(58)
+                    pos_hint: {'center_x': .5, 'center_y': .5}
 
         MDCircularProgressIndicator:
             id: speech_spin
