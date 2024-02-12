@@ -105,7 +105,7 @@ class ChatGptScreen(BaseScreen):
             self.ids.send_button.disabled = False
 
             if 'message' in response:
-                text = response.get('message')  # .lstrip()
+                text = response.get('message')
                 self.user_controller.user.chat_token = response.get('chat_token')
                 self.app.root.ids.main_screen.chat_token = self.user_controller.user.chat_token
 
