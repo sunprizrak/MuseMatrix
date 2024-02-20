@@ -83,8 +83,10 @@ class OpenImageScreen(BaseScreen):
                 if os.path.exists(private_path):
                     self.app.ss.copy_to_shared(private_path)
 
+                toast(text='image saved')
+
             self.app.dialog.dismiss()
-            toast(text='image saved')
+
 
         button = MDButton(
             MDButtonText(

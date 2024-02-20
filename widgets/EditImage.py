@@ -5,46 +5,11 @@ from kivy.clock import Clock
 from kivy.graphics import Color, Rectangle, Fbo, ClearColor, ClearBuffers
 from kivy.graphics.shader import Shader
 from kivy.graphics.texture import Texture
+from kivy.metrics import dp
 from kivy.uix.image import Image
 import numpy as np
 import asynckivy as ak
 import time
-
-# Определение шейдера для обесцвечивания текстуры
-vertex_shader = """
----VERTEX SHADER---
-attribute vec2 tex_coords;
-varying vec2 v_tex_coords;
-void main(void) {
-    gl_Position = vec4(tex_coords, 0.0, 1.0);
-    v_tex_coords = tex_coords;
-}
-"""
-
-fragment_shader = """
----FRAGMENT SHADER---
-uniform sampler2D texture;
-varying vec2 v_tex_coords;
-
-uniform float min_x; // Минимальная координата X области
-uniform float max_x; // Максимальная координата X области
-uniform float min_y; // Минимальная координата Y области
-uniform float max_y; // Максимальная координата Y области
-
-void main(void) {
-    vec4 tex_color = texture2D(texture, v_tex_coords);
-    // Проверяем, находится ли текущий пиксель внутри области для стирания
-    if (v_tex_coords.x >= min_x && v_tex_coords.x <= max_x &&
-        v_tex_coords.y >= min_y && v_tex_coords.y <= max_y) {
-        // Если да, делаем его прозрачным
-        gl_FragColor = vec4(tex_color.rgb, 0.0);
-    } else {
-        // Если нет, оставляем пиксель без изменений
-        gl_FragColor = tex_color;
-    }
-}
-"""
-
 
 
 class EditImage(Image):
@@ -53,16 +18,6 @@ class EditImage(Image):
         self.initial_texture = None
         self.updated_texture = None
         self.erase_percent = 4
-
-        self.shader = Shader()
-        self.shader.fs = fragment_shader
-        self.shader.vs = vertex_shader
-
-        # Устанавливаем начальные значения Uniform переменных
-        self.shader.min_x = 0.0
-        self.shader.max_x = 0.0
-        self.shader.min_y = 0.0
-        self.shader.max_y = 0.0
 
     def on_parent(self, widget, parent):
             if parent is not None:
@@ -113,41 +68,32 @@ class EditImage(Image):
         min_y = max(0, tex_y - erase_radius)
         max_y = min(self.texture_size[1], tex_y + erase_radius + 1)
 
-        # Передаем координаты в Uniform переменные шейдера
-        self.shader.min_x = min_x
-        self.shader.max_x = max_x
-        self.shader.min_y = min_y
-        self.shader.max_y = max_y
+        # Calculate distances vectorized
+        xs, ys = np.meshgrid(np.arange(min_x, max_x), np.arange(min_y, max_y))
+        distances = np.sqrt((xs - tex_x) ** 2 + (ys - tex_y) ** 2)
 
-        # Обновляем текстуру
-        self.canvas.ask_update()
+        # Calculate indices vectorized
+        abs_xs = xs.flatten()
+        abs_ys = ys.flatten()
+        # Calculate indices vectorized
+        indices = abs_ys * self.texture_size[0] * 4 + abs_xs * 4 + 3
 
-        # # Calculate distances vectorized
-        # xs, ys = np.meshgrid(np.arange(min_x, max_x), np.arange(min_y, max_y))
-        # distances = np.sqrt((xs - tex_x) ** 2 + (ys - tex_y) ** 2)
-        #
-        # # Calculate indices vectorized
-        # abs_xs = xs.flatten()
-        # abs_ys = ys.flatten()
-        # # Calculate indices vectorized
-        # indices = abs_ys * self.texture_size[0] * 4 + abs_xs * 4 + 3
-        #
-        # # Create mask for pixels that need to be updated
-        # mask = np.ravel(distances <= erase_radius)
-        #
-        # # Use mask to update modifiable pixels array
-        # pixels[indices[mask]] = 0
-        #
-        # self.updated_texture = Texture.create(
-        #     size=self.texture_size,
-        #     colorfmt='rgba',
-        #     bufferfmt='ubyte',
-        #     mipmap=True,
-        # )
-        #
-        # self.texture.blit_buffer(pixels.tobytes(), size=self.texture_size, colorfmt='rgba', bufferfmt='ubyte')
-        # self.updated_texture.flip_vertical()
-        # self.texture = self.updated_texture
+        # Create mask for pixels that need to be updated
+        mask = np.ravel(distances <= erase_radius)
+
+        # Use mask to update modifiable pixels array
+        pixels[indices[mask]] = 0
+
+        self.updated_texture = Texture.create(
+            size=self.texture_size,
+            colorfmt='rgba',
+            bufferfmt='ubyte',
+            mipmap=True,
+        )
+
+        self.updated_texture.blit_buffer(pixels.tobytes(), size=self.texture_size, colorfmt='rgba', bufferfmt='ubyte')
+        self.updated_texture.flip_vertical()
+        self.texture = self.updated_texture
         end = time.time() - start
         print(f'eraser {end}')
 
@@ -208,5 +154,5 @@ class EditImage(Image):
 
     def clear_eraser(self):
         if self.initial_texture:
-            self.texture = self.initial_texture
+            self.texture_update()
             self.updated_texture = None
