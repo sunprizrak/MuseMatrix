@@ -20,17 +20,9 @@ class ChatGptScreen(BaseScreen):
         self.user_controller = UserController()
 
     def on_pre_enter(self, *args):
-        # if platform == 'android':
-            # color_nav = self.theme_cls.primary_color
-            # color_stat = self.theme_cls.primary_color
-            # self.app.change_android_color(color_nav=color_nav, color_stat=color_stat)
-
         Window.softinput_mode = 'pan'
 
     def on_pre_leave(self, *args):
-        # if platform == 'android':
-        #     self.app.change_android_color()
-
         Window.softinput_mode = 'below_target'
 
     def __create_message(self, text, sense=None, spin=None):

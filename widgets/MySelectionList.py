@@ -44,7 +44,7 @@ class MySmartTileOverlayContainer(MDSmartTileOverlayContainer):
         def _on_active_checkbox(obj, value):
             image = self.parent.image
             image.size_hint = (None, None)
-            image.size = [image.size[0] - 20, image.size[1] - 20] if self.check_box.active else self.parent.size
+            image.size = [image.size[0] - 30, image.size[1] - 30] if self.check_box.active else self.parent.size
             image.pos_hint = {'center_x': .5, 'center_y': .5}
 
             app = MDApp.get_running_app()

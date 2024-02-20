@@ -1,7 +1,6 @@
 from kivy.properties import StringProperty, NumericProperty
 from kivy.utils import platform
 from kivymd.uix.transition import MDSwapTransition
-
 from controller.user import UserController
 from .layout import BaseScreen
 

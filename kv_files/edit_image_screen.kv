@@ -42,9 +42,9 @@
                 MDButton:
                     id: add_image_button
                     theme_width: 'Custom'
-                    width: dp(84)
+                    width: dp(100)
                     theme_height: 'Custom'
-                    height: dp(84)
+                    height: dp(100)
                     style: 'elevated'
                     opacity: 0 if self.disabled else 1
                     pos_hint: {"center_x": .5, 'center_y': .55}
@@ -54,7 +54,7 @@
                     MDButtonIcon:
                         icon: 'image-plus'
                         theme_font_size: "Custom"
-                        font_size: sp(58)
+                        font_size: sp(78)
                         pos_hint: {'center_x': .5, 'center_y': .5}
 
                 MDBoxLayout:
@@ -82,6 +82,8 @@
                             MDFabButton:
                                 icon: 'broom'
                                 style: 'small'
+                                theme_icon_color: 'Custom'
+                                icon_color: self.theme_cls.primaryColor
                                 disabled: bottom_buttons.buttons_disabled
                                 opacity: 0 if self.disabled else 1
                                 on_release:
@@ -90,6 +92,8 @@
                             MDFabButton:
                                 icon: 'image-sync'
                                 style: 'small'
+                                theme_icon_color: 'Custom'
+                                icon_color: self.theme_cls.primaryColor
                                 disabled: bottom_buttons.buttons_disabled
                                 opacity: 0 if self.disabled else 1
                                 on_release:
@@ -125,6 +129,9 @@
                                 text: 'next'
                                 theme_font_name: 'Custom'
                                 font_name: 'Hacked'
+                                font_style: 'Headline'
+                                role: 'small'
+
 
         MDScreen:
             name: 'option_section'
@@ -140,13 +147,15 @@
 
                     MySegmentedButton:
                         orientation: 'horizontal'
-                        adaptive_size: True
+                        adaptive_height: True
+                        size_hint_x: None
+                        width: dp(350)
                         pos_hint: {'center_x': .5}
 
                         MDButton:
                             style: 'elevated'
                             theme_width: 'Custom'
-                            width: dp(100)
+                            width: self.parent.width / 3
                             radius: [dp(25), 0, 0, dp(25)]
                             on_release:
                                 self.parent.current = self
@@ -164,7 +173,7 @@
                         MDButton:
                             style: 'elevated'
                             theme_width: 'Custom'
-                            width: dp(100)
+                            width: self.parent.width / 3
                             radius: [0, 0, 0, 0]
                             on_release:
                                 self.parent.current = self
@@ -182,7 +191,7 @@
                         MDButton:
                             style: 'elevated'
                             theme_width: 'Custom'
-                            width: dp(100)
+                            width: self.parent.width / 3
                             radius: [0, dp(25), dp(25), 0]
                             on_release:
                                 self.parent.current = self
@@ -239,6 +248,7 @@
                                 pos_hint: {'center_x': .5, 'center_y': .5}
 
                     MDBoxLayout:
+                        orientation: 'vertical'
 
                         TextInput:
                             id: input_prompt
@@ -252,13 +262,12 @@
                             hint_text: 'Enter the prompt'
                             pos_hint: {'center_x': .5}
 
-                    MDBoxLayout:
-                        adaptive_height: True
-
                         MDButton:
                             style: 'elevated'
                             theme_width: 'Custom'
                             size_hint_x: 1
+                            size_hint_y: None
+                            height: dp(60)
                             radius: dp(0)
                             on_release:
                                 root.edit_image(self)
@@ -269,7 +278,8 @@
                                 theme_font_name: 'Custom'
                                 font_name: 'Hacked'
                                 font_style: 'Display'
-                                role: 'small'
+                                role: 'medium'
+                                pos_hint: {'center_x': .5, 'center_y': .5}
 
                 MDCircularProgressIndicator:
                     id: edit_spin
@@ -332,6 +342,8 @@
                     MDButton:
                         id: save_button
                         style: 'elevated'
+                        theme_icon_color: 'Custom'
+                        icon_color: self.theme_cls.primaryColor
                         radius: dp(10)
                         disabled: True if carousel.current_slide in carousel.saved_images else False
                         pos_hint: {'center_x': .5}

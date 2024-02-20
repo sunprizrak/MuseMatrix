@@ -16,12 +16,15 @@ class CollectionScreen(BaseScreen):
         menu_items = [
             {
                 'text': 'Choose all',
+                'theme_font_name': 'Custom',
+                'font_name': 'Hacked',
                 'on_release': lambda: (self.ids.selection_list.selected_all(), self.menu.dismiss()),
             }
         ]
 
         self.menu = MDDropdownMenu(
             items=menu_items,
+            position="center"
         )
 
     def menu_callback(self, button):

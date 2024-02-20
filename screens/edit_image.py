@@ -23,11 +23,14 @@ class EditImageScreen(ImageScreen):
         self.image_original = io.BytesIO()
         self.image_mask = io.BytesIO()
 
-    def on_pre_enter(self, *args):
-        def _erase_percent(instance, value):
-            self.image.erase_percent = int(value)
+    def on_enter(self, *args):
+        if not self._initialized:
+            def _erase_percent(instance, value):
+                self.image.erase_percent = int(value)
 
-        self.ids.erase_percent.bind(value=_erase_percent)
+            self.ids.erase_percent.bind(value=_erase_percent)
+
+        return super(EditImageScreen, self).on_enter()
 
     def add_image(self, path):
         self.image = EditImage(

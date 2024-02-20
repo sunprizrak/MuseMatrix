@@ -1,10 +1,50 @@
+from copy import copy
+
 from kivy.core.image import Image as CoreImage
 from kivy.clock import Clock
-from kivy.graphics import Color, Ellipse, Line, Rectangle
+from kivy.graphics import Color, Rectangle, Fbo, ClearColor, ClearBuffers
+from kivy.graphics.shader import Shader
 from kivy.graphics.texture import Texture
-from kivy.metrics import dp
-from kivy.properties import NumericProperty
 from kivy.uix.image import Image
+import numpy as np
+import asynckivy as ak
+import time
+
+# Определение шейдера для обесцвечивания текстуры
+vertex_shader = """
+---VERTEX SHADER---
+attribute vec2 tex_coords;
+varying vec2 v_tex_coords;
+void main(void) {
+    gl_Position = vec4(tex_coords, 0.0, 1.0);
+    v_tex_coords = tex_coords;
+}
+"""
+
+fragment_shader = """
+---FRAGMENT SHADER---
+uniform sampler2D texture;
+varying vec2 v_tex_coords;
+
+uniform float min_x; // Минимальная координата X области
+uniform float max_x; // Максимальная координата X области
+uniform float min_y; // Минимальная координата Y области
+uniform float max_y; // Максимальная координата Y области
+
+void main(void) {
+    vec4 tex_color = texture2D(texture, v_tex_coords);
+    // Проверяем, находится ли текущий пиксель внутри области для стирания
+    if (v_tex_coords.x >= min_x && v_tex_coords.x <= max_x &&
+        v_tex_coords.y >= min_y && v_tex_coords.y <= max_y) {
+        // Если да, делаем его прозрачным
+        gl_FragColor = vec4(tex_color.rgb, 0.0);
+    } else {
+        // Если нет, оставляем пиксель без изменений
+        gl_FragColor = tex_color;
+    }
+}
+"""
+
 
 
 class EditImage(Image):
@@ -14,18 +54,28 @@ class EditImage(Image):
         self.updated_texture = None
         self.erase_percent = 4
 
-    def on_parent(self, widget, parent):
-        if parent is not None:
-            def _callback(dt):
-                self.__update_before_canvas()
-                self.bind(norm_image_size=lambda x, y: self.__update_before_canvas())
+        self.shader = Shader()
+        self.shader.fs = fragment_shader
+        self.shader.vs = vertex_shader
 
-            Clock.schedule_once(callback=_callback, timeout=0.1)
+        # Устанавливаем начальные значения Uniform переменных
+        self.shader.min_x = 0.0
+        self.shader.max_x = 0.0
+        self.shader.min_y = 0.0
+        self.shader.max_y = 0.0
+
+    def on_parent(self, widget, parent):
+            if parent is not None:
+                def _callback(dt):
+                    self.__update_before_canvas()
+                    self.bind(norm_image_size=lambda x, y: self.__update_before_canvas())
+
+                Clock.schedule_once(callback=_callback, timeout=0.1)
 
     def __update_before_canvas(self):
         self.canvas.before.clear()
 
-        square_size = 10
+        square_size = 20
 
         width, height = self.norm_image_size
 
@@ -49,12 +99,63 @@ class EditImage(Image):
 
                     Rectangle(pos=(x, y), size=(square_size, square_size))
 
-    def eraser_texture(self, touch):
+    async def __eraser_texture(self, touch):
+        start = time.time()
+
+        tex_x, tex_y = await self.__calculate_texture_coordinates(touch)
+
+        pixels = np.frombuffer(self.texture.pixels, dtype=np.uint8).copy()
+
+        erase_radius = round(self.erase_percent * self.texture_size[0] / 100)  # %percent of texture_size
+
+        min_x = max(0, tex_x - erase_radius)
+        max_x = min(self.texture_size[0], tex_x + erase_radius + 1)
+        min_y = max(0, tex_y - erase_radius)
+        max_y = min(self.texture_size[1], tex_y + erase_radius + 1)
+
+        # Передаем координаты в Uniform переменные шейдера
+        self.shader.min_x = min_x
+        self.shader.max_x = max_x
+        self.shader.min_y = min_y
+        self.shader.max_y = max_y
+
+        # Обновляем текстуру
+        self.canvas.ask_update()
+
+        # # Calculate distances vectorized
+        # xs, ys = np.meshgrid(np.arange(min_x, max_x), np.arange(min_y, max_y))
+        # distances = np.sqrt((xs - tex_x) ** 2 + (ys - tex_y) ** 2)
+        #
+        # # Calculate indices vectorized
+        # abs_xs = xs.flatten()
+        # abs_ys = ys.flatten()
+        # # Calculate indices vectorized
+        # indices = abs_ys * self.texture_size[0] * 4 + abs_xs * 4 + 3
+        #
+        # # Create mask for pixels that need to be updated
+        # mask = np.ravel(distances <= erase_radius)
+        #
+        # # Use mask to update modifiable pixels array
+        # pixels[indices[mask]] = 0
+        #
+        # self.updated_texture = Texture.create(
+        #     size=self.texture_size,
+        #     colorfmt='rgba',
+        #     bufferfmt='ubyte',
+        #     mipmap=True,
+        # )
+        #
+        # self.texture.blit_buffer(pixels.tobytes(), size=self.texture_size, colorfmt='rgba', bufferfmt='ubyte')
+        # self.updated_texture.flip_vertical()
+        # self.texture = self.updated_texture
+        end = time.time() - start
+        print(f'eraser {end}')
+
+    async def __calculate_texture_coordinates(self, touch):
         bottom = (self.height - self.norm_image_size[1]) / 2 + self.y
 
         if self.norm_image_size[0] != self.width:
             left = self.x + (self.width - self.texture_size[0]) / 2
-
             if self.texture_size[0] == self.texture_size[1]:
                 tex_x = round(touch.x - left)
                 tex_y = round(touch.y - bottom)
@@ -66,53 +167,18 @@ class EditImage(Image):
             tex_x = round((touch.x - self.x) / self.norm_image_size[0] * self.texture_size[0])
             tex_y = round((touch.y - bottom) / self.norm_image_size[1] * self.texture_size[1])
 
-
-        # Проверяем ориентацию изображения и корректируем координаты при необходимости
         if self.texture.flip_vertical:
             tex_y = self.texture_size[1] - tex_y
 
-        pixels = bytearray(self.texture.pixels)
-
-        erase_radius = round(self.erase_percent * self.texture_size[0] / 100)  # %percent of texture_size
-
-        min_x = max(0, tex_x - erase_radius)
-        max_x = min(self.texture_size[0], tex_x + erase_radius + 1)
-        min_y = max(0, tex_y - erase_radius)
-        max_y = min(self.texture_size[1], tex_y + erase_radius + 1)
-
-        for i in range(min_x, max_x):
-            for j in range(min_y, max_y):
-                distance = ((i - tex_x) ** 2 + (j - tex_y) ** 2) ** 0.5
-
-                if distance <= erase_radius:
-                    abs_x = i
-                    abs_y = j
-
-                    # Расчет одномерного индекса для изменения альфа-канала
-                    index = abs_y * self.texture_size[0] * 4 + abs_x * 4 + 3
-
-                    # Установка альфа-канала в 0
-                    pixels[index] = 0
-
-
-        # Создаем объект Texture с обновленными пикселями
-        self.updated_texture = Texture.create(
-            size=self.texture_size,
-            colorfmt='rgba',
-            bufferfmt='ubyte',
-            mipmap=True,
-        )
-
-        self.updated_texture.blit_buffer(bytes(pixels), size=self.texture_size, colorfmt='rgba', bufferfmt='ubyte')
-        self.updated_texture.flip_vertical()
-        self.texture = self.updated_texture
+        return tex_x, tex_y
 
     def on_touch_down(self, touch):
         if self.collide_point(*touch.pos):
             if self.texture:
                 if not self.initial_texture:
                     self.initial_texture = self.texture
-                self.eraser_texture(touch=touch)
+                # Clock.schedule_once(callback=lambda dt: self.__eraser_texture(touch=touch))
+                ak.start(self.__eraser_texture(touch=touch))
             return True
         for child in self.children[:]:
             if child.dispatch('on_touch_down', touch):
@@ -120,7 +186,7 @@ class EditImage(Image):
 
     def on_touch_move(self, touch):
         if self.collide_point(*touch.pos):
-            self.eraser_texture(touch=touch)
+            ak.start(self.__eraser_texture(touch=touch))
             return True
         for child in self.children[:]:
             if child.dispatch('on_touch_move', touch):

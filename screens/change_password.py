@@ -1,7 +1,6 @@
 from kivy.metrics import dp, sp
 from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.label import MDLabel
-
 from controller.user import UserController
 from .layout import BaseScreen
 
@@ -56,7 +55,6 @@ class ChangePasswordScreen(BaseScreen):
             )
 
             self.app.show_dialog(title=title, content=content)
-
 
         def _on_error(request, error):
             _output_error(error)

@@ -80,7 +80,7 @@
             MDBoxLayout:
                 orientation: 'horizontal'
                 adaptive_height: True
-                padding: dp(10), 0, 0, 0
+                padding: dp(10)
                 md_bg_color: app.theme_cls.backgroundColor
 
                 TextInput:
@@ -104,8 +104,8 @@
                     id: send_button
                     icon: 'send'
                     style: 'standard'
-                    theme_icon_size: 'Custom'
-                    icon_size: dp(25)
+                    theme_font_size: 'Custom'
+                    font_size: sp(32)
                     ripple_effect: False
                     focus_behavior: False
                     on_release:

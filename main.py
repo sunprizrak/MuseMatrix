@@ -17,7 +17,7 @@ from kivymd.uix.dialog import (
 from kivymd.uix.filemanager import MDFileManager
 from kivymd.uix.transition import MDSlideTransition
 from kivy.utils import platform
-from kivy.clock import mainthread
+from kivy.clock import mainthread, Clock
 from kivy.logger import Logger
 from kivymd.utils.set_bars_colors import set_bars_colors
 from kivy.storage.jsonstore import JsonStore
@@ -55,7 +55,6 @@ class MainApp(MDApp):
         )
 
         if platform == 'android':
-            # self.change_android_color()
             self.ads = KivAds()
             self.reward_interstitial = RewardedInterstitial(
                 ID_REWARD_INTERSTITIAL, self.reward_callback
@@ -92,11 +91,15 @@ class MainApp(MDApp):
     def on_start(self):
         super().on_start()
         self.check_user_authentication()
+        Clock.schedule_once(self.change_android_color, 0.1)
 
     def on_resume(self):
         if platform == 'android':
             self.load_ads_video()
         pass
+
+    def on_pause(self):
+        return True
 
     def theme_initial(self):
         self.theme_cls.theme_style = "Dark"
@@ -109,8 +112,8 @@ class MainApp(MDApp):
 
     def change_android_color(self, *args, **kwargs):
         if platform == 'android':
-            color_stat = self.theme_cls.bg_light
-            color_nav = self.theme_cls.bg_light
+            color_stat = self.theme_cls.backgroundColor
+            color_nav = self.theme_cls.backgroundColor
             if kwargs.get('color_stat'):
                 color_stat = kwargs.get('color_stat')
             if kwargs.get('color_nav'):

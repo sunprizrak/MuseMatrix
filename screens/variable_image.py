@@ -1,13 +1,10 @@
 import base64
-
 from kivy.metrics import dp
 from kivy.uix.screenmanager import NoTransition
 from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.fitimage import FitImage
 from PIL import Image as PILImage
 from kivymd.uix.label import MDLabel
-from kivymd.uix.segmentedbutton import MDSegmentedButton
-
 from .layout import ImageScreen
 import io
 

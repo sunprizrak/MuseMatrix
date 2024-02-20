@@ -32,6 +32,8 @@ class SpeechToTextScreen(BaseScreen):
             text='translate the translation into English?',
             theme_font_name='Custom',
             font_name='Hacked',
+            theme_font_size='Custom',
+            font_size=sp(20),
             adaptive_size=True,
             pos_hint={'center_x': .5, 'center_y': .7},
         )
@@ -47,17 +49,17 @@ class SpeechToTextScreen(BaseScreen):
         button = MDButton(
             MDButtonText(
                 text='transcript',
-                pos_hint={'center_x': .5},
+                pos_hint={'center_x': .5, 'center_y': .5},
                 theme_font_name='Custom',
                 font_name='Hacked',
                 font_style='Display',
-                role='small',
+                role='medium',
             ),
             style='elevated',
-            theme_width='Custom',
-            size_hint_x=1,
-            radius=dp(0),
-            pos_hint={'bottom': 1},
+            theme_height='Custom',
+            size_hint_y=None,
+            height=dp(60),
+            pos_hint={'center_x': .5, 'center_y': .1},
             on_release=lambda x: self.transcript(),
         )
 

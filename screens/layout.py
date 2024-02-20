@@ -13,10 +13,16 @@ from widgets.MySelectionList import MySmartTile, MySmartTileImage
 
 
 class BaseScreen(MDScreen):
+    _initialized = False
+
     def __init__(self, **kwargs):
         super(BaseScreen, self).__init__(**kwargs)
         self.app = MDApp.get_running_app()
         self.theme_bg_color = 'Custom'
+
+    def on_enter(self, *args):
+        if not self._initialized:
+            self._initialized = True
 
 
 class ImageScreen(BaseScreen):
@@ -77,12 +83,3 @@ class ImageScreen(BaseScreen):
             on_success=_on_success,
             on_failure=_on_failure,
         )
-
-    # def on_pre_enter(self, *args):
-    #     if platform == 'android':
-    #         color_nav = self.theme_cls.primary_color
-    #         self.app.change_android_color(color_nav=color_nav)
-    #
-    # def on_pre_leave(self, *args):
-    #     if platform == 'android':
-    #         self.app.change_android_color()

@@ -63,7 +63,7 @@ class ImageController:
     def del_image(self, **kwargs):
 
         UrlRequest(
-            url=f'{self.path_image}{kwargs.get('image_id')}/',
+            url=f"{self.path_image}{kwargs.get('image_id')}/",
             method='DELETE',
             on_success=kwargs.get('on_success'),
             on_failure=kwargs.get('on_failure'),

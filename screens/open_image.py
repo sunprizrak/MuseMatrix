@@ -62,6 +62,7 @@ class OpenImageScreen(BaseScreen):
                 app_bar.text = ' x '.join(str(value.texture_size).split(', '))
 
         carousel.bind(current_slide=_change_appbar_title)
+        return super(OpenImageScreen, self).on_enter()
 
     def on_leave(self, *args):
         self.ids.carousel.clear_widgets()

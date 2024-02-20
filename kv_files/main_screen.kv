@@ -17,13 +17,12 @@
     MDNavigationDrawerItemLeadingIcon:
         icon: root.item_icon
         theme_icon_color: 'Custom'
-        icon_color: self.theme_cls.primaryColor
+        icon_color: app.theme_cls.primaryColor
 
     MDNavigationDrawerItemText:
         text: root.item_text
         theme_font_name: "Custom"
         font_name: 'Hacked'
-
 
 <MainCard@MDCard>:
     style: 'elevated'
@@ -179,7 +178,7 @@
                         MDBoxLayout:
                             orientation: 'vertical'
                             pos_hint: {'center_y': .5}
-                            spacing: dp(30)
+                            spacing: dp(15)
                             padding: dp(20)
                             adaptive_height: True
 
@@ -221,15 +220,14 @@
                                     font_name: 'Hacked'
                                     adaptive_width: True
 
-                        MDIconButton:
+                        MDFabButton:
                             icon: 'swap-vertical-circle-outline'
-                            icon_size: sp(30)
-                            ripple_effect: False
-                            focus_behavior: False
-                            theme_icon_color: "Custom"
-                            icon_color: 'green'
-                            md_bg_color: root.md_bg_color
-                            pos_hint: {'center_y': .5}
+                            style: 'small'
+                            theme_font_size: 'Custom'
+                            font_size: sp(30)
+                            theme_icon_color: 'Custom'
+                            icon_color: self.theme_cls.primaryColor
+                            pos_hint: {'center_x': .5, 'center_y': .5}
                             on_release:
                                 root.add_chat_token()
 

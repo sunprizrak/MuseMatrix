@@ -1,16 +1,11 @@
-from kivy.clock import Clock
 from kivy.metrics import dp
-from kivy.properties import StringProperty, ObjectProperty
+from kivy.properties import StringProperty
 from kivy.uix.screenmanager import NoTransition
 from kivy.uix.widget import Widget
-from kivymd.uix.appbar import MDActionTopAppBarButton
 from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.button import MDButton, MDButtonIcon, MDButtonText
 from kivymd.uix.fitimage import FitImage
 from kivymd.uix.label import MDLabel
-from kivymd.uix.transition import MDSwapTransition, MDSlideTransition
-
-from widgets.MyCarousel import MyCarousel
 from .layout import ImageScreen
 
 

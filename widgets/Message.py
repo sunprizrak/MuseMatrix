@@ -8,6 +8,7 @@ from kivy.utils import platform
 if platform == 'android':
     from kivymd.toast import toast
 
+
 class Message(RectangularRippleBehavior, ButtonBehavior, MDRelativeLayout):
     message = StringProperty()
     time = StringProperty()

@@ -48,7 +48,8 @@
                         icon: 'music' if root.sound else ''
                         text: ''
                         spacing: dp(5)
-                        pos_hint: {'center_x': .5}
+                        pos_hint: {'center_x': .5, 'center_y': .5}
+                        adaptive_height: True
 
                         MDIcon:
                             id: icon
@@ -74,39 +75,41 @@
                             orientation: 'horizontal'
                             icon_play: 'play' if root.sound else ''
                             icon_stop: 'stop' if root.sound else ''
+                            icon_size: sp(26)
                             pos_hint: {"center_x": .5}
                             adaptive_size: True
                             spacing: dp(5)
 
                             MDButton:
-                                size_hint: None, None
-                                size: icon.size
                                 on_release:
                                     root.sound_play()
 
                                 MDButtonIcon:
                                     icon: sound_option.icon_play
+                                    theme_font_size: 'Custom'
+                                    font_size: sound_option.icon_size
                                     pos_hint: {'center_x': .5, 'center_y': .5}
 
                             MDButton:
-                                size_hint: None, None
-                                size: icon.size
                                 on_release:
                                     root.sound_stop()
 
                                 MDButtonIcon:
                                     icon: sound_option.icon_stop
+                                    theme_font_size: 'Custom'
+                                    font_size: sound_option.icon_size
                                     pos_hint: {'center_x': .5, 'center_y': .5}
 
                         MDButton:
                             id: delete_button
-                            size_hint: None, None
-                            size: icon.size
+                            radius: dp(10)
                             on_release:
                                 root.delete_sound()
 
                             MDButtonIcon:
                                 icon: 'close' if root.sound else ''
+                                theme_font_size: 'Custom'
+                                font_size: sp(26)
                                 pos_hint: {'center_x': .5, 'center_y': .5}
 
             MDBoxLayout:
@@ -141,6 +144,8 @@
 
                     MDButtonIcon:
                         icon: 'content-copy'
+                        theme_icon_color: 'Custom'
+                        icon_color: self.theme_cls.primaryColor
                         pos_hint: {'center_x': .5, 'center_y': .5}
 
         MDBoxLayout:
@@ -150,9 +155,9 @@
 
             MDButton:
                 theme_width: 'Custom'
-                width: dp(84)
+                width: dp(100)
                 theme_height: 'Custom'
-                height: dp(84)
+                height: dp(100)
                 style: 'elevated'
                 opacity: 0 if self.disabled else 1
                 on_release:
@@ -161,7 +166,7 @@
                 MDButtonIcon:
                     icon: 'music-note-plus'
                     theme_font_size: "Custom"
-                    font_size: sp(58)
+                    font_size: sp(78)
                     pos_hint: {'center_x': .5, 'center_y': .5}
 
         MDCircularProgressIndicator:
