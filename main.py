@@ -26,6 +26,7 @@ from settings import ID_REWARD_INTERSTITIAL
 import base64
 import io
 import os
+import asynckivy as ak
 
 __version__ = '0.76'
 
@@ -33,7 +34,7 @@ logging.getLogger('PIL').setLevel(logging.WARNING)
 os.environ["KIVY_AUDIO"] = "ffpyplayer"
 
 if platform == 'android':
-    from android import api_version, loadingscreen
+    from android import api_version
     from android.permissions import request_permissions, check_permission, Permission
     from androidstorage4kivy import SharedStorage, Chooser
     from kivads import KivAds, RewardedInterstitial
@@ -75,8 +76,6 @@ class MainApp(MDApp):
         self.theme_initial()
 
         if platform == 'android':
-            loadingscreen.hide_loading_screen()
-
             if not self.check_android_permissions:
                 self.req_android_permissions()
 
@@ -90,8 +89,8 @@ class MainApp(MDApp):
 
     def on_start(self):
         super().on_start()
-        self.check_user_authentication()
-        Clock.schedule_once(self.change_android_color, 0.1)
+        ak.start(self.check_user_authentication())
+        Clock.schedule_once(self.change_android_color)
 
     def on_resume(self):
         if platform == 'android':
@@ -139,7 +138,7 @@ class MainApp(MDApp):
 
         user_controller.update_user(fields={reward_name: total_amount}, on_success=_on_success)
 
-    def check_user_authentication(self):
+    async def check_user_authentication(self):
         if self.storage.exists('auth_token'):
             user_controller = UserController()
             user_controller.authorized()
@@ -203,10 +202,8 @@ class MainApp(MDApp):
 
             image = CoreImage(path)
 
-            fmt = path.split('.')[-1]
-
             data = io.BytesIO()
-            image.save(data, fmt=fmt)
+            image.save(data, fmt='png')
             png_bytes = data.read()
 
             im_b64 = base64.b64encode(png_bytes).decode('UTF-8')

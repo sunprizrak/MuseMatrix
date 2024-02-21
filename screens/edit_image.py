@@ -73,7 +73,7 @@ class EditImageScreen(ImageScreen):
     def change_section(self, button=None):
         if self.ids.screen_manager.current == 'edit_section':
             if isinstance(button, MDButton):
-                if self.image.updated_texture:
+                if self.image.initial_texture:
                     self.ids.screen_manager.transition = MDSlideTransition()
                     self.ids.screen_manager.transition.direction = 'left'
                     self.ids.screen_manager.current = 'option_section'
@@ -197,6 +197,18 @@ class EditImageScreen(ImageScreen):
                     on_success=_on_success,
                     on_error=_on_error,
                     on_failure=_on_failure,
+                )
+            else:
+                content = MDBoxLayout(
+                    MDLabel(
+                        text='You need to select all parameters for generation',
+                    ),
+                    padding=[0, dp(10), 0, dp(10)],
+                )
+
+                self.app.show_dialog(
+                    title='Oops!',
+                    content=content,
                 )
 
     def clear_selection(self):

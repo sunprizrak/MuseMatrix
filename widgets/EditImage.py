@@ -1,23 +1,26 @@
-from copy import copy
-
 from kivy.core.image import Image as CoreImage
 from kivy.clock import Clock
-from kivy.graphics import Color, Rectangle, Fbo, ClearColor, ClearBuffers
-from kivy.graphics.shader import Shader
+from kivy.graphics import Color, Rectangle
 from kivy.graphics.texture import Texture
-from kivy.metrics import dp
 from kivy.uix.image import Image
-import numpy as np
+from PIL import Image as PILImage, ImageDraw
 import asynckivy as ak
-import time
 
 
 class EditImage(Image):
     def __init__(self, **kwargs):
         super(EditImage, self).__init__(**kwargs)
         self.initial_texture = None
-        self.updated_texture = None
-        self.erase_percent = 4
+        self.erase_percent = 5
+
+        texture = self.__create_new_texture()
+        self.texture = texture
+
+        # Create pill image mask with white pixels
+        self.pill_mask = PILImage.new('L', self.texture_size, 255)
+
+        # Create pill image for pill image mask
+        self.pil_image = PILImage.open(self.source).convert('RGBA')
 
     def on_parent(self, widget, parent):
             if parent is not None:
@@ -26,6 +29,18 @@ class EditImage(Image):
                     self.bind(norm_image_size=lambda x, y: self.__update_before_canvas())
 
                 Clock.schedule_once(callback=_callback, timeout=0.1)
+
+    def __create_new_texture(self):
+        texture = Texture.create(
+            size=self.texture_size,
+            colorfmt='rgba',
+            bufferfmt='ubyte',
+            mipmap=True,
+        )
+
+        texture.blit_buffer(bytes(self.texture.pixels), size=self.texture_size, colorfmt='rgba', bufferfmt='ubyte')
+        texture.flip_vertical()
+        return texture
 
     def __update_before_canvas(self):
         self.canvas.before.clear()
@@ -54,48 +69,19 @@ class EditImage(Image):
 
                     Rectangle(pos=(x, y), size=(square_size, square_size))
 
-    async def __eraser_texture(self, touch):
-        start = time.time()
+    async def __apply_mask(self, mask):
+        self.pil_image.putalpha(mask)  # Применяем маску к изображению через альфа-канал
+        self.texture.blit_buffer(self.pil_image.tobytes(), size=self.texture_size, colorfmt='rgba', bufferfmt='ubyte')
+        self.canvas.ask_update()
 
-        tex_x, tex_y = await self.__calculate_texture_coordinates(touch)
+    async def __create_transparent_circle(self, touch):
+        erase_radius = round(self.erase_percent * self.texture_size[0] / 100)
+        tex_x, tex_y = await self.__calculate_texture_coordinates(touch=touch)
 
-        pixels = np.frombuffer(self.texture.pixels, dtype=np.uint8).copy()
+        draw = ImageDraw.Draw(self.pill_mask)
+        draw.ellipse((tex_x - erase_radius, tex_y - erase_radius, tex_x + erase_radius, tex_y + erase_radius), fill=0)  # Рисуем круг на маске
 
-        erase_radius = round(self.erase_percent * self.texture_size[0] / 100)  # %percent of texture_size
-
-        min_x = max(0, tex_x - erase_radius)
-        max_x = min(self.texture_size[0], tex_x + erase_radius + 1)
-        min_y = max(0, tex_y - erase_radius)
-        max_y = min(self.texture_size[1], tex_y + erase_radius + 1)
-
-        # Calculate distances vectorized
-        xs, ys = np.meshgrid(np.arange(min_x, max_x), np.arange(min_y, max_y))
-        distances = np.sqrt((xs - tex_x) ** 2 + (ys - tex_y) ** 2)
-
-        # Calculate indices vectorized
-        abs_xs = xs.flatten()
-        abs_ys = ys.flatten()
-        # Calculate indices vectorized
-        indices = abs_ys * self.texture_size[0] * 4 + abs_xs * 4 + 3
-
-        # Create mask for pixels that need to be updated
-        mask = np.ravel(distances <= erase_radius)
-
-        # Use mask to update modifiable pixels array
-        pixels[indices[mask]] = 0
-
-        self.updated_texture = Texture.create(
-            size=self.texture_size,
-            colorfmt='rgba',
-            bufferfmt='ubyte',
-            mipmap=True,
-        )
-
-        self.updated_texture.blit_buffer(pixels.tobytes(), size=self.texture_size, colorfmt='rgba', bufferfmt='ubyte')
-        self.updated_texture.flip_vertical()
-        self.texture = self.updated_texture
-        end = time.time() - start
-        print(f'eraser {end}')
+        await self.__apply_mask(self.pill_mask)
 
     async def __calculate_texture_coordinates(self, touch):
         bottom = (self.height - self.norm_image_size[1]) / 2 + self.y
@@ -122,9 +108,9 @@ class EditImage(Image):
         if self.collide_point(*touch.pos):
             if self.texture:
                 if not self.initial_texture:
-                    self.initial_texture = self.texture
-                # Clock.schedule_once(callback=lambda dt: self.__eraser_texture(touch=touch))
-                ak.start(self.__eraser_texture(touch=touch))
+                    texture = self.__create_new_texture()
+                    self.initial_texture = texture
+                ak.start(self.__create_transparent_circle(touch=touch))
             return True
         for child in self.children[:]:
             if child.dispatch('on_touch_down', touch):
@@ -132,7 +118,7 @@ class EditImage(Image):
 
     def on_touch_move(self, touch):
         if self.collide_point(*touch.pos):
-            ak.start(self.__eraser_texture(touch=touch))
+            ak.start(self.__create_transparent_circle(touch=touch))
             return True
         for child in self.children[:]:
             if child.dispatch('on_touch_move', touch):
@@ -154,5 +140,6 @@ class EditImage(Image):
 
     def clear_eraser(self):
         if self.initial_texture:
-            self.texture_update()
-            self.updated_texture = None
+            self.texture = self.initial_texture
+            self.initial_texture = None
+            self.pill_mask = PILImage.new('L', self.texture_size, 255)

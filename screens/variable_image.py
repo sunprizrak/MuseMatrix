@@ -150,3 +150,27 @@ class VariableImageScreen(ImageScreen):
                     on_error=_on_error,
                     on_failure=_on_failure,
                 )
+            else:
+                content = MDBoxLayout(
+                    MDLabel(
+                        text='You need to select all parameters for generation',
+                    ),
+                    padding=[0, dp(10), 0, dp(10)],
+                )
+
+                self.app.show_dialog(
+                    title='Oops!',
+                    content=content,
+                )
+        else:
+            content = MDBoxLayout(
+                MDLabel(
+                    text='Уou need to upload images',
+                ),
+                padding=[0, dp(10), 0, dp(10)],
+            )
+
+            self.app.show_dialog(
+                title='Oops!',
+                content=content,
+            )

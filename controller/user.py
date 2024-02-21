@@ -66,15 +66,15 @@ class UserController:
         )
 
     def authorized(self):
-        self._get_data_user()
-        self.image_controller.get_image_list()
-
         if self.app.root.current == 'login_screen':
             self.app.root.transition = MDSwapTransition()
         else:
             self.app.root.transition = NoTransition()
 
         self.app.root.current = 'main_screen'
+
+        self._get_data_user()
+        self.image_controller.get_image_list()
 
     def google_oauth2(self, *args, **kwargs):
 
