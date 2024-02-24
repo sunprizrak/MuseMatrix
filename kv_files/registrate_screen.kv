@@ -1,13 +1,14 @@
-#:import RegistrateScreen screens
+#:import RegistrateScreen screens.registrate
 #:import SlideTransition kivymd.uix.transition.transition.MDSlideTransition
 #:import platform kivy.utils
+#:import MyIconButton widgets
 
 
 <RegTextField@MDTextField>
-    mode: "rectangle"
+    mode: "outlined"
+    theme_text_color: 'Custom'
     text_color_normal: 'white'
-    hint_text_color_normal: 'white'
-    helper_text_mode: 'on_error'
+    text_color_focus: 'white'
 
 
 <RegistrateScreen>
@@ -15,26 +16,42 @@
 
     MDFloatLayout:
 
-        MyTopAppBar:
+        MDTopAppBar:
             pos_hint: {'top': 1}
-            type_height: 'small'
-            title: 'Registrate'
-            anchor_title: 'left'
-            md_bg_color: root.md_bg_color
-            left_action_items: [['arrow-left-bold', lambda x: app.back(screen='start_screen')]]
-            elevation: 0
+            type: 'small'
+            theme_bg_color: 'Custom'
+            md_bg_color: self.theme_cls.backgroundColor
+
+            MDTopAppBarLeadingButtonContainer:
+
+                MDActionTopAppBarButton:
+                    icon: 'arrow-left-bold'
+                    ripple_effect: False
+                    focus_behavior: False
+                    on_release:
+                        app.back(screen='start_screen')
+
+            MDTopAppBarTitle:
+                text: 'sign up'
+                theme_font_name: 'Custom'
+                font_name: 'Hacked'
 
         MDBoxLayout:
             orientation: 'vertical'
             spacing: dp(30)
-            pos_hint: {'center_x': .5, 'center_y': .65}
+            pos_hint: {'center_x': .5, 'center_y': .6}
             adaptive_height: True
             size_hint_max_x: dp(300)
 
             RegTextField:
                 id: email_field
-                hint_text: 'email'
                 pos_hint: {'center_x': .5}
+
+                MDTextFieldHintText:
+                    text: 'Email'
+                    text_color_normal: 'white'
+                    theme_font_name: "Custom"
+                    font_name: 'Hacked'
 
             MDRelativeLayout:
                 size_hint: 1, None
@@ -43,13 +60,20 @@
 
                 RegTextField:
                     id: password_field
-                    hint_text: 'Password'
                     password: True
 
-                MyIconButton:
+                    MDTextFieldHintText:
+                        text: 'Password'
+                        text_color_normal: 'white'
+                        theme_font_name: "Custom"
+                        font_name: 'Hacked'
+
+                MDIconButton:
                     icon: "eye"
                     pos_hint: {"center_y": .45}
                     pos: password_field.width - self.width, 0
+                    ripple_effect: False
+                    focus_behavior: False
                     theme_text_color: "Custom"
                     text_color: password_field.text_color_focus if password_field.focus else 'white'
                     on_release:
@@ -63,13 +87,20 @@
 
                 RegTextField:
                     id: re_password_field
-                    hint_text: 'Password repeat'
                     password: True
 
-                MyIconButton:
+                    MDTextFieldHintText:
+                        text: 'Password repeat'
+                        text_color_normal: 'white'
+                        theme_font_name: "Custom"
+                        font_name: 'Hacked'
+
+                MDIconButton:
                     icon: "eye"
                     pos_hint: {"center_y": .45}
                     pos: re_password_field.width - self.width, 0
+                    ripple_effect: False
+                    focus_behavior: False
                     theme_text_color: "Custom"
                     text_color: re_password_field.text_color_focus if re_password_field.focus else 'white'
                     on_release:
@@ -82,10 +113,20 @@
                 pos_hint: {'center_x': .5}
                 size_hint_max_x: dp(300)
 
-                MDRaisedButton:
-                    text: 'Registrate'
-                    font_size: sp(20)
+                MDButton:
+                    style: 'filled'
+                    theme_width: 'Custom'
                     size_hint_x: 1
-                    md_bg_color: app.theme_cls.primary_color
+                    radius: dp(10)
                     on_release:
                         root.registrate(email_field.text, password_field.text, re_password_field.text)
+
+                    MDButtonText:
+                        text: 'Registrate'
+                        pos_hint: {'center_x': .5}
+                        theme_font_name: 'Custom'
+                        font_name: 'Hacked'
+                        theme_text_color: 'Custom'
+                        text_color: 'white'
+                        font_style: 'Display'
+                        role: 'small'

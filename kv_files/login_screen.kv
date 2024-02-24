@@ -1,14 +1,13 @@
-#:import LoginScreen screens
+#:import LoginScreen screens.login
 #:import MDSlideTransition kivymd.uix.transition.transition.MDSlideTransition
 #:import platform kivy.utils
 
 
 <LogTextField@MDTextField>
-    mode: "rectangle"
+    mode: "outlined"
+    theme_text_color: 'Custom'
     text_color_normal: 'white'
-    hint_text_color_normal: 'white'
-    helper_text_mode: 'on_error'
-
+    text_color_focus: 'white'
 
 
 <LoginScreen>
@@ -16,26 +15,45 @@
 
     MDFloatLayout:
 
-        MyTopAppBar:
+        MDTopAppBar:
             pos_hint: {'top': 1}
-            type_height: 'small'
-            title: 'Login'
-            anchor_title: 'left'
-            md_bg_color: root.md_bg_color
-            left_action_items: [['arrow-left-bold', lambda x: app.back(screen='start_screen')]]
-            elevation: 0
+            type: 'small'
+            theme_bg_color: 'Custom'
+            md_bg_color: self.theme_cls.backgroundColor
+
+            MDTopAppBarLeadingButtonContainer:
+
+                MDActionTopAppBarButton:
+                    icon: 'arrow-left-bold'
+                    theme_icon_color: 'Custom'
+                    icon_color: self.theme_cls.primaryColor
+                    ripple_effect: False
+                    focus_behavior: False
+                    on_release:
+                        app.back(screen='start_screen')
+
+            MDTopAppBarTitle:
+                text: 'sign in'
+                theme_font_name: "Custom"
+                font_name: 'Hacked'
+
 
         MDBoxLayout:
             orientation: 'vertical'
             spacing: dp(30)
-            pos_hint: {'center_x': .5, 'center_y': .68}
+            pos_hint: {'center_x': .5, 'center_y': .6}
             adaptive_height: True
             size_hint_max_x: dp(300)
 
             LogTextField:
                 id: email_field
-                hint_text: 'email'
                 pos_hint: {'center_x': .5}
+
+                MDTextFieldHintText:
+                    text: "Email"
+                    text_color_normal: 'white'
+                    theme_font_name: "Custom"
+                    font_name: 'Hacked'
 
             MDRelativeLayout:
                 size_hint: 1, None
@@ -45,13 +63,20 @@
                 LogTextField:
                     id: password_field
                     password: True
-                    hint_text: 'Password'
 
-                MyIconButton:
+                    MDTextFieldHintText:
+                        text: 'Password'
+                        text_color_normal: 'white'
+                        theme_font_name: "Custom"
+                        font_name: 'Hacked'
+
+                MDIconButton:
                     icon: "eye"
                     pos_hint: {"center_y": .45}
-                    theme_text_color: "Custom"
-                    text_color: password_field.text_color_focus if password_field.focus else 'white'
+                    ripple_effect: False
+                    focus_behavior: False
+                    theme_icon_color: "Custom"
+                    icon_color: password_field.text_color_focus if password_field.focus else 'white'
                     pos: password_field.width - self.width, 0
                     on_release:
                         self.icon = "eye" if self.icon == "eye-off" else "eye-off"
@@ -70,22 +95,42 @@
                     size_hint_max_x: dp(300)
                     pos_hint: {'center_x': .5}
 
-                    MDRaisedButton:
-                        text: 'Login'
-                        font_size: sp(20)
+                    MDButton:
+                        style: "filled"
+                        theme_width: 'Custom'
                         size_hint_x: 1
-                        md_bg_color: app.theme_cls.primary_color
+                        radius: dp(10)
                         on_release:
                             root.login(email_field.text, password_field.text)
 
-                MDTextButton:
-                    text: "Forgot Password?"
-                    theme_text_color: "Custom"
-                    font_size: sp(25)
-                    text_color: "orange"
+                        MDButtonText:
+                            text: 'Login'
+                            pos_hint: {'center_x': .5}
+                            theme_text_color: 'Custom'
+                            text_color: 'white'
+                            theme_font_name: 'Custom'
+                            font_name: 'Hacked'
+                            font_style: 'Display'
+                            role: 'small'
+
+
+                MDButton:
+                    style: 'text'
                     pos_hint: {'center_x': .5}
+                    ripple_effect: False
+                    focus_behavior: False
                     on_release:
                         root.forgot_password()
+
+                    MDButtonText:
+                        text: 'Forgot Password?'
+                        theme_text_color: "Custom"
+                        text_color: "orange"
+                        font_style: 'Headline'
+                        theme_font_name: "Custom"
+                        font_name: 'Hacked'
+                        role: 'small'
+
 
 #        MDBoxLayout:
 #            orientation: 'vertical'

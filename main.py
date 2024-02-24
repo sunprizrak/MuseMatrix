@@ -1,64 +1,45 @@
-import base64
-import io
-import os
+import logging
 from kivy.core.image import Image as CoreImage
-from kivy.core.audio import SoundLoader
 from kivy.core.text import LabelBase
-from kivy.metrics import dp, sp
+from kivy.metrics import dp
+from kivy.uix.widget import Widget
 from kivymd.app import MDApp
 from kivy.lang import Builder
 from kivy.core.window import Window
-from kivymd.theming import ThemeManager
-from kivymd.uix.button import MDRaisedButton, MDFillRoundFlatButton
-from kivymd.uix.chip import MDChip, MDChipText
-from kivymd.uix.dialog import MDDialog
+from kivymd.uix.button import MDFabButton
+from kivymd.uix.dialog import (
+    MDDialog,
+    MDDialogHeadlineText,
+    MDDialogSupportingText,
+    MDDialogButtonContainer,
+    MDDialogContentContainer,
+)
 from kivymd.uix.filemanager import MDFileManager
 from kivymd.uix.transition import MDSlideTransition
 from kivy.utils import platform
-from kivy.clock import mainthread
+from kivy.clock import mainthread, Clock
 from kivy.logger import Logger
 from kivymd.utils.set_bars_colors import set_bars_colors
 from kivy.storage.jsonstore import JsonStore
 from controller.user import UserController
 from settings import ID_REWARD_INTERSTITIAL
+import base64
+import io
+import os
+import asynckivy as ak
 
+__version__ = '0.78.13'
+
+logging.getLogger('PIL').setLevel(logging.WARNING)
 os.environ["KIVY_AUDIO"] = "ffpyplayer"
 
-
 if platform == 'android':
-    from android import api_version, loadingscreen
+    from android import api_version
     from android.permissions import request_permissions, check_permission, Permission
     from androidstorage4kivy import SharedStorage, Chooser
-    from utility.kivads import KivAds, RewardedInterstitial
+    from kivads import KivAds, RewardedInterstitial
 elif platform == 'linux':
     Window.size = (360, 600)
-
-
-class CustomThemeManager(ThemeManager):
-    def __init__(self, **kwargs):
-        super(CustomThemeManager, self).__init__(**kwargs)
-        self.theme_style = 'Dark'
-        a = ['Red', 'Pink', 'Purple', 'DeepPurple', 'Indigo', 'Blue', 'LightBlue', 'Cyan', 'Teal', 'Green', 'LightGreen', 'Lime', 'Yellow', 'Amber', 'Orange', 'DeepOrange', 'Brown', 'Gray', 'BlueGray']
-        self.primary_palette = 'DeepPurple'
-        self.font_styles.update({
-            "H1": ["Hacked", 96, False, -1.5],
-            "H2": ["Hacked", 60, False, -0.5],
-            "H3": ["Hacked", 48, False, 0],
-            "H4": ["Hacked", 34, False, 0.25],
-            "H5": ["Hacked", 24, False, 0],
-            "H6": ["Hacked", 20, False, 0.15],
-            "Subtitle1": ["Hacked", 16, False, 0.15],
-            "Subtitle2": ["Hacked", 14, False, 0.1],
-            "Body1": ["Hacked", 16, False, 0.5],
-            "Body2": ["Hacked", 14, False, 0.25],
-            "Button": ["Hacked", 14, True, 1.25],
-            "Caption": ["Hacked", 12, False, 0.4],
-            "Overline": ["Hacked", 10, True, 1.5],
-            'Message': ['Roboto', 16, False, 0.5],
-            'Instruction': ['Roboto', 16, False, 0.5],
-            "Sound_name": ["Roboto", 16, False, 0.5],
-        })
-        LabelBase.register(name='Hacked', fn_regular='assets/font/hacked.ttf')
 
 
 class MainApp(MDApp):
@@ -66,7 +47,6 @@ class MainApp(MDApp):
     def __init__(self, **kwargs):
         super(MainApp, self).__init__(**kwargs)
         self.title = "MuseMatrix"
-        self.theme_cls = CustomThemeManager()
         self.dialog = None
         self.manager_open = False
         self.file_manager = MDFileManager(
@@ -76,7 +56,6 @@ class MainApp(MDApp):
         )
 
         if platform == 'android':
-            self.change_android_color()
             self.ads = KivAds()
             self.reward_interstitial = RewardedInterstitial(
                 ID_REWARD_INTERSTITIAL, self.reward_callback
@@ -89,13 +68,14 @@ class MainApp(MDApp):
                 self.permissions = [Permission.READ_MEDIA_IMAGES, Permission.READ_MEDIA_AUDIO]
             else:
                 self.permissions = [Permission.READ_EXTERNAL_STORAGE, Permission.WRITE_EXTERNAL_STORAGE, Permission.READ_EXTERNAL_STORAGE]
+
         elif platform == 'linux':
             self.storage = JsonStore('storage.json')
 
     def build(self):
-        if platform == 'android':
-            loadingscreen.hide_loading_screen()
+        self.theme_initial()
 
+        if platform == 'android':
             if not self.check_android_permissions:
                 self.req_android_permissions()
 
@@ -108,17 +88,31 @@ class MainApp(MDApp):
         return kv_file
 
     def on_start(self):
-        self.check_user_authentication()
+        super().on_start()
+        ak.start(self.check_user_authentication())
+        Clock.schedule_once(self.change_android_color)
 
     def on_resume(self):
         if platform == 'android':
             self.load_ads_video()
         pass
 
+    def on_pause(self):
+        return True
+
+    def theme_initial(self):
+        self.theme_cls.theme_style = "Dark"
+        self.theme_cls.primary_palette = "Ghostwhite"
+        LabelBase.register(name='Hacked', fn_regular='assets/font/hacked.ttf')
+
+    @staticmethod
+    def get_version():
+        return __version__
+
     def change_android_color(self, *args, **kwargs):
         if platform == 'android':
-            color_stat = self.theme_cls.bg_light
-            color_nav = self.theme_cls.bg_light
+            color_stat = self.theme_cls.backgroundColor
+            color_nav = self.theme_cls.backgroundColor
             if kwargs.get('color_stat'):
                 color_stat = kwargs.get('color_stat')
             if kwargs.get('color_nav'):
@@ -144,7 +138,7 @@ class MainApp(MDApp):
 
         user_controller.update_user(fields={reward_name: total_amount}, on_success=_on_success)
 
-    def check_user_authentication(self):
+    async def check_user_authentication(self):
         if self.storage.exists('auth_token'):
             user_controller = UserController()
             user_controller.authorized()
@@ -198,33 +192,7 @@ class MainApp(MDApp):
                 else:
                     sound_name = path.split('/')[-1]
 
-                screen.ids.add_sound_button.disabled = True
-                screen.sound = SoundLoader.load(path)
-                screen.ids.sound.text = sound_name
-
-                button = MDRaisedButton(
-                    text='transcript',
-                    pos_hint={'center_x': .5, 'center_y': .5},
-                    font_size=sp(25),
-                    md_bg_color=self.theme_cls.primary_color,
-                    on_release=lambda
-                        x: screen.transcript(),
-                )
-
-                text_button = MDChipText(text='translate to english')
-
-                chip = MDChip(
-                    pos_hint={'center_x': .5, 'center_y': .6},
-                    md_bg_color='grey',
-                    line_color="black",
-                    type='filter',
-                    selected_color='green',
-                )
-
-                chip.add_widget(text_button)
-
-                screen.ids.speech_layout.add_widget(button)
-                screen.ids.speech_layout.add_widget(chip)
+                screen.add_sound(path=path, sound_name=sound_name)
         elif screen.name == 'main_screen':
             user_controller = UserController()
 
@@ -234,13 +202,11 @@ class MainApp(MDApp):
 
             image = CoreImage(path)
 
-            fmt = path.split('.')[-1]
-
             data = io.BytesIO()
-            image.save(data, fmt=fmt)
+            image.save(data, fmt='png')
             png_bytes = data.read()
 
-            im_b64 = base64.b64encode(png_bytes).decode('utf-8')
+            im_b64 = base64.b64encode(png_bytes).decode('UTF-8')
 
             user_controller.update_user(fields={'avatar': im_b64}, on_success=_on_success)
         else:
@@ -252,28 +218,55 @@ class MainApp(MDApp):
             self.manager_open = False
             self.file_manager.close()
 
-    def show_dialog(self, button=None, content=None):
+    def show_dialog(self, title=None, sup_text=None, button=None, content=None):
         self.dialog = MDDialog(
-            title='Notice!',
-            type='custom',
-            md_bg_color=self.theme_cls.bg_light,
-            radius=[dp(25), dp(25), dp(25), dp(25)],
-            elevation=dp(2),
-            shadow_color='white',
-            shadow_radius=dp(25),
-            shadow_offset=(dp(2), dp(-2)),
-            shadow_softness=dp(1),
-            content_cls=content,
-            buttons=[
+            MDDialogButtonContainer(
+                Widget(),
                 button,
-                MDFillRoundFlatButton(
-                    text='Close',
+                MDFabButton(
+                    icon='close-thick',
+                    style='small',
                     on_release=self.close_dialog,
                 ),
-            ],
+                spacing='8dp',
+            ),
+            size_hint_x=.9,
+            theme_bg_color='Custom',
+            md_bg_color=self.theme_cls.backgroundColor,
+            radius=dp(25),
         )
-        self.dialog.children[0].children[3].line_height = 1.5
-        self.dialog.children[0].children[3].color = 'white'
+
+        if title:
+            self.dialog.add_widget(
+                MDDialogHeadlineText(
+                    text=title,
+                    theme_font_name="Custom",
+                    font_name='Hacked',
+                ),
+            )
+        else:
+            self.dialog.add_widget(
+                MDDialogHeadlineText(
+                    text='Notice!',
+                ),
+            )
+
+        if sup_text:
+            self.dialog.add_widget(
+                MDDialogSupportingText(
+                    text=sup_text,
+                    theme_font_name="Custom",
+                    font_name='Hacked',
+                ),
+            )
+
+        if content:
+            self.dialog.add_widget(
+                MDDialogContentContainer(
+                    content,
+                ),
+            )
+
         self.dialog.open()
 
     def close_dialog(self, inst):

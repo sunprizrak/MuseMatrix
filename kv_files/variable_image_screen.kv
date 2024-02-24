@@ -1,111 +1,296 @@
-#:import VariableImageScreen screens
+#:import VariableImageScreen screens.variable_image
+#:import MySegmentedButton widgets.MySegmentedButton
+
 
 <VariableImageScreen>
     name: 'variable_image_screen'
 
-    MDFloatLayout:
+    MDScreenManager:
+        id: screen_manager
 
-        MDBoxLayout:
-            orientation: 'vertical'
+        MDScreen:
+            name: 'option_section'
 
-            MyTopAppBar:
-                id: variable_top_bar
-                type_height: 'small'
-                title: 'variable image'
-                anchor_title: 'left'
-                md_bg_color: root.md_bg_color
-                left_action_items: [['arrow-left-bold', lambda x: app.back(screen='main_screen')]]
-                elevation: 0
+            MDFloatLayout:
+
+                MDBoxLayout:
+                    id: option_section
+                    orientation: 'vertical'
+
+                    MDTopAppBar:
+                        type: 'small'
+                        md_bg_color: self.theme_cls.backgroundColor
+
+                        MDTopAppBarLeadingButtonContainer:
+
+                            MDActionTopAppBarButton:
+                                icon: 'arrow-left-bold'
+                                theme_icon_color: 'Custom'
+                                icon_color: self.theme_cls.primaryColor
+                                ripple_effect: False
+                                focus_behavior: False
+                                on_release:
+                                    app.back(screen='main_screen')
+
+                        MDTopAppBarTitle:
+                            text: 'variable image'
+                            theme_font_name: "Custom"
+                            font_name: 'Hacked'
+
+                    MDBoxLayout:
+                        id: image_box
+
+
+                    MDBoxLayout:
+                        orientation: 'horizontal'
+                        adaptive_size: True
+                        pos_hint: {'center_x': .9}
+                        padding: [dp(10), dp(10), dp(10), 0]
+
+                        MDButton:
+                            id: img_reload
+                            style: 'elevated'
+                            radius: dp(15)
+                            disabled: True
+                            opacity: 0 if self.disabled else 1
+                            on_release:
+                                root.reload_image()
+
+                            MDButtonIcon:
+                                icon: 'image-sync'
+                                theme_font_size: 'Custom'
+                                font_size: sp(26)
+                                pos_hint: {'center_x': .5, 'center_y': .5}
+
+                    MDBoxLayout:
+                        orientation: 'vertical'
+                        padding: dp(5)
+                        spacing: dp(10)
+                        adaptive_height: True
+
+                        MDBoxLayout:
+                            orientation: 'horizontal'
+                            pos_hint: {'center_x': .5}
+                            size_hint_x: None
+                            width: dp(140)
+                            adaptive_height: True
+
+                            MDButton:
+                                style: 'elevated'
+                                size_hint: None, None
+                                size: dp(30), dp(30)
+                                radius: dp(15)
+                                on_release:
+                                    root.image_count -= 1
+
+                                MDButtonIcon:
+                                    icon: 'minus'
+                                    pos_hint: {'center_x': .5, 'center_y': .5}
+
+
+                            MDLabel:
+                                id: img_count
+                                text: str(root.image_count)
+                                theme_font_name: "Custom"
+                                font_name: 'Hacked'
+                                theme_font_size: 'Custom'
+                                font_size: sp(30)
+                                halign: 'center'
+
+                            MDButton:
+                                style: 'elevated'
+                                size_hint: None, None
+                                size: dp(30), dp(30)
+                                radius: dp(15)
+                                on_release:
+                                    root.image_count += 1
+
+                                MDButtonIcon:
+                                    icon: 'plus'
+                                    pos_hint: {'center_x': .5, 'center_y': .5}
+
+                        MDBoxLayout:
+                            orientation: 'vertical'
+                            adaptive_height: True
+
+                            MySegmentedButton:
+                                id: segmented_buttons
+                                orientation: 'horizontal'
+                                adaptive_height: True
+                                size_hint_x: None
+                                width: dp(350)
+                                pos_hint: {'center_x': .5}
+
+                                MDButton:
+                                    style: 'elevated'
+                                    theme_width: 'Custom'
+                                    width: self.parent.width / 3
+                                    radius: [dp(25), 0, 0, dp(25)]
+                                    on_release:
+                                        segmented_buttons.current = self
+                                        root.image_size = self.children[0].text
+
+                                    MDButtonText:
+                                        text: '256x256'
+                                        pos_hint: {'center_x': .5}
+                                        theme_font_name: 'Custom'
+                                        font_name: 'Hacked'
+                                        theme_font_size: 'Custom'
+                                        font_size: sp(16)
+                                        pos_hint: {'center_x': .5, 'center_y': .5}
+
+                                MDButton:
+                                    style: 'elevated'
+                                    theme_width: 'Custom'
+                                    width: self.parent.width / 3
+                                    radius: [0, 0, 0, 0]
+                                    on_release:
+                                        segmented_buttons.current = self
+                                        root.image_size = self.children[0].text
+
+                                    MDButtonText:
+                                        text: '512x512'
+                                        pos_hint: {'center_x': .5}
+                                        theme_font_name: 'Custom'
+                                        font_name: 'Hacked'
+                                        theme_font_size: 'Custom'
+                                        font_size: sp(16)
+                                        pos_hint: {'center_x': .5, 'center_y': .5}
+
+                                MDButton:
+                                    style: 'elevated'
+                                    theme_width: 'Custom'
+                                    width: self.parent.width / 3
+                                    radius: [0, dp(25), dp(25), 0]
+                                    on_release:
+                                        segmented_buttons.current = self
+                                        root.image_size = self.children[0].text
+
+                                    MDButtonText:
+                                        text: '1024x1024'
+                                        pos_hint: {'center_x': .5}
+                                        theme_font_name: 'Custom'
+                                        font_name: 'Hacked'
+                                        theme_font_size: 'Custom'
+                                        font_size: sp(16)
+                                        pos_hint: {'center_x': .5, 'center_y': .5}
+
+                            MDBoxLayout:
+                                adaptive_height: True
+                                size_hint_x: None
+                                width: segmented_buttons.width / 1.5
+                                pos_hint: {'center_x': .5}
+
+                                MDButton:
+                                    style: 'elevated'
+                                    theme_width: 'Custom'
+                                    size_hint_x: 1
+                                    size_hint_y: None
+                                    height: dp(60)
+                                    radius: [0, 0, dp(25), dp(25)]
+                                    on_release:
+                                        root.generate()
+
+                                    MDButtonText:
+                                        text: 'Generate'
+                                        pos_hint: {'center_x': .5}
+                                        theme_font_name: 'Custom'
+                                        font_name: 'Hacked'
+                                        font_style: 'Display'
+                                        role: 'medium'
+                                        pos_hint: {'center_x': .5, 'center_y': .5}
+
+                MDButton:
+                    id: add_image_button
+                    theme_width: 'Custom'
+                    width: dp(100)
+                    theme_height: 'Custom'
+                    height: dp(100)
+                    style: 'elevated'
+                    opacity: 0 if self.disabled else 1
+                    pos_hint: {"center_x": .5, 'center_y': .55}
+                    on_release:
+                        app.file_manager_open()
+
+                    MDButtonIcon:
+                        icon: 'image-plus'
+                        theme_font_size: "Custom"
+                        font_size: sp(78)
+                        pos_hint: {'center_x': .5, 'center_y': .5}
+
+                MDCircularProgressIndicator:
+                    id: variable_spin
+                    size_hint: None, None
+                    size: dp(38), dp(38)
+                    pos_hint: {'center_x': .5, 'center_y': .5}
+                    active: False
+
+        MDScreen:
+            name: 'completed_section'
 
             MDBoxLayout:
-                id: image_section
-
-            MDBoxLayout:
-                id: option_section
                 orientation: 'vertical'
-                adaptive_height: True
 
                 MDBoxLayout:
                     orientation: 'horizontal'
+                    padding: [dp(0), dp(10), dp(0), dp(10)]
+                    spacing: dp(50)
                     pos_hint: {'center_x': .5}
-                    size_hint_x: None
-                    width: dp(140)
-                    adaptive_height: True
+                    adaptive_size: True
 
-                    MyIconButton:
-                        icon: 'minus-box-outline'
-                        icon_size: sp(30)
-                        theme_icon_color: "Custom"
-                        icon_color: app.theme_cls.primary_color
-                        md_bg_color: root.md_bg_color
+                    MDButton:
+                        style: 'elevated'
+                        radius: dp(10)
                         on_release:
-                            root.image_count -= 1
+                            app.root.transition = MDSwapTransition()
+                            app.root.current = 'collection_screen'
 
-                    MDLabel:
-                        id: img_count
-                        text: str(root.image_count)
-                        font_size: sp(30)
-                        halign: 'center'
+                        MDButtonIcon:
+                            icon: 'image-album'
 
-                    MyIconButton:
-                        icon: 'plus-box-outline'
-                        icon_size: sp(30)
-                        theme_icon_color: "Custom"
-                        icon_color: app.theme_cls.primary_color
-                        md_bg_color: root.md_bg_color
+                        MDButtonText:
+                            text: 'gallery'
+                            theme_font_name: 'Custom'
+                            font_name: 'Hacked'
+
+                    MDButton:
+                        style: 'elevated'
+                        radius: dp(10)
                         on_release:
-                            root.image_count += 1
+                            root.variable_new_button()
+
+                        MDButtonIcon:
+                            icon: 'plus'
+
+                        MDButtonText:
+                            text: 'Variable new'
+                            theme_font_name: 'Custom'
+                            font_name: 'Hacked'
+
+                MyCarousel:
+                    id: carousel
 
                 MDBoxLayout:
-                    orientation: 'vertical'
+                    orientation: 'horizontal'
+                    padding: [dp(30), dp(10), dp(30), dp(30)]
                     pos_hint: {'center_x': .5}
-                    adaptive_height: True
+                    adaptive_size: True
 
-                    MySegmentedControl:
-                        md_bg_color: app.theme_cls.primary_color
-                        segment_color: root.md_bg_color
-                        separator_color: "white"
-                        radius: [dp(15), dp(15), 0, 0]
-                        on_active:
-                            root.image_size = self.current_active_segment.text
+                    MDButton:
+                        id: save_button
+                        style: 'elevated'
+                        radius: dp(10)
+                        disabled: True if carousel.current_slide in carousel.saved_images else False
+                        pos_hint: {'center_x': .5}
+                        on_release:
+                            root.save_image(carousel.current_slide)
 
-                        MDSegmentedControlItem:
-                            text: '256x256'
+                        MDButtonIcon:
+                            icon: 'check-circle' if carousel.current_slide in carousel.saved_images else 'content-save'
+                            icon_color_disabled: 'green'
 
-                        MDSegmentedControlItem:
-                            text: '512x512'
-
-                        MDSegmentedControlItem:
-                            text: '1024x1024'
-
-                    MDBoxLayout:
-                        md_bg_color: app.theme_cls.primary_color
-                        padding: [dp(20), dp(10), dp(20), dp(10)]
-                        adaptive_height: True
-
-                        MDRaisedButton:
-                            text: 'Generate'
-                            font_size: sp(25)
-                            md_bg_color: app.theme_cls.primary_color
-                            size_hint_x: 1
-                            on_release:
-                                root.generate()
-
-        MDSpinner:
-            id: variable_spin
-            size_hint: None, None
-            size: dp(38), dp(38)
-            pos_hint: {'center_x': .5, 'center_y': .68}
-            active: False
-
-        MyIconButton:
-            id: add_image_button
-            icon: 'image-plus'
-            icon_size: dp(70)
-            theme_icon_color: "Custom"
-            disabled_color: 1, 1, 1, 0
-            icon_color: 'gray'
-            md_bg_color: root.md_bg_color
-            pos_hint: {"center_x": .5, "center_y": .55}
-            on_release:
-                app.file_manager_open()
+                        MDButtonText:
+                            text: 'saved' if carousel.current_slide in carousel.saved_images else 'save image'
+                            theme_font_name: 'Custom'
+                            font_name: 'Hacked'
+                            theme_text_color: 'Primary'

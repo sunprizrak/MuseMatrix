@@ -1,4 +1,5 @@
-#:import CollectionScreen screens
+#:import CollectionScreen screens.collection
+#:import MySelectionList widgets.MySelectionList
 
 <CollectionScreen>
     name: 'collection_screen'
@@ -6,32 +7,65 @@
     MDBoxLayout:
         orientation: 'vertical'
 
-        MyTopAppBar:
+        MDTopAppBar:
             id: collection_app_bar
-            type_height: 'small'
-            md_bg_color: root.md_bg_color
-            left_action_items: [selection_list.back_item]
-            right_action_items: [['dots-vertical', lambda x: root.menu_callback(x)]]
-            elevation: 0
+            type: 'small'
+            theme_bg_color: 'Custom'
+            md_bg_color: self.theme_cls.backgroundColor
+
+            MDTopAppBarLeadingButtonContainer:
+                id: left_button
+
+                MDActionTopAppBarButton:
+                    icon: 'arrow-left-bold'
+                    theme_icon_color: 'Custom'
+                    icon_color: self.theme_cls.primaryColor
+                    ripple_effect: False
+                    focus_behavior: False
+                    on_release:
+                        app.back(screen='main_screen')
+
+            MDTopAppBarTitle:
+                id: collection_app_bar_title
+                text: ' '
+                theme_font_name: "Custom"
+                font_name: 'Hacked'
+
+            MDTopAppBarTrailingButtonContainer:
+                adaptive_width: True
+
+                MDActionTopAppBarButton:
+                    id: button_delete
+                    icon: "delete"
+                    ripple_effect: False
+                    focus_behavior: False
+                    disabled: True
+                    theme_icon_color: 'Custom'
+                    icon_color: root.md_bg_color
+                    on_release:
+                        root.delete_images(selection_list.selected_items)
+
+                MDActionTopAppBarButton:
+                    icon: "dots-vertical"
+                    theme_icon_color: 'Custom'
+                    icon_color: self.theme_cls.primaryColor
+                    ripple_effect: False
+                    focus_behavior: False
+                    on_release:
+                        root.menu_callback(self)
 
         MDScrollView:
             effect_cls: ScrollEffect
+            do_scroll_x: False
+            do_scroll_y: True
 
             MySelectionList:
-                screen: root
-                toolbar: collection_app_bar
-
                 id: selection_list
                 cols: 4
                 padding: dp(2)
                 spacing: dp(2)
-                icon: 'assets/img/check_true.png'
-                icon_bg_color: 1, 1, 1, 0
-                progress_round_color: app.theme_cls.primary_color
                 row_default_height: (self.width - self.cols * self.spacing[0]) / self.cols
                 row_force_default: True
                 col_default_width: (self.width - (self.cols * self.spacing[0] + self.padding[0])) / self.cols
                 col_force_default: True
-                on_selected: self.selected(*args)
-                on_unselected: self.unselected(*args)
-                on_selected_mode: self.set_selection_mode(*args)
+                adaptive_height: True

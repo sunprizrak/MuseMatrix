@@ -1,4 +1,5 @@
-#:import OpenImageScreen screens
+#:import OpenImageScreen screens.open_image
+#:import MyCarousel widgets.MyCarousel
 
 
 <OpenImageScreen>
@@ -7,19 +8,53 @@
     MDBoxLayout:
         orientation: 'vertical'
 
-        MyTopAppBar:
+        MDTopAppBar:
             id: app_bar
-            type_height: 'small'
-            md_bg_color: root.md_bg_color
-            left_action_items: [['arrow-left-bold', lambda x: root.back(root.back_screen)]]
-            right_action_items: [['delete', lambda x: root.delete(img_id=carousel.current_slide.img_id, widget_selection=carousel.current_slide.pre_parent)], ['download', lambda x: root.download(carousel.current_slide)]] if root.back_screen == 'collection_screen' else [['download', lambda x: root.download(carousel.current_slide)]]
-            elevation: 0
+            type: 'small'
+            theme_bg_color: 'Custom'
+            md_bg_color: self.theme_cls.backgroundColor
 
-        MDCarousel:
+            MDTopAppBarLeadingButtonContainer:
+                id: left_button
+
+                MDActionTopAppBarButton:
+                    icon: 'arrow-left-bold'
+                    theme_icon_color: 'Custom'
+                    icon_color: self.theme_cls.primaryColor
+                    ripple_effect: False
+                    focus_behavior: False
+                    on_release:
+                        root.back(screen=root.back_screen)
+
+            MDTopAppBarTitle:
+                id: app_bar_title
+                text: ' '
+                theme_font_name: "Custom"
+                font_name: 'Hacked'
+
+        MyCarousel:
             id: carousel
 
-            on_slide_complete:
-                app_bar.title = 'x'.join(str(carousel.current_slide.texture_size).split(', '))
+
+        MDFloatLayout:
+            size_hint_y: None
+            height: self.children[0].height
+
+            MDFabButton:
+                icon: 'download'
+                style: 'small'
+                theme_icon_color: 'Custom'
+                icon_color: self.theme_cls.primaryColor
+                pos_hint: {'center_x': .1, 'center_y': .5}
+                on_release:
+                    root.download(carousel.current_slide)
 
 
-
+            MDFabButton:
+                icon: 'delete'
+                style: 'small'
+                theme_icon_color: 'Custom'
+                icon_color: self.theme_cls.primaryColor
+                pos_hint: {'center_x': .9, 'center_y': .5}
+                on_release:
+                    root.delete(carousel.current_slide.img_id, carousel.current_slide.pre_parent)

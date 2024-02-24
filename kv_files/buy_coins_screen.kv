@@ -1,42 +1,58 @@
-#:import BuyCoinsScreen screens
+#:import BuyCoinsScreen screens.buy_coins
 
-<ListItemWithLabel@OneLineAvatarIconListItem>:
-    recent: False
-    icon: ""
-    method_name: ""
-    right_label_text: "Recent" if self.recent else ""
+<ListItemWithLabel@MDListItem>:
+    icon: ''
+    text: ''
+    method_name: ''
+    divider: True
 
-    IconLeftWidget:
+    MDListItemLeadingIcon:
         icon: root.icon
 
-    RightLabel:
-        text: root.right_label_text
-        theme_text_color: "Custom"
-        text_color: [0,0,0,.4] if app.theme_cls.theme_style == "Light" else [1, 1, 1, 1]
-        font_size: sp(12)
+    MDListItemHeadlineText:
+        text: root.text
 
+<BuyButton@MDButton>:
+    style: 'elevated'
+    text: ''
+    radius: dp(10)
+    theme_width: 'Custom'
+    width: dp(150)
 
-<BuyButton@MDRaisedButton>:
-    font_size: sp(25)
-    size_hint_x: .5
-    md_bg_color: app.theme_cls.primary_color
+    MDButtonText:
+        text: self.parent.text
+        theme_font_name: 'Custom'
+        font_name: 'Hacked'
+        theme_font_size: 'Custom'
+        font_size: sp(25)
+        pos_hint: {'center_x': .5, 'center_y': .5}
 
 
 <BuyCoinsScreen>
     name: 'buy_coins_screen'
 
     MDFloatLayout:
-        md_bg_color: root.md_bg_color if bottom_sheet.state == 'close' else app.theme_cls.bg_dark
 
         MDTopAppBar:
-            id: buy_top_bar
+            type: 'small'
             pos_hint: {'top': 1}
-            type_height: 'small'
-            title: 'Buy coins'
-            anchor_title: 'left'
-            md_bg_color: self.parent.md_bg_color
-            left_action_items: [['arrow-left-bold', lambda x: app.back(screen='main_screen')]]
-            elevation: 0
+            md_bg_color: self.theme_cls.backgroundColor
+
+            MDTopAppBarLeadingButtonContainer:
+
+                MDActionTopAppBarButton:
+                    icon: 'arrow-left-bold'
+                    theme_icon_color: 'Custom'
+                    icon_color: self.theme_cls.primaryColor
+                    ripple_effect: False
+                    focus_behavior: False
+                    on_release:
+                        app.back(screen='main_screen')
+
+            MDTopAppBarTitle:
+                text: 'Buy coins'
+                theme_font_name: "Custom"
+                font_name: 'Hacked'
 
         MDGridLayout:
             cols: 2
@@ -48,6 +64,8 @@
 
             MDLabel:
                 text: '$99.99'
+                theme_font_name: 'Custom'
+                font_name: 'Hacked'
 
             BuyButton:
                 text: '20000 coins'
@@ -56,6 +74,8 @@
 
             MDLabel:
                 text: '$24.99'
+                theme_font_name: 'Custom'
+                font_name: 'Hacked'
 
             BuyButton:
                 text: '5000 coins'
@@ -64,6 +84,8 @@
 
             MDLabel:
                 text: '$17.99'
+                theme_font_name: 'Custom'
+                font_name: 'Hacked'
 
             BuyButton:
                 text: '3600 coins'
@@ -72,6 +94,8 @@
 
             MDLabel:
                 text: '$7.99'
+                theme_font_name: 'Custom'
+                font_name: 'Hacked'
 
             BuyButton:
                 text: '1600 coins'
@@ -80,6 +104,8 @@
 
             MDLabel:
                 text: '$4.99'
+                theme_font_name: 'Custom'
+                font_name: 'Hacked'
 
             BuyButton:
                 text: '1000 coins'
@@ -88,6 +114,8 @@
 
             MDLabel:
                 text: '$1.99'
+                theme_font_name: 'Custom'
+                font_name: 'Hacked'
 
             BuyButton:
                 text: '400  coins'
@@ -96,6 +124,8 @@
 
             MDLabel:
                 text: '$0.99'
+                theme_font_name: 'Custom'
+                font_name: 'Hacked'
 
             BuyButton:
                 text: '200  coins'
@@ -104,54 +134,49 @@
 
     MDBottomSheet:
         id: bottom_sheet
-        bg_color: root.md_bg_color
-        radius: [dp(25), dp(25), 0, 0]
-        elevation: dp(2) if self.state == 'open' else 0
-        shadow_color: app.theme_cls.primary_color
-        max_opening_height: self.height
-        default_opening_height: self.max_opening_height
         adaptive_height: True
 
+        MDBottomSheetDragHandle:
+            drag_handle_color: app.theme_cls.primaryColor
+            padding: dp(5)
 
-        MDBottomSheetContent:
-            padding: "5dp"
+        MDBoxLayout:
+            orientation: 'vertical'
+            size_hint_y: None
+            height: dp(200)
 
-            MDBoxLayout:
-                orientation: 'vertical'
-                size_hint_y: None
-                height: '200dp'
+            MDLabel:
+                text: 'Select Payment Method'
+                theme_font_size: 'Custom'
+                font_size: sp(16)
+                halign: 'center'
+                theme_font_name: 'Custom'
+                font_name: 'Hacked'
+                pos_hint: {'center_x': .5}
+                adaptive_size: True
+                padding: dp(10)
 
-                MDBoxLayout:
-                    size_hint_y: None
-                    height: dp(40)
+            MDDivider:
+                size_hint_x: .7
+                pos_hint: {'center_x': .5}
 
-                    MDLabel:
-                        text: 'Select Payment Method'
-                        font_size: sp(16)
-                        halign: 'center'
-                        theme_text_color: 'Custom'
-                        text_color: [0, 0, 0, .5] if app.theme_cls.theme_style == 'Light' else [1, 1, 1, 1]
+            MDScrollView:
+                do_scroll_x: False
+                effect_cls: ScrollEffect
 
-                MDSeparator:
-                    size_hint_x: .7
-                    pos_hint: {'center_x': .5}
-                    md_bg_color: app.theme_cls.primary_color
+                MDGridLayout:
+                    cols: 1
+                    adaptive_height: True
 
-                MDScrollView:
-                    do_scroll_x: False
-                    effect_cls: ScrollEffect
+                    ListItemWithLabel:
+                        icon: "google-play"
+                        text: "Google Play"
+                        method_name: "gplay"
+                        theme_bg_color: 'Custom'
+                        md_bg_color: self.parent.md_bg_color
+                        on_release:
+                            root.initiate_purchase(self.method_name)
 
-                    MDGridLayout:
-                        cols: 1
-                        adaptive_height: True
-
-                        ListItemWithLabel:
-                            icon: "assets/img/google_play.png"
-                            text: "Google Play"
-                            method_name: "gplay"
-                            recent: True
-                            on_release:
-                                root.initiate_purchase(self.method_name)
 
 
 

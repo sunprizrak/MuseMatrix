@@ -1,6 +1,7 @@
-#:import StartScreen screens
+#:import StartScreen screens.start
 #:import MDSwapTransition kivymd.uix.transition.transition.MDSwapTransition
 #:import MDSlideTransition kivymd.uix.transition.transition.MDSlideTransition
+#:import get_hex_from_color kivy.utils.get_hex_from_color
 
 <LogoBox@CommonElevationBehavior+MDBoxLayout>:
 
@@ -11,11 +12,13 @@
     MDFloatLayout:
 
         LogoBox:
+            id: button
             size_hint: None, None
             size: dp(256), dp(256)
             pos_hint: {'center_x': .5, 'center_y': .65}
             radius: dp(67)
-            elevation: dp(5)
+            theme_shadow_color: 'Custom'
+            elevation_level: 5
             shadow_radius: dp(67)
             shadow_softness: dp(12)
             shadow_offset: dp(12), dp(-12)
@@ -28,12 +31,14 @@
 
         MDLabel:
             text: 'MuseMatrix'
+            theme_font_size: 'Custom'
+            font_size: sp(65)
+            theme_font_name: "Custom"
+            font_name: 'Hacked'
             theme_text_color: 'Custom'
-            text_color: app.theme_cls.primary_color
-            md_bg_color: self.parent.md_bg_color
-            font_size: sp(60)
+            text_color: '#019DF2'
             halign: 'center'
-            pos_hint: {'center_y': .3}
+            pos_hint: {'center_y': .25}
 
         MDBoxLayout:
             orientation: 'horizontal'
@@ -45,25 +50,45 @@
             MDBoxLayout:
                 adaptive_height: True
 
-                MDRaisedButton:
-                    text: "login"
-                    md_bg_color: app.theme_cls.primary_color
-                    font_size: sp(20)
+                MDButton:
+                    style: "filled"
+                    theme_width: 'Custom'
                     size_hint_x: 1
+                    radius: dp(10)
                     on_release:
                         app.root.transition = MDSwapTransition()
                         app.root.current = 'login_screen'
 
+                    MDButtonText:
+                        text: "sign in"
+                        pos_hint: {"center_x": .5, "center_y": .5}
+                        theme_font_name: "Custom"
+                        font_name: 'Hacked'
+                        font_style: 'Display'
+                        role: 'small'
+                        theme_text_color: 'Custom'
+                        text_color: 'white'
+
             MDBoxLayout:
                 adaptive_height: True
 
-                MDRaisedButton:
-                    text: 'registrate'
-                    theme_text_color: 'Custom'
-                    text_color: app.theme_cls.bg_light
-                    font_size: sp(20)
+                MDButton:
+                    style: 'filled'
+                    theme_bg_color: "Custom"
                     md_bg_color: 'white'
+                    theme_width: 'Custom'
                     size_hint_x: 1
+                    radius: dp(10)
                     on_release:
                         app.root.transition = MDSwapTransition()
                         app.root.current = 'reg_screen'
+
+                    MDButtonText:
+                        text: 'sign up'
+                        pos_hint: {"center_x": .5, "center_y": .5}
+                        theme_font_name: "Custom"
+                        font_name: 'Hacked'
+                        theme_text_color: 'Custom'
+                        text_color: '#131416'
+                        font_style: 'Display'
+                        role: 'small'

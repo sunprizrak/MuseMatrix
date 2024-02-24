@@ -1,4 +1,4 @@
-#:import SpeechToTextScreen screens
+#:import SpeechToTextScreen screens.speech_to_text
 
 
 <SpeechToTextScreen>
@@ -10,14 +10,26 @@
         MDBoxLayout:
             orientation: 'vertical'
 
-            MyTopAppBar:
-                id: speech_top_bar
-                type_height: 'small'
-                title: 'speech to text'
-                anchor_title: 'left'
-                md_bg_color: root.md_bg_color
-                left_action_items: [['arrow-left-bold', lambda x: app.back(screen='main_screen')]]
-                elevation: 0
+            MDTopAppBar:
+                type: 'small'
+                theme_bg_color: 'Custom'
+                md_bg_color: self.theme_cls.backgroundColor
+
+                MDTopAppBarLeadingButtonContainer:
+
+                    MDActionTopAppBarButton:
+                        icon: 'arrow-left-bold'
+                        theme_icon_color: 'Custom'
+                        icon_color: self.theme_cls.primaryColor
+                        ripple_effect: False
+                        focus_behavior: False
+                        on_release:
+                            app.back(screen='main_screen')
+
+                MDTopAppBarTitle:
+                    text: 'speech to text'
+                    theme_font_name: "Custom"
+                    font_name: 'Hacked'
 
             MDBoxLayout:
                 orientation: 'vertical'
@@ -27,7 +39,7 @@
                     id: sound_layout
                     orientation: 'horizontal'
                     spacing: dp(10)
-                    padding: dp(5)
+                    padding: dp(10)
                     adaptive_height: True
 
                     MDBoxLayout:
@@ -36,52 +48,69 @@
                         icon: 'music' if root.sound else ''
                         text: ''
                         spacing: dp(5)
-                        pos_hint: {'center_x': .5}
+                        pos_hint: {'center_x': .5, 'center_y': .5}
+                        adaptive_height: True
 
                         MDIcon:
                             id: icon
                             icon: self.parent.icon
+                            theme_icon_color: 'Custom'
+                            icon_color: self.theme_cls.primaryColor
                             adaptive_size: True
 
                         MDLabel:
                             id: name
                             text: self.parent.text
-                            font_style: 'Sound_name'
                             adaptive_size: True
 
                     MDBoxLayout:
-                        id: sound_option
                         orientation: 'horizontal'
-                        icon_play: 'play' if root.sound else ''
-                        icon_stop: 'stop' if root.sound else ''
-                        pos_hint: {"center_x": .5}
+                        disabled: False if root.sound else True
                         adaptive_size: True
+                        spacing: dp(10)
+                        opacity: 0 if self.disabled else 1
 
-                        MyIconButton:
-                            icon: self.parent.icon_play
-                            size_hint: None, None
-                            size: icon.size
-                            disable: False if root.sound else True
+                        MDBoxLayout:
+                            id: sound_option
+                            orientation: 'horizontal'
+                            icon_play: 'play' if root.sound else ''
+                            icon_stop: 'stop' if root.sound else ''
+                            icon_size: sp(26)
+                            pos_hint: {"center_x": .5}
+                            adaptive_size: True
+                            spacing: dp(5)
+
+                            MDButton:
+                                on_release:
+                                    root.sound_play()
+
+                                MDButtonIcon:
+                                    icon: sound_option.icon_play
+                                    theme_font_size: 'Custom'
+                                    font_size: sound_option.icon_size
+                                    pos_hint: {'center_x': .5, 'center_y': .5}
+
+                            MDButton:
+                                on_release:
+                                    root.sound_stop()
+
+                                MDButtonIcon:
+                                    icon: sound_option.icon_stop
+                                    theme_font_size: 'Custom'
+                                    font_size: sound_option.icon_size
+                                    pos_hint: {'center_x': .5, 'center_y': .5}
+
+                        MDButton:
+                            id: delete_button
+                            radius: dp(10)
                             on_release:
-                                root.sound_play()
+                                root.delete_sound()
 
-                        MyIconButton:
-                            icon: self.parent.icon_stop
-                            size_hint: None, None
-                            size: icon.size
-                            disable: False if root.sound else True
-                            on_release:
-                                root.sound_stop()
-
-
-                    MyIconButton:
-                        id: delete_button
-                        icon: 'close' if root.sound else ''
-                        size_hint: None, None
-                        size: icon.size
-                        disable: False if root.sound else True
-                        on_release:
-                            root.delete_sound()
+                            MDButtonIcon:
+                                icon: 'close' if root.sound else ''
+                                theme_font_size: 'Custom'
+                                font_size: sp(26)
+                                pos_hint: {'center_x': .5, 'center_y': .5}
 
             MDBoxLayout:
                 id: audio_transcript
@@ -92,27 +121,55 @@
                     do_scroll_x: False
                     scroll_y: 1
                     effect_cls: ScrollEffect
-                    padding: dp(5)
+                    padding: dp(10)
 
                     MDLabel:
                         id: audio_text
                         text: self.parent.parent.text
                         padding: dp(10), dp(10)
-                        font_style: 'Sound_name'
                         adaptive_height: True
 
-        MyIconButton:
-            id: add_sound_button
-            icon: 'music-note-plus'
-            icon_size: dp(70)
-            theme_icon_color: "Custom"
-            disabled_color: [1, 1, 1, 0]
-            icon_color: 'gray'
-            pos_hint: {"center_x": .5, "center_y": .5}
-            on_release:
-                app.file_manager_open()
+            MDBoxLayout:
+                id: bottom_buttons
+                padding: dp(10)
+                adaptive_height: True
+                disabled: True
 
-        MDSpinner:
+                MDButton:
+                    style: 'elevated'
+                    radius: dp(10)
+                    opacity: 0 if self.disabled else 1
+                    on_release:
+                        root.copy_to_buffer()
+
+                    MDButtonIcon:
+                        icon: 'content-copy'
+                        theme_icon_color: 'Custom'
+                        icon_color: self.theme_cls.primaryColor
+                        pos_hint: {'center_x': .5, 'center_y': .5}
+
+        MDBoxLayout:
+            id: add_sound_button
+            pos_hint: {"center_x": .5, 'center_y': .55}
+            adaptive_size: True
+
+            MDButton:
+                theme_width: 'Custom'
+                width: dp(100)
+                theme_height: 'Custom'
+                height: dp(100)
+                style: 'elevated'
+                opacity: 0 if self.disabled else 1
+                on_release:
+                    app.file_manager_open()
+
+                MDButtonIcon:
+                    icon: 'music-note-plus'
+                    theme_font_size: "Custom"
+                    font_size: sp(78)
+                    pos_hint: {'center_x': .5, 'center_y': .5}
+
+        MDCircularProgressIndicator:
             id: speech_spin
             size_hint: None, None
             size: dp(38), dp(38)

@@ -1,4 +1,4 @@
-Cython
-Kivy @ https://github.com/kivy/Kivy/archive/master.zip
+Kivy[full] @ https://github.com/kivy/kivy/archive/stable.zip
 kivymd @ https://github.com/kivymd/KivyMD/archive/master.zip
 buildozer @ https://github.com/kivy/buildozer/archive/master.zip
+Cython==0.29.33

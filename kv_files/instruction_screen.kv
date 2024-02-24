@@ -1,11 +1,10 @@
-#:import InstructionScreen screens
+#:import InstructionScreen screens.instruction
 
 
 <InstScrollView@MDScrollView>
     effect_cls: ScrollEffect
     do_scroll_x: False
-    bar_color: app.theme_cls.primary_color
-
+    bar_color: app.theme_cls.primaryColor
 
 <InstBoxLayout@MDBoxLayout>
     orientation: 'vertical'
@@ -28,66 +27,122 @@
     MDBoxLayout:
         orientation: 'vertical'
 
-        MyTopAppBar:
-            id: instruction_top_bar
-            type_height: 'small'
-            title: 'instruction'
-            anchor_title: 'left'
-            md_bg_color: self.parent.md_bg_color
-            left_action_items: [['arrow-left-bold', lambda x: app.back(screen='main_screen')]]
-            elevation: 0
+        MDTopAppBar:
+            id: inst_bar
+            type: 'small'
+            theme_bg_color: 'Custom'
+            md_bg_color: app.theme_cls.backgroundColor
 
-        MDTabs:
+            MDTopAppBarLeadingButtonContainer:
+
+                MDActionTopAppBarButton:
+                    icon: 'arrow-left-bold'
+                    theme_icon_color: 'Custom'
+                    icon_color: app.theme_cls.primaryColor
+                    ripple_effect: False
+                    focus_behavior: False
+                    on_release:
+                        app.back(screen='main_screen')
+
+            MDTopAppBarTitle:
+                text: 'instruction'
+                theme_font_name: "Custom"
+                font_name: 'Hacked'
+
+        MDTabsPrimary:
+            id: tabs
             indicator_color: 'white'
+            allow_stretch: False
+            label_only: True
+            size_hint_y: None
+            height: root.height - inst_bar.height
 
-            Tab:
-                title: 'Coins'
+            MDTabsItem:
+
+                MDTabsItemText:
+                    text: 'Coins'
+                    theme_font_name: "Custom"
+                    font_name: 'Hacked'
+
+            MDTabsItem:
+
+                MDTabsItemText:
+                    text: 'Create Image'
+                    theme_font_name: "Custom"
+                    font_name: 'Hacked'
+
+            MDTabsItem:
+
+                MDTabsItemText:
+                    text: 'Edit Image'
+                    theme_font_name: "Custom"
+                    font_name: 'Hacked'
+
+            MDTabsItem:
+
+                MDTabsItemText:
+                    text: 'Variable Image'
+                    theme_font_name: "Custom"
+                    font_name: 'Hacked'
+
+            MDTabsItem:
+
+                MDTabsItemText:
+                    text: 'Chat GPT'
+                    theme_font_name: "Custom"
+                    font_name: 'Hacked'
+
+            MDTabsItem:
+
+                MDTabsItemText:
+                    text: 'Speech to text'
+                    theme_font_name: "Custom"
+                    font_name: 'Hacked'
+
+            MDTabsCarousel:
+                id: related_content_container
+                size_hint_y: 1
 
                 InstScrollView:
+                    id: coins
 
                     InstBoxLayout:
 
                         MDLabel:
                             text: "Coins are needed to use the features of the application.\nThere are two ways to get coins :\n  1. [ref=Purchase via google play store][color=0000ff]Purchase via google play store[/color][/ref]\n  2. [ref=View ads][color=0000ff]View ads[/color][/ref]\nFor one video watched, you will receive 1 coin."
-                            font_style: 'Instruction'
                             halign: 'left'
                             line_height: 1.5
                             markup: True
                             adaptive_height: True
                             on_ref_press:
                                 root.move_to_screen(*args)
-            Tab:
-                title: 'Create Image'
 
                 InstScrollView:
+                    id: create_image
 
                     InstBoxLayout:
 
                         MDLabel:
-                            text: "With the create image function you to create an original image given a text prompt. Generated images can have a size of 256x256, 512x512, or 1024x1024 pixels. Smaller sizes are faster to generate. You can request 1-10 images at a time. The more detailed the description, the more likely you are to get the result you want. When downloading a generated image, it is saved to the user's gallery and device.\nGenerating one image requires 20 coins."
-                            font_style: 'Instruction'
+                            text: "With the image generation feature, you can create a source image using a text prompt. The generated images can be 256x256, 512x512, 1024x1024 in size if the DALL-2 model is selected, or 1024x1024, 1024x1792, 1792x1024 when the DALL-3 model is selected. Smaller sizes are generated faster. You can request from 1 to 10 images at a time if you select the DALL-2 model or one image with the DALL-3 model. The more detailed the description, the greater the likelihood of getting the desired result. \nTo create one image, 20 coins are required."
                             halign: 'left'
                             line_height: 1.5
                             adaptive_height: True
 
                         MDLabel:
                             text: 'Example :'
-                            font_style: 'Instruction'
                             padding: dp(10)
                             adaptive_height: True
 
                         MDLabel:
-                            text: '1. Select the number of images from 1 to 10'
-                            font_style: 'Instruction'
+                            text: '1. Select OpenAI model for images'
                             padding: [dp(20), 0, 0, 0]
                             adaptive_height: True
 
                         InstImage:
-                            source: 'assets/img/instruction_count.png'
+                            source: 'assets/img/instruction_model.png'
 
                         MDLabel:
                             text: '2. Select image size'
-                            font_style: 'Instruction'
                             padding: [dp(20), 0, 0, 0]
                             adaptive_height: True
 
@@ -95,8 +150,15 @@
                             source: 'assets/img/instruction_size.png'
 
                         MDLabel:
-                            text: '3. Describe the picture you want to generate'
-                            font_style: 'Instruction'
+                            text: '3. Select number of images'
+                            padding: [dp(20), 0, 0, 0]
+                            adaptive_height: True
+
+                        InstImage:
+                            source: 'assets/img/instruction_count.png'
+
+                        MDLabel:
+                            text: '4. Describe the picture you want to generate'
                             padding: [dp(20), 0, 0, 0]
                             adaptive_height: True
 
@@ -105,36 +167,30 @@
 
                         MDLabel:
                             text: '4. Click on the generate button'
-                            font_style: 'Instruction'
                             padding: [dp(20), 0, 0, 0]
                             adaptive_height: True
 
                         InstImage:
                             source: 'assets/img/instruction_button.png'
 
-            Tab:
-                title: 'Edit Image'
-
                 InstScrollView:
+                    id: edit_image
 
                     InstBoxLayout:
 
                         MDLabel:
-                            text: "With the image editing function, you can edit and enhance the image with text hint. The tooltip should describe the complete new image, not just the selection. The more detailed the description, the more likely it is to get the desired result. Generated images can be 256x256, 512x512 or 1024x1024 pixels. Smaller sizes are generated faster. You can request from 1 to 10 images at a time. When uploading a generated image, it is saved in the user's gallery and on the device.\nGenerating one image requires 20 coins."
-                            font_style: 'Instruction'
+                            text: "With the image editing function, you can edit and enhance the image with text hint. The tooltip should describe the complete new image, not just the selection. The more detailed the description, the more likely it is to get the desired result. Generated images can be 256x256, 512x512 or 1024x1024 pixels. Smaller sizes are generated faster. You can request from 1 to 10 images at a time.\nGenerating one image requires 20 coins."
                             halign: 'left'
                             line_height: 1.5
                             adaptive_height: True
 
                         MDLabel:
                             text: 'Example :'
-                            font_style: 'Instruction'
                             padding: dp(10)
                             adaptive_height: True
 
                         MDLabel:
                             text: '1. Upload an image from your device'
-                            font_style: 'Instruction'
                             padding: [dp(20), 0, 0, 0]
                             adaptive_height: True
 
@@ -142,17 +198,24 @@
                             source: 'assets/img/instruction_upload_image.png'
 
                         MDLabel:
-                            text: '2. Select the number of images from 1 to 10'
-                            font_style: 'Instruction'
+                            text: '2. Select the area you want to change'
                             padding: [dp(20), 0, 0, 0]
                             adaptive_height: True
 
                         InstImage:
-                            source: 'assets/img/instruction_count.png'
+                            source: 'assets/img/image_edit_mask.png'
+                            size: dp(156), dp(156)
 
                         MDLabel:
-                            text: '3. Select image size'
-                            font_style: 'Instruction'
+                            text: '3. Click next button'
+                            padding: [dp(20), 0, 0, 0]
+                            adaptive_height: True
+
+                        InstImage:
+                            source: 'assets/img/instruction_next_button.png'
+
+                        MDLabel:
+                            text: '4. Select image size'
                             padding: [dp(20), 0, 0, 0]
                             adaptive_height: True
 
@@ -160,8 +223,15 @@
                             source: 'assets/img/instruction_size.png'
 
                         MDLabel:
-                            text: '4. Describe the complete new image, not just the selection'
-                            font_style: 'Instruction'
+                            text: '5. Select the number of images'
+                            padding: [dp(20), 0, 0, 0]
+                            adaptive_height: True
+
+                        InstImage:
+                            source: 'assets/img/instruction_count.png'
+
+                        MDLabel:
+                            text: '6. Describe the complete new image, not just the selection'
                             padding: [dp(20), 0, 0, 0]
                             adaptive_height: True
 
@@ -169,37 +239,31 @@
                             source: 'assets/img/instruction_prompt.png'
 
                         MDLabel:
-                            text: '5. Click on the generate button'
-                            font_style: 'Instruction'
+                            text: '7. Click on the generate button'
                             padding: [dp(20), 0, 0, 0]
                             adaptive_height: True
 
                         InstImage:
                             source: 'assets/img/instruction_button.png'
 
-            Tab:
-                title: 'Variable Image'
-
                 InstScrollView:
+                    id: variable_image
 
                     InstBoxLayout:
 
                         MDLabel:
-                            text: "With the Image Variation feature, you can create a variant of a given image. Generated images can be 256x256, 512x512 or 1024x1024 pixels. Smaller sizes are generated faster. You can request from 1 to 10 images at a time. When uploading a generated image, it is saved in the user's gallery and on the device.\nGenerating one image requires 20 coins."
-                            font_style: 'Instruction'
+                            text: "With the Image Variation feature, you can create a variant of a given image. Generated images can be 256x256, 512x512 or 1024x1024 pixels. Smaller sizes are generated faster. You can request from 1 to 10 images at a time.\nGenerating one image requires 20 coins."
                             halign: 'left'
                             line_height: 1.5
                             adaptive_height: True
 
                         MDLabel:
                             text: 'Example :'
-                            font_style: 'Instruction'
                             padding: dp(10)
                             adaptive_height: True
 
                         MDLabel:
                             text: '1. Upload an image from your device'
-                            font_style: 'Instruction'
                             padding: [dp(20), 0, 0, 0]
                             adaptive_height: True
 
@@ -208,7 +272,6 @@
 
                         MDLabel:
                             text: '2. Select the number of images from 1 to 10'
-                            font_style: 'Instruction'
                             padding: [dp(20), 0, 0, 0]
                             adaptive_height: True
 
@@ -217,7 +280,6 @@
 
                         MDLabel:
                             text: '3. Select image size'
-                            font_style: 'Instruction'
                             padding: [dp(20), 0, 0, 0]
                             adaptive_height: True
 
@@ -226,23 +288,19 @@
 
                         MDLabel:
                             text: '4. Click on the generate button'
-                            font_style: 'Instruction'
                             padding: [dp(20), 0, 0, 0]
                             adaptive_height: True
 
                         InstImage:
                             source: 'assets/img/instruction_button.png'
 
-            Tab:
-                title: 'Chat GPT'
-
                 InstScrollView:
+                    id: chat_gpt
 
                     InstBoxLayout:
 
                         MDLabel:
-                            text: "The chat gpt function gives you access to the chat gpt language model. New users receive 1000 chat tokens to use with chat gpt. The number of spent chat tokens is determined by the length of the message you entered. Chat Tokens can be obtained by converting coins into chat tokens.\n1 coin = 1000 chat tokens.\nThis can be done by pressing the transfer button, which is located to the right of the chat tokens in the drop-down menu of the application."
-                            font_style: 'Instruction'
+                            text: "The chat gpt function gives you access to the chat gpt language model gpt-4-0125-preview. New users receive 1000 chat tokens to use with chat gpt. The number of spent chat tokens is determined by the length of the message you entered. Chat Tokens can be obtained by converting coins into chat tokens.\n1 coin = 1000 chat tokens.\nThis can be done by pressing the transfer button, which is located to the right of the chat tokens in the drop-down menu of the application."
                             halign: 'left'
                             line_height: 1.5
                             adaptive_height: True
@@ -250,29 +308,24 @@
                         InstImage:
                             source: 'assets/img/instruction_transfer_button.png'
 
-            Tab:
-                title: 'Speech to text'
-
                 InstScrollView:
+                    id: speech_to_text
 
                     InstBoxLayout:
 
                         MDLabel:
                             text: "With the speech to text feature, you can transcribe audio into any language it is written in, or translate and transcribe audio into English.\nFile uploads are currently limited to 25MB, and the following input file types are supported: mp3, mp4, mpeg , mpga, m4a, wav and webm.\n1 minute audio = 2 coins"
-                            font_style: 'Instruction'
                             halign: 'left'
                             line_height: 1.5
                             adaptive_height: True
 
                         MDLabel:
                             text: 'Example :'
-                            font_style: 'Instruction'
                             padding: dp(10)
                             adaptive_height: True
 
                         MDLabel:
                             text: '1. Upload an audio from your device'
-                            font_style: 'Instruction'
                             padding: [dp(20), 0, 0, 0]
                             adaptive_height: True
 
@@ -280,24 +333,18 @@
                             source: 'assets/img/instruction_upload_audio.png'
 
                         MDLabel:
-                            text: '2. Press and hold the translate to english button if you want to translate the text into english'
-                            font_style: 'Instruction'
+                            text: '2. Press the checkbox if you want to translate the text into english'
                             padding: [dp(20), 0, 0, 0]
                             adaptive_height: True
 
                         InstImage:
                             source: 'assets/img/instruction_translate_button.png'
 
-                        InstImage:
-                            source: 'assets/img/instruction_translate_button_success.png'
 
                         MDLabel:
                             text: '3. Click on the transcript button'
-                            font_style: 'Instruction'
                             padding: [dp(20), 0, 0, 0]
                             adaptive_height: True
 
                         InstImage:
                             source: 'assets/img/instruction_transcript_button.png'
-
-

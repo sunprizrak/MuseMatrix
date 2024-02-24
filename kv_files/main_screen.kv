@@ -1,4 +1,4 @@
-#:import MainScreen screens
+#:import MainScreen screens.main
 #:import ScrollEffect kivy.effects.scroll.ScrollEffect
 
 <ContentNavigationDrawer@MDBoxLayout>:
@@ -6,29 +6,29 @@
 
 
 <AvatarBox@ButtonBehavior+MDBoxLayout+CommonElevationBehavior>:
-    line_color: app.theme_cls.primary_color
-    line_width: dp(1.5)
-    elevation: dp(2)
-    shadow_color: app.theme_cls.primary_color
+    elevation_level: 3
     radius: dp(50)
 
 
-<MyNavigationDrawerDivider@MDNavigationDrawerDivider>:
-    color: app.theme_cls.primary_color
-
-
 <MyNavigationDrawerItem@MDNavigationDrawerItem>:
-    text_color: 'white'
-    focus_color: app.theme_cls.primary_color
-    selected_color: "white"
+    item_icon: ''
+    item_text: ''
 
+    MDNavigationDrawerItemLeadingIcon:
+        icon: root.item_icon
+        theme_icon_color: 'Custom'
+        icon_color: app.theme_cls.primaryColor
+
+    MDNavigationDrawerItemText:
+        text: root.item_text
+        theme_font_name: "Custom"
+        font_name: 'Hacked'
 
 <MainCard@MDCard>:
-    md_bg_color: 69/255,55/255,86/255, .2
+    style: 'elevated'
     orientation: 'vertical'
     padding: dp(10)
     spacing: dp(15)
-    radius: dp(25)
     ripple_behavior: True
     image: ''
     text: ''
@@ -38,10 +38,14 @@
         fit_mode: 'contain'
         mipmap: True
 
+
     MDLabel:
         halign: 'center'
         text: root.text
-        font_style: 'H6'
+        theme_font_name: "Custom"
+        font_name: 'Hacked'
+        theme_font_size: 'Custom'
+        font_size: sp(20)
         adaptive_height: True
 
 
@@ -56,14 +60,23 @@
 
                 MDBoxLayout:
                     orientation: 'vertical'
-                    md_bg_color: root.md_bg_color
 
-                    MyTopAppBar:
+                    MDTopAppBar:
                         id: main_top_bar
-                        type_height: 'small'
-                        md_bg_color: self.parent.md_bg_color
-                        left_action_items: [["menu", lambda x: nav_drawer.set_state("open")]]
-                        elevation: 0
+                        type: 'small'
+                        theme_bg_color: 'Custom'
+                        md_bg_color: self.theme_cls.backgroundColor
+
+                        MDTopAppBarLeadingButtonContainer:
+
+                            MDActionTopAppBarButton:
+                                icon: 'menu'
+                                theme_icon_color: 'Custom'
+                                icon_color: self.theme_cls.primaryColor
+                                ripple_effect: False
+                                focus_behavior: False
+                                on_release:
+                                    nav_drawer.set_state("open")
 
                     MDGridLayout:
                         cols: 2
@@ -100,7 +113,7 @@
 
                         MainCard:
                             image: 'assets/img/chat_icon.png'
-                            text: 'Chat gpt'
+                            text: 'Chat gpt-4'
                             on_release:
                                 app.root.transition = MDSwapTransition()
                                 app.root.current = 'chat_gpt_screen'
@@ -117,7 +130,7 @@
             orientation: 'vertical'
             radius: (0, dp(25), dp(25), 0)
             elevation: dp(2) if self.state == 'open' else 0
-            shadow_color: app.theme_cls.primary_color
+            shadow_color: 'white'
             padding: [dp(15), dp(15), dp(30), dp(15)]
             size_hint_y: .95
             pos_hint: {'center_y': .5}
@@ -129,9 +142,11 @@
 
                 MDLabel:
                     text: root.email
-                    halign: 'center'
+                    theme_font_name: "Custom"
+                    font_name: 'Hacked'
+                    theme_font_size: 'Custom'
                     font_size: sp(20)
-                    color: 'white'
+                    halign: 'center'
                     adaptive_height: True
 
                 MDBoxLayout:
@@ -143,14 +158,13 @@
                         size_hint_x: .4
 
                         AvatarBox:
-                            source: root.avatar
+                            source: root.avatar if root.avatar else 'assets/img/avatar_default.png'
                             size_hint: None, None
                             size: dp(85), dp(85)
                             anchor_x: 'center'
                             anchor_y: 'center'
                             on_release:
                                 app.file_manager_open()
-
 
                             FitImage:
                                 source: self.parent.source
@@ -164,7 +178,7 @@
                         MDBoxLayout:
                             orientation: 'vertical'
                             pos_hint: {'center_y': .5}
-                            spacing: dp(30)
+                            spacing: dp(15)
                             padding: dp(20)
                             adaptive_height: True
 
@@ -176,12 +190,15 @@
                                 MDIcon:
                                     icon: 'crown-circle'
                                     icon_size: sp(25)
-                                    theme_text_color: 'Custom'
-                                    text_color: '#FFD700'
+                                    theme_icon_color: 'Custom'
+                                    icon_color: '#FFD700'
 
                                 MDLabel:
                                     text: str(root.coin)
-                                    color: '#FFD700'
+                                    theme_text_color: 'Custom'
+                                    text_color: '#FFD700'
+                                    theme_font_name: "Custom"
+                                    font_name: 'Hacked'
                                     adaptive_width: True
 
                             MDBoxLayout:
@@ -190,22 +207,27 @@
                                 adaptive_size: True
 
                                 MDIcon:
-                                    icon: 'water-circle'
+                                    icon: 'send-circle'
                                     icon_size: sp(25)
-                                    theme_text_color: 'Custom'
-                                    text_color: '#157ded'
+                                    theme_icon_color: 'Custom'
+                                    icon_color: '#157ded'
 
                                 MDLabel:
                                     text: str(root.chat_token)
-                                    color: '#157ded'
+                                    theme_text_color: 'Custom'
+                                    text_color: '#157ded'
+                                    theme_font_name: "Custom"
+                                    font_name: 'Hacked'
                                     adaptive_width: True
 
-                        MyIconButton:
+                        MDFabButton:
                             icon: 'swap-vertical-circle-outline'
-                            icon_size: sp(30)
-                            theme_icon_color: "Custom"
-                            md_bg_color: root.md_bg_color
-                            pos_hint: {'center_y': .5}
+                            style: 'small'
+                            theme_font_size: 'Custom'
+                            font_size: sp(30)
+                            theme_icon_color: 'Custom'
+                            icon_color: self.theme_cls.primaryColor
+                            pos_hint: {'center_x': .5, 'center_y': .5}
                             on_release:
                                 root.add_chat_token()
 
@@ -214,48 +236,57 @@
                 effect_cls: ScrollEffect
                 bar_width: 0
 
-                MyNavigationDrawerDivider:
+                MDNavigationDrawerDivider:
 
                 MyNavigationDrawerItem:
-                    icon: "cog"
-                    text: "Settings"
+                    item_icon: "cog"
+                    item_text: "Settings"
                     on_release:
                         root.open_settings()
 
-                MyNavigationDrawerDivider:
+                MDNavigationDrawerDivider:
 
                 MyNavigationDrawerItem:
                     id: collection
-                    icon: 'image-multiple'
-                    text: 'My Collection'
+                    item_icon: 'image-multiple'
+                    item_text: 'My Collection'
                     on_release:
                         root.open_collection()
 
-                MyNavigationDrawerDivider:
+                MDNavigationDrawerDivider:
 
                 MyNavigationDrawerItem:
-                    icon: 'shopping'
-                    text: 'Buy Coins'
+                    item_icon: 'shopping'
+                    item_text: 'Buy Coins'
                     on_release:
                         root.open_buy_credits()
 
-                MyNavigationDrawerDivider:
+                MDNavigationDrawerDivider:
 
                 MyNavigationDrawerItem:
-                    icon: 'movie-open'
-                    text: 'Earn Coins'
+                    item_icon: 'movie-open'
+                    item_text: 'Earn Coins'
                     on_release:
                         root.show_ads()
 
-                MyNavigationDrawerDivider:
+                MDNavigationDrawerDivider:
 
                 MyNavigationDrawerItem:
-                    icon: 'logout'
-                    text: 'Logout'
+                    item_icon: 'logout'
+                    item_text: 'Logout'
                     on_release:
                         root.exit()
 
-                MyNavigationDrawerDivider:
+                MDNavigationDrawerDivider:
+
+            MDLabel:
+                text: f'v{app.get_version()}'
+                padding: [dp(10), dp(10), dp(10), 0]
+                theme_font_size: 'Custom'
+                font_size: sp(14)
+                theme_font_name: "Custom"
+                font_name: 'Hacked'
+                adaptive_size: True
 
 
 
