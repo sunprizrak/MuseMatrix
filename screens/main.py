@@ -9,7 +9,7 @@ class MainScreen(BaseScreen):
     email = StringProperty('email')
     coin = NumericProperty()
     chat_token = NumericProperty()
-    avatar = StringProperty('avatar')
+    avatar = StringProperty('')
 
     def __init__(self, **kwargs):
         super(MainScreen, self).__init__(**kwargs)

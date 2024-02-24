@@ -158,7 +158,7 @@
                         size_hint_x: .4
 
                         AvatarBox:
-                            source: root.avatar
+                            source: root.avatar if root.avatar else 'assets/img/avatar_default.png'
                             size_hint: None, None
                             size: dp(85), dp(85)
                             anchor_x: 'center'

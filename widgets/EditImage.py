@@ -23,12 +23,12 @@ class EditImage(Image):
         self.pil_image = PILImage.open(self.source).convert('RGBA')
 
     def on_parent(self, widget, parent):
-            if parent is not None:
-                def _callback(dt):
-                    self.__update_before_canvas()
-                    self.bind(norm_image_size=lambda x, y: self.__update_before_canvas())
+        if parent is not None:
+            def _callback(dt):
+                self.__update_before_canvas()
+                self.bind(norm_image_size=lambda x, y: self.__update_before_canvas())
 
-                Clock.schedule_once(callback=_callback, timeout=0.1)
+            Clock.schedule_once(callback=_callback, timeout=0.1)
 
     def __create_new_texture(self):
         texture = Texture.create(
