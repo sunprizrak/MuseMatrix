@@ -1,33 +1,6 @@
 #:import ChatGptScreen screens.chat_gpt
 #:import Message widgets.Message
-
-
-<Message>:
-    canvas:
-        Color:
-            rgba: root.md_bg_color
-        Triangle:
-            points: root.triangle_points
-
-    MDLabel:
-        text: root.message
-        padding: [dp(10), dp(10), dp(5), dp(10)]
-
-    MDLabel:
-        text: root.time
-        theme_font_size: 'Custom'
-        font_size: sp(10)
-        bold: True
-        padding: [0, 0, dp(10), dp(5)]
-        adaptive_size: True
-        pos_hint: {'bottom': 1, 'right': 1}
-
-    Image:
-        source: root.image_path
-        fit_mode: 'cover'
-        anim_delay: 0
-        mipmap: True
-
+#:import MyChatLayout widgets.Message
 
 
 <ChatGptScreen>:
@@ -62,20 +35,20 @@
                     theme_font_name: "Custom"
                     font_name: 'Hacked'
 
-            MDRecycleView:
+            MDScrollView:
                 id: chat_gpt
                 do_scroll_y: False if chat_gpt_box.height < self.height else True
                 scroll_y: 0
                 effect_cls: ScrollEffect
-                viewclass: 'Message'
 
-                RecycleBoxLayout:
+                MyChatLayout:
                     id: chat_gpt_box
                     orientation: 'vertical'
                     size_hint_y: None
                     height: self.minimum_height
                     spacing: dp(10)
                     padding: dp(10)
+                    adaptive_height: True
 
             MDBoxLayout:
                 orientation: 'horizontal'

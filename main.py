@@ -28,7 +28,7 @@ import io
 import os
 import asynckivy as ak
 
-__version__ = '0.78.13'
+__version__ = '0.78'
 
 logging.getLogger('PIL').setLevel(logging.WARNING)
 os.environ["KIVY_AUDIO"] = "ffpyplayer"

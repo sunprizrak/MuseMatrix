@@ -1,16 +1,16 @@
 import base64
 import io
+
+from kivy.clock import mainthread
 from kivy.core.image import Image as CoreImage
-from kivy.utils import platform
-from kivy.properties import BoundedNumericProperty, StringProperty, NumericProperty, ObjectProperty
+from kivy.properties import BoundedNumericProperty, StringProperty, NumericProperty
 from kivymd.app import MDApp
 from kivymd.uix.screen import MDScreen
-
 from controller.image import ImageController
 from controller.openai import OpenAIController
 from controller.user import UserController
 from widgets.MySelectionList import MySmartTile, MySmartTileImage
-
+import asynckivy as ak
 
 class BaseScreen(MDScreen):
     _initialized = False
@@ -36,7 +36,14 @@ class ImageScreen(BaseScreen):
         self.user_controller = UserController()
         self.image_controller = ImageController()
 
-    def save_image(self, widget):
+    async def __send_save(self, **kwargs):
+        self.image_controller.save_image(
+            data_image=kwargs.get('data_image'),
+            on_success=kwargs.get('on_success'),
+            on_failure=kwargs.get('on_failure'),
+        )
+
+    async def save_image(self, widget):
         core_image = CoreImage(widget.texture)
 
         data = io.BytesIO()
@@ -52,7 +59,10 @@ class ImageScreen(BaseScreen):
         if self.name != 'variable_image_screen':
             data_image['description'] = self.prompt
 
+        @mainthread
         def _on_success(request, response):
+            self.ids.save_spin.active = False
+
             self.ids.carousel.saved_images.append(widget)
 
             image = self.image_controller.object(data_image=response)
@@ -75,11 +85,17 @@ class ImageScreen(BaseScreen):
             for index, smart_tile in enumerate(reversed(screen.ids.selection_list.children)):
                 smart_tile.image.index = index
 
+        @mainthread
         def _on_failure(request, response):
             print(response)
 
-        self.image_controller.save_image(
+        self.ids.save_spin.active = True
+
+        ak.start(self.__send_save(
             data_image=data_image,
             on_success=_on_success,
             on_failure=_on_failure,
-        )
+        ))
+
+    def start_save(self, widget):
+        ak.start(self.save_image(widget=widget))

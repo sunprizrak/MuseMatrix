@@ -283,27 +283,41 @@
                 MyCarousel:
                     id: carousel
 
-                MDBoxLayout:
-                    orientation: 'horizontal'
-                    padding: [dp(30), dp(10), dp(30), dp(30)]
+                MDRelativeLayout:
+                    size_hint_x: None
+                    width: save_button.width
+                    adaptive_height: True
                     pos_hint: {'center_x': .5}
-                    adaptive_size: True
 
-                    MDButton:
-                        id: save_button
-                        style: 'elevated'
-                        radius: dp(10)
+                    MDBoxLayout:
+                        adaptive_size: True
                         disabled: True if carousel.current_slide in carousel.saved_images else False
-                        pos_hint: {'center_x': .5}
-                        on_release:
-                            root.save_image(carousel.current_slide)
+                        pos_hint: {'center_y': .5}
 
-                        MDButtonIcon:
-                            icon: 'check-circle' if carousel.current_slide in carousel.saved_images else 'content-save'
-                            icon_color_disabled: 'green'
+                        MDButton:
+                            id: save_button
+                            style: 'elevated'
+                            radius: dp(10)
+                            disabled: self.parent.disabled
+                            on_release:
+                                root.start_save(carousel.current_slide)
 
-                        MDButtonText:
-                            text: 'saved' if carousel.current_slide in carousel.saved_images else 'save image'
-                            theme_font_name: 'Custom'
-                            font_name: 'Hacked'
-                            theme_text_color: 'Primary'
+                            MDButtonIcon:
+                                id: save_icon
+                                icon: 'check-circle' if carousel.current_slide in carousel.saved_images else 'content-save'
+                                disabled: True if save_spin.active else False
+                                icon_color_disabled: self.parent.md_bg_color if save_spin.active else 'green'
+
+                            MDButtonText:
+                                id: save_text
+                                text: 'saved' if carousel.current_slide in carousel.saved_images else 'save image'
+                                theme_font_name: 'Custom'
+                                font_name: 'Hacked'
+                                theme_text_color: 'Primary'
+
+                    MDCircularProgressIndicator:
+                        id: save_spin
+                        size_hint: None, None
+                        size: dp(16), dp(16)
+                        pos_hint: {'center_x': .15, 'center_y': .5}
+                        active: False
