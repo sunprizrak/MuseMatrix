@@ -1,7 +1,10 @@
 import logging
 from kivy.core.image import Image as CoreImage
 from kivy.core.text import LabelBase
+from kivy.loader import Loader
 from kivy.metrics import dp
+from kivy.uix.image import Image
+
 from kivy.uix.widget import Widget
 from kivymd.app import MDApp
 from kivy.lang import Builder
@@ -81,8 +84,6 @@ class MainApp(MDApp):
 
         Window.softinput_mode = 'below_target'
         Window.bind(on_keyboard=self.key_input)
-
-        # Loader.loading_image = 'assets/img/transparent.png'
 
         kv_file = Builder.load_file('kv_files/layout.kv')
         return kv_file

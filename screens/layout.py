@@ -12,6 +12,7 @@ from controller.user import UserController
 from widgets.MySelectionList import MySmartTile, MySmartTileImage
 import asynckivy as ak
 
+
 class BaseScreen(MDScreen):
     _initialized = False
 
@@ -98,4 +99,5 @@ class ImageScreen(BaseScreen):
         ))
 
     def start_save(self, widget):
-        ak.start(self.save_image(widget=widget))
+        if not self.ids.save_spin.active:
+            ak.start(self.save_image(widget=widget))
